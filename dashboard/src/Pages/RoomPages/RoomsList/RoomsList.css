@@ -1,0 +1,47 @@
+
+
+.roomsList{
+    flex: 4;
+}
+.roomsListItem {
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+    justify-content: end;
+    justify-self: end;
+    justify-items: end;
+    align-self: flex-end;
+    align-content: end;
+}
+.roomAddButton {
+    border: none;
+    padding: 5px;
+    background-color: teal;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    margin: 10px;
+}
+.roomsListImg {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.roomsListEdit {
+    border: none;
+    border-radius: 10px;
+    padding: 5px 10px;
+    background-color: #3bb077;
+    color: white;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.roomsListDelete {
+    color: red;
+    cursor: pointer;
+}

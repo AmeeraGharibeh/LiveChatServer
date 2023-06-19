@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "grocery-372908",
+  "private_key_id": "ff0ac3871e9e6fd9043a86412716173d322c17cc",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCyaPra5RcpmgRU\n1pmWFilstqZ6JBZNV+1BzpO6BY9B/k36kyOhaLnI6XoXEiYZHexJglLLX4y/NWLS\nzGoza2psG6G1wfrxHCD4vZmM8abM9uq8w8iA1omvruiZ13NlOBjEGNjk3/BjKlJq\nQC+mqujo+dTIuyfB0r3eAYAXR1JBG/tBSAcq7crQwu3fHvzstCdeialJ5pBesKi1\nC7hkECXncqC2sDnML4LIRtHE2HBhh1aeaCT3KNIdG6Q3AZ5Cu8nOXldSq7PCileY\n/w7jo2j4pqvpA23S1bkYCmwsmroMMn4nPUwnT18P97dTbh3hDzU3D9ZoENYxnJHd\nllAu/6dnAgMBAAECggEADmrNWsMIjCQWFYUCBE7mKhLYgSZJZxaj5Z178pxgZ0TV\nqFoblv+Pg9zaMOMWkREJ9ybA6g5eoVT/F2nNazpS70mMV9PFI5bSU0d/ERS2Ffoe\nHgL0QPUVS00nHsd6W8OcvLwFSvmNw3W4Ez38m8tT5v/JYi89lzwge8BDSZ5J11j4\ni6NtMRKi77UdXCXdSQqj0KqPfd/gdCNWMl4oi3/b2COzKALK+3g+J62DSYDuIX8a\nQ9qcpFiQfgQuMx7qx9rYXpRC0IkBV32P6ymEPAi/mR2yH+oLNGLIKTk/JgEWY2Sr\nzYrEZlN76Sy3S8oYua8sQAVfLfMhICw+3qiIgHOSgQKBgQD6V6xQEcybSiWpGpWj\nMhI84Br8DUDYudheD4RsjDjXgrVmQmQagcoCjRP/LACYnrP+wlMj6YfJN/+vj9Zk\nYv/2NHxetu+R5o+YcDXgMSaGFYf4CJJhuXXsOvfxjpZ9bA2dLRm0tuR/ScNtwHpH\nokw7deir79S5tS68feOS6BO5XQKBgQC2cSaAveAGa+3YbcIgjJ4za/LsP8WCFZSB\nSIIg1qlR37vorgQM0AqL1hc5Hzaai0YDaieKxXMrYWco5GhtXYc5PHZmM4atDMHt\n6nTo0lf5Od+DRGWul4m7RKQ/377Nz4+mFzYPQ/OpBfsIMjVb3O3/+xSkgi12Ct1A\nWe0sNt6jkwKBgBrYlA3yGrL8fJVp2Gor0HDex4YIFdAn/d/4YgcR8naJ+dIBhKKj\nEHq9jktq+JVlT4AebrQHMxyM+Mpm7mLNiw1oC35Mt9w5kWSTg/OK0crHPFGI+cmp\nDdBLcpNg6xqAH+WfFIagplhQHLkETxineu1Vc6Ickf9oQp7MET+Ly7GxAoGAM2W3\nIifb2BNJ42IwgXj8DKKJwlLI8rffqXhi6JtxAhbU2l1D2NQ3VGPREQ+hE3LPG6Ep\nWKf9pSgApv2KCd2CffZxqKM1esUQUVVu8DRqAlVyiYmYV9JrQ+23lCMVnuetoW4C\nldRf7as4qHt0mten2SjEDQB7jDjNUhbDgWRH3q8CgYEAuCrNe6BZDcEf/Uu84CFF\nnOSkFfx0K/mbO6enOXxO67P/ht5CFsNJCy7HaLbIIJtLwFbKhPkMX+qt9PcufS9n\nVQMxhncbRyUu6vNnM0ivKVCs16Uy7YzHtx3AmfF95r0qj+xziYDeotYGPDlQhRsM\nM1fMfDSrCoHTZM50k/ZIS0I=\n-----END PRIVATE KEY-----\n",
+  "client_email": "ameeracloudaccount@grocery-372908.iam.gserviceaccount.com",
+  "client_id": "110204991484691445655",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ameeracloudaccount%40grocery-372908.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

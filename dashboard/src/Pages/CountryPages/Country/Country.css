@@ -1,0 +1,131 @@
+.country {
+    flex: 4;
+    padding: 20px;
+    direction: rtl;
+}
+
+
+.countryAddButton {
+    width: 25%;
+    padding: 10px;
+    border: none;
+    margin-top: 20px;
+    border-radius: 10px;
+    background-color: darkblue;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: center;
+}
+
+.countryTop {
+    display: flex;
+}
+
+.countryTopLeft,
+.countryTopRight {
+    flex: 1;
+}
+
+.countryTopRight {
+    padding: 20px;
+    margin: 20px;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+}
+
+.countryInfoTop {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin-left: 20px;
+}
+
+.countryName {
+    font-weight: 600;
+    margin-top: 12px;
+}
+
+.countryInfoBottom {
+    margin-top: 10px;
+
+}
+
+.countryInfoItem {
+    width: 100%;
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.countryInfoKey {
+    font-weight: 500;
+
+}
+
+.countryInfoValue {
+    font-weight: 300;
+}
+
+.countryBottom {
+    padding: 20px;
+    margin: 20px;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+}
+
+.countryForm {
+    display: flex;
+    justify-content: space-between;
+}
+
+.countryFormLeft,
+.countryFormRight {
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    margin-right: 30px;
+}
+
+.countryFormLeft>label {
+    margin-bottom: 10px;
+    color: gray;
+}
+
+.countryFormLeft>input {
+    margin-bottom: 20px;
+    border: none;
+    padding: 5px;
+    border-bottom: 1px solid gray;
+}
+
+.countryFormLeft>select {
+    margin-bottom: 10px;
+}
+.countryImg{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.countryFormRight {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    flex: 1;
+}
+
+
+
+.countryButton {
+    border: none;
+    margin-top: 20px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: darkblue;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: stretch;
+}

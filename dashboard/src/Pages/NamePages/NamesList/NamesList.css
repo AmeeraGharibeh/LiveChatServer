@@ -1,0 +1,13 @@
+.namesList{
+   flex: 4;
+}
+.nameAddButton {
+    border: none;
+    padding: 5px;
+    background-color: teal;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    margin: 10px;
+}

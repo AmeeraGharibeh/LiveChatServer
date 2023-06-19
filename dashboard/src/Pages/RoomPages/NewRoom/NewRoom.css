@@ -1,0 +1,58 @@
+.newRoom {
+    flex: 4;
+    margin: 20px;
+    direction: rtl;
+}
+
+.addRoomForm {
+    margin: 10px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    column-gap: 20px;
+    row-gap: 10px;
+}
+
+.addRoomItem {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.addRoomItem>label {
+    color: gray;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.addRoomItem>input {
+    padding: 10px;
+}
+
+.addRoomItem>select {
+    padding: 10px;
+}
+
+.addRoomButton {
+   width: 25%;
+    padding: 10px;
+    border: none;
+    margin-top: 20px;
+    border-radius: 10px;
+    background-color: darkblue;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: center;
+
+}
+.limits{
+    width: 100%;
+    margin-top: 10px;
+        display: grid;
+        grid-template-columns: auto auto auto auto;
+        column-gap: 20px;
+        row-gap: 10px;
+}
+.dropdown{
+        width: 100%;
+}

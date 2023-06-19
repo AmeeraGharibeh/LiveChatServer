@@ -1,0 +1,76 @@
+.room {
+    flex: 4;
+    padding: 20px;
+    direction: rtl;
+}
+
+.roomUpdateButton {
+    border: none;
+    width: 50%;
+    padding: 5px;
+    background-color: teal;
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 20px;
+    cursor: pointer;
+    justify-self: center;
+}
+
+.roomTop,
+.roomBottom {
+    display: flex;
+    width: 100%;
+}
+
+.roomTopContainer,
+.roomBottomContainer {
+    width: 100%;
+    padding: 20px;
+    margin: 20px;
+    display: grid;
+    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+}
+.roomTopContainer{
+     grid-template-columns: 50% 50%;
+}
+
+.roomName {
+    font-weight: 600;
+    margin-top: 12px;
+}
+
+.roomInfoItem {
+    width: 150px;
+    display: flex;
+    gap: 20px;
+}
+.roomFormItem{
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+}
+.roomInfoKey{
+    font-weight: 500;
+
+}
+.roomInfoValue {
+    font-weight: 300;
+}
+.roomFormItem>input {
+    padding: 10px;
+    width: 100%;
+}
+.roomFormItem>label {
+    color: gray;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.roomForm{
+    margin: 10px;
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 20px;
+    row-gap: 10px;
+}

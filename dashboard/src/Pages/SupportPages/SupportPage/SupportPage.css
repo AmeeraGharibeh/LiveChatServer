@@ -1,0 +1,72 @@
+.supportPage{
+    flex: 4;
+    direction: rtl;
+    padding: 20px;
+}
+.adminsContainer{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 10px;
+    color: rgb(175, 170, 170);
+}
+.adminsItem{
+    display: inline;
+}
+.adminsItem > span {
+    color: green;
+    margin-right: 20px;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.supportPageBottom{
+    margin-top: 50px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+.addAdminButton,
+.addAdminFormButton{
+    border: none;
+    padding: 5px;
+    background-color: teal;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    margin: 10px;
+}
+.addAdminFormButton{
+width: 25%;
+align-self: center;
+background-color: darkblue;
+}
+.newAdminForm,
+.updateAdmin{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.addAdminItem {
+    width: 75%;
+    display: grid;
+    grid-template-rows: auto auto;
+    row-gap: 20px;
+    margin-bottom: 20px;
+}
+
+.addAdminItem>label {
+    color: gray;
+    font-weight: 600;
+    margin-left: 20px;
+}
+
+.addAdminItem>input {
+    padding: 10px;
+}
+

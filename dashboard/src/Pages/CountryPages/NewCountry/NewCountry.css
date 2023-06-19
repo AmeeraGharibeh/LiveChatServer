@@ -1,0 +1,48 @@
+.newCountry {
+    flex: 4;
+    margin: 0px 20px;
+    direction: rtl;
+    
+}
+
+.addCountryForm {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 20px;
+    row-gap: 10px;
+}
+
+.addCountryItem {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.addCountryItem>label {
+    color: gray;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.addCountryItem>input {
+    padding: 10px;
+}
+
+.addCountryItem>select {
+    padding: 10px;
+}
+
+.addCountryButton {
+    width: 25%;
+    padding: 10px;
+    border: none;
+    margin-top: 30px;
+    border-radius: 10px;
+    background-color: darkblue;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: center;
+}

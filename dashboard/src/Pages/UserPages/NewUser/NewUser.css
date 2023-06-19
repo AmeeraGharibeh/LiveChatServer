@@ -1,0 +1,43 @@
+.newUser {
+    flex: 4;
+    margin: 0px 20px;
+    direction: rtl;
+}
+
+.addUserForm {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 20px;
+    row-gap: 10px;
+}
+
+.addUserItem {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.addUserItem>label {
+    color: gray;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.addUserItem>input {
+    padding: 10px;
+}
+
+.addUserButton {
+    width: 25%;
+    padding: 10px;
+    border: none;
+    margin-top: 30px;
+    border-radius: 10px;
+    background-color: darkblue;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: center;
+}

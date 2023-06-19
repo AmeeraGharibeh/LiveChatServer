@@ -1,0 +1,5 @@
+.blockedList{
+    flex: 4;
+    direction: rtl;
+    padding: 20px;
+}

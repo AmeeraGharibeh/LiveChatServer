@@ -1,0 +1,156 @@
+const Rooms = require('../Models/RoomModel');
+const User = require('../Models/UserModel')
+
+const createRoom = async (req, res)=> {
+const newRoom = new Rooms(req.body);
+try {
+    const saved = await newRoom.save();
+    res.status(200).json(saved);
+
+} catch (err) {
+        res.status(500).send({msg: err.message});
+}
+};
+
+const getAllRooms = async (req, res) => {
+  const page = parseInt(req.query.page) || 1; 
+  const limit = parseInt(req.query.limit) || 10; 
+ 
+  try {
+    const totalItems = await Rooms.countDocuments(); 
+    const totalPages = Math.ceil(totalItems / limit); 
+    const currentPage = Math.min(page, totalPages); 
+    const skip = Math.max((currentPage - 1) * limit, 0);
+
+    const items = await Rooms.find()
+      .skip(skip)
+      .limit(limit);
+
+    const response = {
+      current_page: currentPage,
+      per_page: limit,
+      last_page: totalPages,
+      total: totalItems,
+      Rooms: items,
+    };
+
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getAllRoomsByCountry = async (req, res) => {
+  const page = parseInt(req.query.page) || 1; 
+  const limit = parseInt(req.query.limit) || 10; 
+  const countryId = req.params.id; 
+
+  try {
+    const totalItems = await Rooms.countDocuments({ room_country: countryId }); 
+    const totalPages = Math.ceil(totalItems / limit); 
+    const currentPage = Math.min(page, totalPages); 
+    const skip = Math.max((currentPage - 1) * limit, 0);
+
+    const items = await Rooms.find({ room_country: countryId })
+      .skip(skip)
+      .limit(limit);
+
+    const response = {
+      current_page: currentPage,
+      per_page: limit,
+      last_page: totalPages,
+      total: totalItems,
+      Rooms: items,
+    };
+
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getRoomUsers = async (req, res)=> {
+    const page = parseInt(req.query.page) || 1; 
+  const limit = parseInt(req.query.limit) || 10; 
+  const roomId = req.params.id; 
+
+  try {
+    const totalItems = await User.countDocuments({ room_id: roomId }); 
+    const totalPages = Math.ceil(totalItems / limit); 
+    const currentPage = Math.min(page, totalPages); 
+    const skip = Math.max((currentPage - 1) * limit, 0);
+
+    const items = await User.find({ room_id: roomId })
+      .skip(skip)
+      .limit(limit);
+
+    const response = {
+      current_page: currentPage,
+      per_page: limit,
+      last_page: totalPages,
+      total: totalItems,
+      users: items,
+    };
+
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+const searchRoom = async (req, res) => {
+  const keyword = req.query.search
+    ? {
+        $or: [
+          { room_name: { $regex: req.query.search, $options: "i" } }
+        ],
+      }
+    : {};
+
+  const rooms = await Rooms.find(keyword);
+  res.send(rooms);
+};
+
+const getRoom = async (req, res) => {
+ 
+   try {
+        const room = await Rooms.findById(req.params.id);
+            res.status(200).json(room);
+
+} catch (err) {
+    res.status(500).send({msg: err.message});
+}
+};
+
+const updateRoom = async (req, res) => {
+      console.log(req.body)
+
+try {
+    const updated = await Rooms.findByIdAndUpdate(req.params.id, 
+        {
+            $set: req.body.body,
+        }, 
+        {
+            new: true
+        } );
+    res.status(200).json({msg: 'تم تعديل الغرفة بنجاح!', room: updated});
+
+} catch (err) {
+        res.status(500).send({msg: err.message});
+}
+};
+
+const deleteRoom= async (req, res) => {
+ 
+   try {
+         await Rooms.findByIdAndDelete(req.params.id);
+            res.status(200).json({msg: 'room has been deleted.. '});
+
+} catch (err) {
+    res.status(500).send({msg: err.message});
+}
+};
+module.exports = {createRoom, getAllRooms, getAllRoomsByCountry,
+   getRoom, deleteRoom, updateRoom, searchRoom, getRoomUsers};
