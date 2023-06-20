@@ -25,7 +25,7 @@ dotenv.config();
 ///////////////////////////////////////////////////////////
 app.use(cors(
   {
-  origin: ['https://vercel.com/ameeragharibeh/live-chat-server'],
+  origin: ['https://vercel.com/ameeragharibeh/live-chat-server/'],
     methods: ['POST', 'GET'],
     creditntials: true
   }
