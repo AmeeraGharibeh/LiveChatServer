@@ -23,13 +23,13 @@ const io = socketIo(server);
 dotenv.config();
 
 ///////////////////////////////////////////////////////////
-app.use(cors(
+/*app.use(cors(
   {
   origin: ['https://vercel.com/ameeragharibeh/live-chat-server/'],
     methods: ['POST', 'GET'],
     creditntials: true
   }
-  ));
+  ));*/
 mongoose
   .connect(process.env.MONGO_URL
 )
