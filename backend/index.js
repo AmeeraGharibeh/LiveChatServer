@@ -17,7 +17,6 @@ const Logs = require('./Models/LogModel');
 
 const http = require('http');
 const socketIo = require('socket.io');
-const { disconnect } = require('process');
 const server = http.createServer(app);
 const io = socketIo(server);
 dotenv.config();
