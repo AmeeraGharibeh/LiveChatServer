@@ -5,9 +5,9 @@ const gc = require('../Config')
 const bucket = gc.bucket('grocery-372908.appspot.com') 
 
 
-const upload = multer({ dest: '/uploads' });
+const upload = multer({ dest: '/tmp' });
 
-router.post('/upload', upload.single('image'), async (req, res, next) => {
+router.post('/tmp', upload.single('image'), async (req, res, next) => {
    try {
     if (!req.file) {
       return res.status(400).send({ message: "Please upload a file!" });
