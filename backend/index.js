@@ -30,7 +30,7 @@ dotenv.config();
   }
   ));*/
 mongoose
-  .connect(process.env.MONGO_URL
+  .connect('mongodb+srv://ameera_gharibeh:123321mb@cluster0.2zramit.mongodb.net/?retryWrites=true&w=majority'
 )
   .then(() => console.log("DB Connection Successfull!"))
   .catch((err) => {
