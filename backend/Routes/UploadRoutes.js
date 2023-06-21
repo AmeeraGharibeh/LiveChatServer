@@ -1,9 +1,11 @@
 const router = require('express').Router();
 const multer = require('multer');
 const { Storage } = require('@google-cloud/storage');
-const upload = multer({ dest: 'uploads/' });
 const gc = require('../Config')
 const bucket = gc.bucket('grocery-372908.appspot.com') 
+
+
+const upload = multer({ dest: '/uploads' });
 
 router.post('/upload', upload.single('image'), async (req, res, next) => {
    try {
