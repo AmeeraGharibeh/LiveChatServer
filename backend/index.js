@@ -195,8 +195,8 @@ return `${year}-${month}-${day} ${hour}:${minute}:${second} ${hour >=12 ? 'PM' :
 ///////////////////////////////////////////////////
 app.use(cors());
 app.use(express.json());
-app.use('/auth', AuthRouter);
-app.use('/users', UserRouter);
+app.use('api/auth', AuthRouter);
+app.use('api/users', UserRouter);
 app.use('/country', CountryRouter);
 app.use('/rooms', RoomsRouter);
 app.use('/chat', ChatRouter);
