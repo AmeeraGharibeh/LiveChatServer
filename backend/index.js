@@ -68,6 +68,7 @@ socket.on("addUser", async (user) => {
     // send notification of user's joining the room
 io.to(user.room_id).emit('notification', {
         sender: user.username,
+        senderId: user._id,
         message: user.username + ' انضمّ إلى الغرفة',
         color: 0xffc7f9cc,
         type: 'notification'
