@@ -8,7 +8,7 @@
     "@emotion/styled": "^11.10.5",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
-    "@mui/material": "^5.0.0",
+    "@mui/material": "^5.13.5",
     "@mui/x-data-grid": "^6.9.0",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",
@@ -59,8 +59,5 @@
   },
   "devDependencies": {
     "gh-pages": "^5.0.0"
-  },
-  "peerDependencies": {
-    "@mui/material": "^5.0.0"
   }
 }

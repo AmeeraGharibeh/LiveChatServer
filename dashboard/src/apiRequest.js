@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://live-chat-server-three.vercel.app/";
+const BASE_URL = "https://syriachatserver.onrender.com/";
 
 const storedValue = localStorage.getItem("persist:root");
 let Token = "";
