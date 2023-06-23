@@ -21,7 +21,7 @@ const server = http.createServer(app);
 const io = socketIo(server, {
      cors: {
     transports: ['websocket'],
-     origin: "https://syriachatserver.onrender.com",
+     origin: "https://syriachatserver.onrender.com/",
      methods: ["GET","POST"]                              
 }
 });
