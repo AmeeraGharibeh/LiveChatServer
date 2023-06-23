@@ -8,14 +8,15 @@ import { store, persistor } from "./Redux/store";
 
 const root = document.getElementById('root'); // <- This is the correct method call for React version 17
 render(
-  <React.StrictMode>
+<React.StrictMode>
 <Provider store={store}>
     <PersistGate loading="null" persistor={persistor}>      
     <BrowserRouter>
       <App />
     </BrowserRouter>
     </PersistGate>
-  </Provider>  </React.StrictMode>,
+  </Provider>
+  </React.StrictMode>,
   root
 );
 //document.getElementsByTagName('html')[0].setAttribute("dir", "rtl");
