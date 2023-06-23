@@ -18,7 +18,12 @@ const Logs = require('./Models/LogModel');
 const http = require('http');
 const socketIo = require('socket.io');
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+     cors: {
+     origin: "https://syriachatserver.onrender.com",
+     methods: ["GET","POST"]                              
+}
+});
 dotenv.config();
 
 ///////////////////////////////////////////////////////////
@@ -206,6 +211,6 @@ app.use('/blocked', BlockedRouter);
 app.use('/logs', LogsRouter);
 
 /////////////////////////////////////////////////////
-server.listen(5000, ()=> {
+server.listen(8002, ()=> {
     console.log('listening to port....');
 })
