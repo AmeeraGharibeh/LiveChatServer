@@ -1,5 +1,5 @@
 import './SmallWidget.css'
-import { Visibility } from "@material-ui/icons";
+import { Visibility } from "@mui/icons-material";
 
 export default function SmallWidget() {
   return (

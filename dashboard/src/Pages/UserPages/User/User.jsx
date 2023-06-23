@@ -16,7 +16,7 @@ import {
   Settings,
   WcOutlined,
   Work
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import "./User.css";
 import { useSelector } from "react-redux";
 import { toast, ToastContainer } from 'react-toastify';

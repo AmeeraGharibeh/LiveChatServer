@@ -1,7 +1,7 @@
 import React from 'react'
 import './Navbar.css'
 import { useDispatch } from 'react-redux'
-import {ExitToApp, NotificationsNone, Settings} from '@material-ui/icons';
+import {ExitToApp, NotificationsNone, Settings} from '@mui/icons-material';
 import { logoutUser } from '../../Redux/Repositories/AuthRepo';
 
 

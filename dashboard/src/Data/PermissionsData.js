@@ -10,7 +10,7 @@
   Person,
   RemoveCircle,
   Settings,
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 
  const permisstionsData = [
     {id: '1', label: "حظر جهاز", key: "block_device", icon: <RemoveCircle/>, member: false, admin: true, super_admin: true, master: true} ,

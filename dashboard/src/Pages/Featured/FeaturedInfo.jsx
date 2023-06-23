@@ -1,5 +1,4 @@
 import './FeaturedInfo.css'
-import {ArrowDownward, ArrowUpward} from '@material-ui/icons'
 import { useEffect, useState } from 'react';
 import { publicRequest, userRequest } from '../../apiRequest';
 

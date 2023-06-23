@@ -1,6 +1,6 @@
 import "./UserList.css";
 import { DataGrid } from '@mui/x-data-grid'
-import { DeleteOutline } from "@material-ui/icons";
+import { DeleteOutline } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";

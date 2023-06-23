@@ -1,13 +1,12 @@
 import "./CountriesList.css";
 import { DataGrid } from '@mui/x-data-grid';
-import { DeleteOutline } from "@material-ui/icons";
+import { DeleteOutline } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {useDispatch, useSelector} from 'react-redux'
 import {deleteCountry, getCountries} from '../../../Redux/Repositories/CountriesRepo'
 import { toast, ToastContainer } from 'react-toastify';
 import { resetCountryState } from "../../../Redux/CountriesRedux";
-import DataTable from "../../../Components/DataTable/DataTable";
 
 
 export default function CountriesList() {
