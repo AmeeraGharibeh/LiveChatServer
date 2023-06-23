@@ -1,7 +1,7 @@
 import './Sidebar.css';
 import { Link } from "react-router-dom";
 
-import {LineStyle,  PersonOutline, PublicOutlined, ForumOutlined, Star, Block, Help, Flag} from '@material-ui/icons'
+import {LineStyle,  PersonOutline, PublicOutlined, ForumOutlined, Star, Block, Help, Flag} from '@mui/icons-material'
 import { useState } from 'react';
 
 export default function Sidebar() {
