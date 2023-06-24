@@ -23,12 +23,16 @@ const verifyToken = (req, res, next)=> {
 
 const verifyTokenAndAuthorization = (req, res, next)=> {
     body = req.body;
+    let master;
+    console.log(body)
     try{
     verifyToken(req, res, async ()=> {
         
         const currentUser = await AuthModel.findById(req.body.id);
      if (currentUser.is_dashboard_admin){
-        req.body = {master: currentUser.username, body};
+        master = currentUser.username
+        req.body = {master, body};
+        console.log(req.body)
         next();
     }else{
         return res.status(403).json({msg: 'عذراً, يُسمح فقط لمدراء لوحة التحكم القيام بهذا الإجراء'});
@@ -46,7 +50,6 @@ const verifyTokenAndAdmin = (req, res, next)=> {
     let master;
     const types = ['admin', 'super_admin', 'master']
     verifyToken(req, res, async ()=> {
-        console.log(req.body)
     const adminUser = await UserModel.findById(req.body.id);
     const dashboardUser = await AuthModel.findById(req.body.id);
 
