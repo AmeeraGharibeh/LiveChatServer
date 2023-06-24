@@ -127,6 +127,7 @@ io.to(user.room_id).emit('onlineUsers', [... new Set(onlineUsers[user.room_id])]
 
 io.to(user.room_id).emit('notification', {
         sender: user.username,
+        senderId: user._id,
         message: user.username + ' غادر الغرفة  ',
         color: 0xffFAD4D4,
         type: 'notification'
@@ -142,6 +143,7 @@ socket.on('updateRoom', (master)=>{
 
   io.to(master.room_id).emit('notification', {
         sender: master.username,
+        senderId: master._id,
         message: master.username + '  قام بتغيير اعدادات الغرفة  ',
         color: 0xffFCE9F1,
         type: 'notification'
@@ -153,6 +155,7 @@ socket.on('profileVisit', (visitor)=>{
 
   io.to(socket.id).emit('notification', {
         sender: visitor.username,
+        senderId: visitor._id,
         message: visitor.username + "  قام بزيارة ملفك الشخصي  ",
         color: 0xffFFEEBB,
         type: 'notification'

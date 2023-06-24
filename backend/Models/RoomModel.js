@@ -10,7 +10,10 @@ const RoomSchema = mongoose.Schema({
     type: String,
     required: true
   },
-
+  room_type: {
+    type: String,
+    required: true
+  },
    email: {
     type: String,
     required: true
@@ -42,12 +45,10 @@ const RoomSchema = mongoose.Schema({
 
    start_date: {
     type: String,
-    
   },
 
    end_date: {
     type: String,
-    required: true
   },
  
    account_limits: {
