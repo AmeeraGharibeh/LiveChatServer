@@ -12,7 +12,7 @@ try {
 
     const accessToken = jwt.sign({
         id: user._id
-      }, process.env.JWTSECRET, {expiresIn: '1h'});
+      }, process.env.JWTSECRET, {expiresIn: '10h'});
     const {dashboard_password, ...others} = user._doc;
     return res.status(200).send({user: {...others}, accessToken: accessToken});
 } catch (err) {

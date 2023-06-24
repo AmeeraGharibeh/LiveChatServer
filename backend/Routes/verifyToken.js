@@ -28,7 +28,7 @@ const verifyTokenAndAuthorization = (req, res, next)=> {
         
         const currentUser = await AuthModel.findById(req.body.id);
      if (currentUser.is_dashboard_admin){
-        req.body = {master: req.body.username, body};
+        req.body = {master: currentUser.username, body};
         next();
     }else{
         return res.status(403).json({msg: 'عذراً, يُسمح فقط لمدراء لوحة التحكم القيام بهذا الإجراء'});
