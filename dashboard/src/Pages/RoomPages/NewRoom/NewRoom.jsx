@@ -11,6 +11,7 @@ export default function NewRoom() {
   const [inputs, setInputs] = useState({});
   const [limitsInput, setLimitsInput] = useState({});
   const [country, setCountry] = useState(null);
+  const [type, setType] = useState(null);
   const success = useSelector((state) => state.room.isSuccess);
   const loading = useSelector((state) => state.room.isFetching);
   const countries = useSelector((state)=> state.country.countries);
@@ -18,6 +19,7 @@ export default function NewRoom() {
 
   useEffect(()=>{
     setCountry(countries[0])
+    setType(roomTypes[0])
   }, []);
 
     useEffect(() => {
@@ -30,6 +32,10 @@ const handleDropdownCountry = (value) => {
   console.log(value.name_ar)
   setCountry(value);
     };
+    const handleDropdownRoomType = (value) => {
+    setType(value);
+    };
+
 
   const handleChange = (e)=> {
     setInputs(prev => {
@@ -45,9 +51,11 @@ const handleDropdownCountry = (value) => {
     e.preventDefault();
     const roomData = { ...inputs,
       room_country: country._id,
+      room_type: type,
            account_limits:  limitsInput};
     addRoom(roomData, dispatch);
   }
+  const roomTypes = ['مميزة', 'ذهبي', 'فضي']
   return (
     <div className="newRoom">
       <h1 className="addRoomTitle">إضافة غرفة</h1>
@@ -56,13 +64,13 @@ const handleDropdownCountry = (value) => {
           <label>اسم الغرفة</label>
           <input name="room_name" type="text"  onChange={handleChange}/>
         </div>
-            <div className="addRoomItem">
-          <label>الوصف</label>
-          <input name="descreption" type="text" onChange={handleChange}/>
-        </div>
            <div className="addRoomItem">
           <label>الدولة</label>
           <DropdownMenu className="dropdown" options={countries} value = {'name_ar'} onDropdownChange={handleDropdownCountry}/>
+        </div>
+           <div className="addRoomItem">
+          <label>نوع الغرفة</label>
+          <DropdownMenu className="dropdown" options={roomTypes} onDropdownChange={handleDropdownRoomType}/>
         </div>
           <div className="addRoomItem">
           <label>اسم المالك</label>
@@ -72,18 +80,10 @@ const handleDropdownCountry = (value) => {
           <label>الإيميل</label>
           <input name="email" type="text" onChange={handleChange}/>
         </div>
-           <div className="addRoomItem">
-          <label>تاريخ الإنتهاء</label>
-          <input name="end_date" type="text" onChange={handleChange} />
-        </div>
       
           <div className="addRoomItem">
           <label>سعة الغرفة</label>
           <input name="room_capacity" type="number" onChange={handleChange}/>
-        </div>
-          <div className="addRoomItem">
-          <label>الرسالة الترحيبية</label>
-          <input name="welcome_msg" type="text" defaultValue={'welcome'} onChange={handleChange}/>
         </div>
        <div className="addRoomItem">
           <label>حد الحسابات</label>
