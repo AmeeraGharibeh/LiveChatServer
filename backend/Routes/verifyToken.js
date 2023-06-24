@@ -24,13 +24,12 @@ const verifyToken = (req, res, next)=> {
 const verifyTokenAndAuthorization = (req, res, next)=> {
     body = req.body;
     let master;
-    console.log(body)
     try{
     verifyToken(req, res, async ()=> {
         
         const currentUser = await AuthModel.findById(req.body.id);
      if (currentUser.is_dashboard_admin){
-        master = currentUser.username
+        master = req.body.username
         req.body = {master, body};
         console.log(req.body)
         next();

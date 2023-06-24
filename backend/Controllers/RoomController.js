@@ -2,6 +2,7 @@ const Rooms = require('../Models/RoomModel');
 const User = require('../Models/UserModel')
 
 const createRoom = async (req, res)=> {
+  console.log(req.body)
 const newRoom = new Rooms(req.body);
 try {
     const saved = await newRoom.save();
