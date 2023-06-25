@@ -12,8 +12,7 @@ if (storedValue) {
       console.log(currentUser)
 
   if (currentUser) {
-    Token = currentUser.currentUser.accessToken;
-    console.log(Token)
+    Token = currentUser.currentUser['accessToken'];
   }
 }
 

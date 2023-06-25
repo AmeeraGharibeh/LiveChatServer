@@ -76,6 +76,14 @@ const handleDropdownCountry = (value) => {
           <label>اسم المالك</label>
           <input name="room_owner" type="text" onChange={handleChange} />
         </div>
+             <div className="addRoomItem">
+          <label>حساب الماستر</label>
+          <input name="username" type="text" value={'master'} readonly={true} />
+        </div>
+             <div className="addRoomItem">
+          <label>كلمة المرور</label>
+          <input name="password" type="text" onChange={handleChange} />
+        </div>
           <div className="addRoomItem">
           <label>الإيميل</label>
           <input name="email" type="text" onChange={handleChange}/>
