@@ -29,7 +29,7 @@ const verifyTokenAndAuthorization = (req, res, next)=> {
         console.log(req.body)
         const currentUser = await AuthModel.findById(req.body.id);
      if (currentUser.is_dashboard_admin){
-        master = req.body.username
+        master = currentUser.username
         req.body = {master, body};
         console.log(req.body)
         next();

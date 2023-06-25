@@ -4,12 +4,17 @@ const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const Reports = require('../Models/ReportsModel');
 const Blocked = require('../Models/BlockedModel');
+const Rooms = require('../Models/RoomModel')
 const createUser = async (req, res) => {
   console.log(req.body)
 try {
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(req.body.room_password, salt);
-    const newUser = new User({
+    const items = await User.find({ room_id: req.body.room_id })
+    if (items &&  items.includes(req.body.username) ){
+      res.status(500).send({msg: 'هذا الاسم مسجل بالفعل'});
+    } else {
+       const newUser = new User({
     username: req.body.username,
     room_password: hashedPass,
     room_id: req.body.room_id,
@@ -18,6 +23,8 @@ try {
 });
     const saved = await newUser.save();
     res.status(200).json({msg: 'تم انشاء المستخدم بنجاح!', user: saved});
+    }
+   
 } catch (err) {
 res.status(500).send({msg: 'something went wrong'});
 }
