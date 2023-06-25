@@ -35,13 +35,13 @@ export default function RoomsList() {
 }
 
   const columns = [
-    { field: "_id", headerName: "ID", width: 120 },
+    { field: "_id", headerName: "ID", width: 150 },
 
-    { field: "room_name", headerName: "Name", width: 200 },
+    { field: "room_name", headerName: "Name", width: 220 },
     {
       field: "room_country",
       headerName: "Country",
-      width: 150,
+      width: 120,
       renderCell: (params) => {
         return (
           <div >
@@ -51,15 +51,21 @@ export default function RoomsList() {
       },
     },
      {
+      field: "room_type",
+      headerName: "type",
+      width: 120,
+    },
+     {
       field: "room_owner",
       headerName: "Owner",
-      width: 160,
+      width: 120,
     },
       {
       field: "email",
       headerName: "Owner Email",
-      width: 160,
+      width: 120,
     },
+
     {
       field: "action",
       headerName: "Action",
@@ -67,9 +73,9 @@ export default function RoomsList() {
       renderCell: (params) => {
         return (
           <>
-            <Link to={"/room/" + params.row._id}>
+        {   /* <Link to={"/room/" + params.row._id}>
               <button className="roomsListEdit">Edit</button>
-            </Link>
+        </Link>*/}
             <DeleteOutline
               className="roomsListDelete"
               onClick={() => showAlert(params.row._id)}

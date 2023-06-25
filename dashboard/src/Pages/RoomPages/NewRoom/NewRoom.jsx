@@ -97,19 +97,19 @@ const handleDropdownCountry = (value) => {
           <label>حد الحسابات</label>
           <div className="limits">
             <div className="addRoomItem">
-            <label >Member</label>
+            <label style={{'color': "purple"}}>Member</label>
             <input name="member" type="number"  onChange={handleLimits}/>
             </div>
               <div className="addRoomItem">
-              <label >Admin</label>
+              <label style={{'color': "green"}}>Admin</label>
             <input name="admin" type="number" onChange={handleLimits}/>
               </div>
               <div className="addRoomItem">
-               <label >Super Admin</label>
+               <label style={{'color': "blue"}}>Super Admin</label>
               <input name="super admin" type="number" onChange={handleLimits}/>
               </div>
               <div className="addRoomItem">
-              <label >Master</label>
+              <label style={{'color': "red"}}>Master</label>
             <input name="master" type="number" onChange={handleLimits}/>
               </div>
         

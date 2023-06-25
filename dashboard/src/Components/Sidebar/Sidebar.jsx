@@ -37,7 +37,7 @@ export default function Sidebar() {
             إدارة الغرف
            {index === 4 && <div className="active"></div>}
             </div></li></Link>
-             <Link to="/roots" className="link">
+     {      /*  <Link to="/roots" className="link">
             <li className="sidebarListItem" onClick={() => {setIndex(5)}}><Star/>
             <div className='label'>
             اسماء الروت
@@ -48,24 +48,24 @@ export default function Sidebar() {
             <div className='label'>
             الأسماء المسجلة
            {index === 6 && <div className="active"></div>}
-            </div></li></Link>
+  </div></li></Link>*/}
              <Link to="/blocked" className="link">
-            <li className="sidebarListItem" onClick={() => {setIndex(7)}}><Block/>
+            <li className="sidebarListItem" onClick={() => {setIndex(5)}}><Block/>
             <div className='label'>
            الأعضاء المحضورين
-           {index === 7 && <div className="active"></div>}
+           {index === 5 && <div className="active"></div>}
             </div></li></Link>
              <Link to="/support" className="link">
-            <li className="sidebarListItem" onClick={() => {setIndex(8)}}><Help/>
+            <li className="sidebarListItem" onClick={() => {setIndex(6)}}><Help/>
             <div className='label'>
             الدعم الفني
-           {index === 8 && <div className="active"></div>}
+           {index === 6 && <div className="active"></div>}
             </div></li></Link>
              <Link to="/reports" className="link">
-            <li className="sidebarListItem" onClick={() => {setIndex(9)}}><Flag/>
+            <li className="sidebarListItem" onClick={() => {setIndex(7)}}><Flag/>
             <div className='label'>
             التبليغات
-           {index === 9 && <div className="active"></div>}
+           {index === 7 && <div className="active"></div>}
             </div></li></Link>
           </ul>
         

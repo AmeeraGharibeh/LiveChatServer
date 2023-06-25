@@ -41,11 +41,11 @@ export default function UserList() {
   });
 
   const columns = [
-    { field: "_id", headerName: "ID", width: 90 },
+    { field: "_id", headerName: "ID", width: 120 },
     {
       field: "username",
       headerName: "User",
-      width: 200,
+      width: 250,
       renderCell: (params) => {
         return (
           <div className="userListUser">
@@ -73,13 +73,14 @@ export default function UserList() {
     {
       field: "action",
       headerName: "Action",
+      
       width: 150,
       renderCell: (params) => {
         return (
           <>
-            <Link to={"/user/" + params.row._id}>
+        {  /*  <Link to={"/user/" + params.row._id}>
               <button className="userListEdit">تعديل</button>
-            </Link>
+        </Link>*/}
             <DeleteOutline
               className="userListDelete"
               onClick={() => showAlert(params.row._id)}

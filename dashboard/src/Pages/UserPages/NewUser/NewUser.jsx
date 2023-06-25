@@ -5,29 +5,35 @@ import { addUser } from "../../../Redux/Repositories/UsersRepo";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { resetUserState } from "../../../Redux/UsersRedux";
-import Checkbox from "../../../Components/PermissionsCheckBox/Checkbox";
-import permisstionsData from "../../../Data/PermissionsData";
-import types from '../../../Data/Type'
+//import Checkbox from "../../../Components/PermissionsCheckBox/Checkbox";
+//import permisstionsData from "../../../Data/PermissionsData";
+import RadioGroup from '../../../Components/RadioGroup/RadioGroup';
 
 
 export default function NewUser() {
   const [inputs, setInputs] = useState({});
   const [room, setRoom] = useState(null);
-  const [type, setType] = useState({});
+  const [date, setDate] = useState(null);
+  const [selectedOption, setSelectedOption] = useState('');
   const rooms = useSelector((state)=> state.room.rooms);
   const success = useSelector((state) => state.user.success);
   const loading = useSelector((state) => state.user.isFetching);
   const msg = useSelector((state) => state.user.msg);
   const error = useSelector((state) => state.user.error);
-  const [checkboxes, setCheckboxes] = useState([]);
-  const [selectedType, setSelectedType] = useState('');
-
+ // const [checkboxes, setCheckboxes] = useState([]);
+ // const [selectedType, setSelectedType] = useState('');
+ const dates = ["شهر", '3 أشهر', '6 أشهر', 'سنة']
   const dispatch = useDispatch();
 
+  const options = [
+    { value: 'royal', label: 'اسم ملكي' },
+    { value: 'protected', label: 'اسم محمي' },
+    { value: 'root', label: 'اسم روت' },
 
+  ];
   useEffect(()=>{
-    setRoom(rooms[0])
-    setType(types[0])
+    setRoom(rooms[0]);
+    setDate(dates[0])
   }, []);
 
   useEffect(()=> {
@@ -37,36 +43,43 @@ export default function NewUser() {
 const handleDropdownRooms = (value) => {
   setRoom(value);
     };
-  const handleDropdownUser = (event) => {
+const handleDropdownDate = (value) => {
+  setDate(value);
+    };
+      const handleOptionChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
+/*  const handleDropdownUser = (event) => {
     setSelectedType(event.target.value)
     const selectedObject = types.find((option) => 
     option.id === event.target.value
     );
-    setType(selectedObject);
+    setType(event.target.value);
      };
-
+*/
   const handleChange = (e)=> {
     setInputs(prev => {
       return {...prev, [e.target.name]: e.target.value}
     })
   }
-  const handlePermissions = (value) => {
+  /*const handlePermissions = (value) => {
    setCheckboxes(value)
-   console.log(checkboxes)
-     }
+   console.log(checkboxes) }*/
+     
   const handleClick = (e)=> {
     e.preventDefault();
-    const permissions = {};
+   /* const permissions = {};
     permisstionsData.forEach((item) => {
       if(checkboxes.includes(item.id)){
         permissions[item.key] = true
       }
-    })
+    })*/
   const userData = { 
       ...inputs,
-      user_type: type,
+      user_type: selectedOption,
       room_id: room._id,
-     user_type: type.value, permissions: permissions };
+     user_type: selectedOption,
+    name_end_date: date };
           console.log(userData)
     addUser(userData, dispatch);
 
@@ -84,32 +97,32 @@ const handleDropdownRooms = (value) => {
           <input name="room_password" type="password"  onChange={handleChange}/>
         </div>
         <div className="addUserItem">
-          <label>نوع المستخدم</label>
-       <select id="options" style={{width: '100%' ,padding: '10px'}} value={selectedType} onChange={handleDropdownUser}>
-          {types.map((option) => (
-          <option style={{fontSize: '14px', margin: '10px 0px'}} 
-          key={option.id}
-          value={option.id} onChange={handleDropdownUser}>
-            {option.label}
-          </option>
-        ))}
-      </select>   
+        <label>نوع الاسم</label>
+          <RadioGroup
+        options={options}
+        selectedOption={selectedOption}
+        onChange={handleOptionChange}
+      />  
           </div>
         <div className="addUserItem">
           <label>الغرفة</label>
           <DropdownMenu className="dropdown" options={rooms} value = {'room_name'} default = {room} onDropdownChange={handleDropdownRooms}/>
         </div>
-            <Checkbox user= {null} type= {type} onCheckboxChange={handlePermissions}/>
-
-        </form>
         <div className="addUserItem">
+          <label>تاريخ الانتهاء</label>
+          <DropdownMenu className="dropdown" options={dates} default = {date} onDropdownChange={handleDropdownDate}/>
+        </div>
+        </form>
+        {
+        //<Checkbox user= {null} type= {type} onCheckboxChange={handlePermissions}/>
+        /*<div className="addUserItem">
         <Link to="/newroot">
           <button className="rootAddButton">اضافة روت</button>
         </Link>
           <Link to="/newname">
           <button className="rootAddButton">اضافة اسم مسجل</button>
         </Link>
-        </div>
+          </div>*/}
       <div className="addUserItem">
          <button className="addUserButton" onClick={handleClick} disabled={loading || success} >{loading ? "بالانتظار..." : success ? "تمت الاضافة" : "تأكيد" }</button>
             <div style={{color: success ? 'green' : error ? 'red' : 'black'}}>
