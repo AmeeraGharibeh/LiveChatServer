@@ -10,10 +10,12 @@ const createUser = async (req, res) => {
 try {
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(req.body.room_password, salt);
-    const items = await User.find({ room_id: req.body.room_id })
-    if (items &&  items.includes(req.body.username) ){
-      res.status(500).send({msg: 'هذا الاسم مسجل بالفعل'});
-    } else {
+const items = await User.find({ room_id: req.body.room_id });
+
+const usernameExists = items.some(item => item.username === req.body.username);
+if (usernameExists) {
+  return res.status(400).json({ error: 'اسم المستخدم موجود بالفعل في الغرفة' });
+}
        const newUser = new User({
     username: req.body.username,
     room_password: hashedPass,
@@ -23,7 +25,7 @@ try {
 });
     const saved = await newUser.save();
     res.status(200).json({msg: 'تم انشاء المستخدم بنجاح!', user: saved});
-    }
+  
    
 } catch (err) {
 res.status(500).send({msg: 'something went wrong'});
