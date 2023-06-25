@@ -4,24 +4,19 @@ const mongoose = require('mongoose');
 const RoomSchema = mongoose.Schema({
    room_name: {
     type: String,
-    required: true
   },
    room_owner: {
     type: String,
-    required: true
   },
   room_type: {
     type: String,
-    required: true
   },
    email: {
     type: String,
-    required: true
   },
 
    room_country: {
     type: String,
-    required: true
   },
 
    description: {
