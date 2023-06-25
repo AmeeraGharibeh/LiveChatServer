@@ -11,6 +11,7 @@ export default function Room() {
     const roomId = location.pathname.split('/')[2];
     const room = useSelector((state)=> state.room.rooms.find((p)=> p._id === roomId));
     const [inputs, setInputs] = useState({});
+    const countries = useSelector((state)=> state.country.countries)
     const success = useSelector((state) => state.room.isSuccess);
     const loading = useSelector((state) => state.room.isFetching);
     const msg = useSelector((state) => state.room.msg);
@@ -24,7 +25,10 @@ export default function Room() {
       toast.success('تم تعديل الغرفة بنجاح')
     }
   }, [success]);
-
+    const getCountry = ((id)=> {
+      const country = countries.find(c => c._id === id);
+        return country.name_ar
+   })
   const handleChange = (e)=> {
     setInputs(prev => {
       return {...prev, [e.target.name]: e.target.value}
@@ -47,9 +51,13 @@ export default function Room() {
                       <span className="roomInfoKey">اسم الغرفة:</span>
                       <span className="roomInfoValue">{room.room_name}</span>
                   </div>
+                    <div className="roomInfoItem">
+                      <span className="roomInfoKey">نوع الغرفة:</span>
+                      <span className="roomInfoValue">{room.room_type}</span>
+                  </div>
                       <div className="roomInfoItem">
                       <span className="roomInfoKey">الدولة:</span>
-                      <span className="roomInfoValue">{room.room_country}</span>
+                      <span className="roomInfoValue">{getCountry(room.room_country)}</span>
                   </div>
                    <div className="roomInfoItem">
                       <span className="roomInfoKey">مالك الغرفة:</span>
@@ -57,7 +65,7 @@ export default function Room() {
                   </div>
                   <div className="roomInfoItem">
                       <span className="roomInfoKey">الإيميل:</span>
-                      <span className="roomInfoValue">{room.email}$</span>
+                      <span className="roomInfoValue">{room.email}</span>
                   </div>
                    <div className="roomInfoItem">
                       <span className="roomInfoKey">الوصف:</span>
