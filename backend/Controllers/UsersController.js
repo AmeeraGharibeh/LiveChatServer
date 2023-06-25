@@ -14,7 +14,7 @@ const items = await User.find({ room_id: req.body.room_id });
 
 const usernameExists = items.some(item => item.username === req.body.username);
 if (usernameExists) {
-  return res.status(400).json({ error: 'اسم المستخدم موجود بالفعل في الغرفة' });
+   res.status(400).json({ msg: 'اسم المستخدم موجود بالفعل في الغرفة' });
 }
        const newUser = new User({
     username: req.body.username,

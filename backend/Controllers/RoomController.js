@@ -3,7 +3,15 @@ const User = require('../Models/UserModel')
 
 const createRoom = async (req, res)=> {
   console.log(req.body)
-const newRoom = new Rooms(req.body);
+const newRoom = new Rooms({
+  room_name: req.body.room_name,
+  room_owner: req.body.room_owner,
+  room_type: req.body.room_type,
+  email: req.body.email,
+  room_country: req.body.room_country,
+  room_capacity: req.body.room_capacity,
+  account_limits : req.body.account_limits
+});
 try {
     const saved = await newRoom.save();
     res.status(200).json(saved);
