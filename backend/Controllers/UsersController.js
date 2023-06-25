@@ -16,16 +16,18 @@ const usernameExists = items.some(item => item.username === req.body.username);
 if (usernameExists) {
    res.status(400).json({ msg: 'اسم المستخدم موجود بالفعل في الغرفة' });
 }
-       const newUser = new User({
+else {
+         const newUser = new User({
     username: req.body.username,
     room_password: hashedPass,
     room_id: req.body.room_id,
-    user_type: req.body.user_type,
+    name_type: req.body.name_type,
     permissions: req.body.permissions
 });
     const saved = await newUser.save();
     res.status(200).json({msg: 'تم انشاء المستخدم بنجاح!', user: saved});
   
+}
    
 } catch (err) {
 res.status(500).send({msg: 'something went wrong'});
