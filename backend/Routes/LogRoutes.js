@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const {verifyTokenAndAction} = require('./verifyToken');
-const {getAllLogs} = require('../Controllers/LogController')
+const {getAllLogs, getLogsByRoom} = require('../Controllers/LogController')
 
-router.post('/:id', verifyTokenAndAction, getAllLogs );
+router.post('/:id', verifyTokenAndAction, getLogsByRoom );
+router.get('/', verifyTokenAndAction, getAllLogs );
+
 module.exports = router;
