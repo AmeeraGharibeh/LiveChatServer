@@ -12,7 +12,7 @@ try {
     const hashedPass = await bcrypt.hash(req.body.room_password, salt);
 
     const newUser = new User({
-    username: 'master',
+    username: req.body.username,
     room_password: hashedPass,
     room_id: saved.room_id,
 });
