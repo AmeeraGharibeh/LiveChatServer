@@ -91,13 +91,14 @@ const userLogin = async (req, res) => {
 
 const updateUser = async (req, res) => {
   console.log(req.body)
-    if(req.body.password){
+  const body = req.body.body;
+    if(body.password){
     const salt = await bcrypt.genSalt(10);
-    req.body.room_password = await bcrypt.hash(req.body.room_password, salt);
+    body.room_password = await bcrypt.hash(body.room_password, salt);
     }
    try {
         const updated = await User.findByIdAndUpdate(req.params.id, {
-            $set: req.body
+            $set: body
         }, {new: true});
         const  report = new Reports({
           master_name: req.body.master,
@@ -117,10 +118,12 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
    try {
-         await User.findByIdAndDelete(req.params.id);
+         const user = await User.findById(req.params.id);
+         await User.findByIdAndDelete(user._id);
           const  report = new Reports({
           master_name: req.body.master,
           action_user: req.body.username,
+          room_id: user.room_id,
           action_name_ar: "حذف مستخدم",
           action_name_en: 'Delete user'
         });
@@ -209,6 +212,7 @@ const blockUser = async (req, res) => {
  const  report = new Reports({
           master_name: req.body.master,
           action_user: req.body.username,
+          room_id: req.body.room_id,
           action_name_ar: "حظر مستخدم",
           action_name_en: 'Block user'
         });
@@ -229,6 +233,7 @@ const unblockUser = async (req, res) => {
  const  report = new Reports({
           master_name: req.body.master,
           action_user: req.body.username,
+          room_id: req.body.room_id,
           action_name_ar: "فك الحظر عن المستخدم",
           action_name_en: 'Unblock user'
         });
