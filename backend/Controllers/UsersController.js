@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const Reports = require('../Models/ReportsModel');
 const Blocked = require('../Models/BlockedModel');
-const Rooms = require('../Models/RoomModel')
 const createUser = async (req, res) => {
   console.log(req.body)
 try {
@@ -119,7 +118,6 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
    try {
          const user = await User.findById(req.params.id);
-         await User.findByIdAndDelete(user._id);
           const  report = new Reports({
           master_name: req.body.master,
           action_user: req.body.username,
@@ -128,6 +126,7 @@ const deleteUser = async (req, res) => {
           action_name_en: 'Delete user'
         });
         await report.save();
+        await User.findByIdAndDelete(user._id);
             res.status(200).json({msg: "تم حذف المستخدم بنجاح!"});
 
 } catch (err) {

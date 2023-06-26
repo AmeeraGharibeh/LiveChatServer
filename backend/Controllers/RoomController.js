@@ -1,12 +1,25 @@
 const Rooms = require('../Models/RoomModel');
 const User = require('../Models/UserModel')
+const bcrypt = require('bcryptjs');
 
 const createRoom = async (req, res)=> {
   console.log(req.body)
 const newRoom = new Rooms(req.body.body);
 try {
     const saved = await newRoom.save();
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPass = await bcrypt.hash(req.body.room_password, salt);
+
+    const newUser = new User({
+    username: 'master',
+    room_password: hashedPass,
+    room_id: saved.room_id,
+});
+
+    await newUser.save();
     res.status(200).json(saved);
+
 
 } catch (err) {
         res.status(500).send({msg: err.message});
