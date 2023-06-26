@@ -5,9 +5,8 @@ export const CountriesSlice = createSlice({
     initialState : {
         countries: [],
         isFetching: false,
-        error: false,
+        error: null,
         isSuccess: false,
-        msg: null,
         page : 0,
         limit : 0,
         totalRows : 0,
@@ -15,52 +14,53 @@ export const CountriesSlice = createSlice({
     reducers: {
         getCountryStart: (state)=> {
             state.isFetching = true
-            state.error = false
+            state.error = null
         },
         getCountrySuccess: (state, action) =>{
             state.isFetching = false
+            state.error = null
             state.countries = action.payload.countries;
             state.page = action.payload['current_page']
             state.limit = action.payload['per_page']
             state.totalRows = action.payload['total']
         },
-          getCountryFailure: (state)=> {
+          getCountryFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
+            state.error = action.payload.msg
         },
 
          deleteCountryStart: (state)=> {
             state.isFetching = true
-            state.error = false
+            state.error = null
         },
         deleteCountrySuccess: (state, action) =>{
             state.isFetching = false
             state.isSuccess = true
+            state.error = null
             state.countries.splice(
                 state.countries.findIndex((item)=> item._id === action.payload), 1
             )
         },
           deleteCountryFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
             state.isSuccess = false
-            state.msg = action.payload.msg
+            state.error = action.payload.msg
         },
 
          addCountryStart: (state)=> {
             state.isFetching = true
-            state.error = false
+            state.error = null
         },
         addCountrySuccess: (state, action) =>{
             state.isFetching = false
+            state.error = null
             state.countries.push(action.payload)
             state.isSuccess = true
         },
           addCountryFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
             state.isSuccess = false
-            state.msg = action.payload.msg
+            state.error = action.payload.msg
         },
 
          updateCountryStart: (state)=> {
@@ -69,18 +69,18 @@ export const CountriesSlice = createSlice({
         },
         updateCountrySuccess: (state, action) =>{
             state.isFetching = false
+            state.error = null
             state.isSuccess = true
             state.countries[state.countries.findIndex((item)=> item._id === action.payload._id)] = action.payload
         },
           updateCountryFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
             state.isSuccess = false
-            state.msg = action.payload.msg
+            state.error = action.payload.msg
         },
         resetCountryState : (state) => {
             state.isFetching = false
-            state.error = false
+            state.error = null
             state.isSuccess = false            
         }
     }

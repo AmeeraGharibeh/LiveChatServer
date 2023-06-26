@@ -82,7 +82,7 @@ const handleDropdownCountry = (value) => {
         </div>
              <div className="addRoomItem">
           <label>كلمة المرور</label>
-          <input name="password" type="text" onChange={handleChange} />
+          <input name="room_password" type="text" onChange={handleChange} />
         </div>
           <div className="addRoomItem">
           <label>الإيميل</label>

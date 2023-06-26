@@ -15,7 +15,6 @@ export default function UserList() {
   const success = useSelector((state)=> state.user.success);
   const error = useSelector((state)=> state.user.error);
   const rooms = useSelector((state)=> state.room.rooms);
-  const msg = useSelector((state) => state.user.msg);
   const [currentPage, setCurrentPage] = useState(1);
 
 
@@ -92,6 +91,7 @@ export default function UserList() {
   ];
 
   return (
+ <>
     <div className="userList">
       <div className="addButtonContainer">
         <Link to="/newUser">
@@ -110,9 +110,9 @@ export default function UserList() {
           setCurrentPage(params + 1)
         }}
       />
-      {  error &&  toast.error(msg)}
-      {success && toast.success('تم حذف المستخدم بنجاح')}
-              <ToastContainer />
     </div>
+         {  error &&  toast.error(error)}
+              <ToastContainer />
+ </>
   );
 }

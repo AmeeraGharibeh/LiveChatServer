@@ -13,7 +13,7 @@ import Login from "./Pages/Login/Login.jsx";
 import React from "react";
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import CountriesList from "./Pages/CountryPages/CountriesList/CountriesList.jsx";
 import NewCountry from "./Pages/CountryPages/NewCountry/NewCountry.jsx";
 import Country from "./Pages/CountryPages/Country/Country.jsx";
@@ -24,10 +24,12 @@ import NewRoot from "./Pages/RootPages/NewRoot/NewRoot.jsx";
 import SupportPage from "./Pages/SupportPages/SupportPage/SupportPage.jsx"
 import BlockedPage from "./Pages/BlockedPages/BlockedList/BlockedList.jsx"
 import ReportPage from "./Pages/SupportPages/ReportPage/ReportPage.jsx"
+import { checkAuthState } from "./Redux/Repositories/AuthRepo.js";
 
 
 
 function App() {
+  const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
 const navigate = useNavigate();
 useEffect(() => {
@@ -44,7 +46,10 @@ useEffect(() => {
     }
     checkUser();
   }, [currentUser]);
-  
+
+useEffect(() => {
+    dispatch(checkAuthState());
+  }, [dispatch]);
 
   return (
         <>

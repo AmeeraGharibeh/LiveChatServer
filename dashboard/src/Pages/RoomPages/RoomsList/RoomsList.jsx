@@ -6,13 +6,14 @@ import { useEffect, useState } from "react";
 import {useDispatch, useSelector} from 'react-redux'
 import { deleteRooms, getRooms} from '../../../Redux/Repositories/RoomsRepo'
 import { resetRoomState } from "../../../Redux/RoomsRedux";
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function RoomsList() {
   const dispatch = useDispatch();
   const rooms = useSelector((state)=> state.room.rooms)
   const countries = useSelector((state)=> state.country.countries)
   const [currentPage, setCurrentPage] = useState(1);
- 
+  const success = useSelector((state)=> state.room.isSuccess);
   useEffect(()=> {
     dispatch(resetRoomState());
   }, []);
@@ -87,6 +88,7 @@ export default function RoomsList() {
   ];
 
   return (     
+  <>
     <div className="roomsList">
     <div className="addButtonContainer">
         <Link to="/newRoom">
@@ -103,5 +105,8 @@ export default function RoomsList() {
         }}
       />
     </div>
+       {success && toast.success('تم حذف الغرفة بنجاح')}
+       <ToastContainer />
+  </>
   );
 }

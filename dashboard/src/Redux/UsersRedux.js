@@ -4,21 +4,21 @@ export const UsersSlice = createSlice({
     name: 'Users',
     initialState : {
         users: [],
-        msg : null,
         isFetching :  false,
         total: 0,
         limit: 0,
         success : null,
-        error: false,
+        error: null,
     },
     reducers: { 
         getUsersStart: (state )=> {
             state.isFetching = true
-            state.error = false
+            state.error = null
         },
         getUsersSuccess: (state, action) =>{
 
             state.isFetching = false
+            state.error = null
             state.users = action.payload.users
             state.total = action.payload.total
             state.limit = action.payload.per_page
@@ -26,52 +26,49 @@ export const UsersSlice = createSlice({
     
           getUsersFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
             state.success = false
-            state.msg = action.payload.msg
+            state.error = action.payload.msg
         },
 
          addUserStart: (state)=> {
             state.isFetching = true
-            state.error = false
+            state.error = null
         },
         addUserSuccess: (state, action) =>{
             state.isFetching = false
-            state.error = false
+            state.error = null
             state.success = true
             state.users.push(action.payload)
 
         },
           addUserFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
             state.success = false
-            state.msg = action.payload.msg
+            state.error = action.payload.msg
         },
           updateUserStart: (state)=> {
             state.isFetching = true
-            state.error = false
+            state.error = null
         },
         updateUserSuccess: (state, action) =>{
             state.isFetching = false
             state.success = true
-            state.error = false
+            state.error = null
             state.users[state.users.findIndex((item)=> item._id === action.payload.id)] = action.payload.data
         },
           updateUserFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
             state.success = false
-            state.msg = action.payload.msg
+            state.error = action.payload.msg
         },
 
          deleteUserStart: (state)=> {
             state.isFetching = true
-            state.error = false
+            state.error = null
         },
         deleteUserSuccess: (state, action) =>{
             state.isFetching = false
-            state.error = false
+            state.error = null
             state.success = true
             state.users.splice(
             state.users.findIndex((item)=> item._id === action.payload), 1
@@ -79,15 +76,13 @@ export const UsersSlice = createSlice({
         },
           deleteUserFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
             state.success = false
-            state.msg = action.payload.msg
+            state.null = action.payload.msg
         },
         resetUserState: (state)=> {
             state.isFetching = false
-            state.error = false
+            state.error = null
             state.success = null
-            state.msg = null
         }
     }
 });

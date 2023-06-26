@@ -18,7 +18,6 @@ export default function NewUser() {
   const rooms = useSelector((state)=> state.room.rooms);
   const success = useSelector((state) => state.user.success);
   const loading = useSelector((state) => state.user.isFetching);
-  const msg = useSelector((state) => state.user.msg);
   const error = useSelector((state) => state.user.error);
  // const [checkboxes, setCheckboxes] = useState([]);
  // const [selectedType, setSelectedType] = useState('');
@@ -76,9 +75,8 @@ const handleDropdownDate = (value) => {
     })*/
   const userData = { 
       ...inputs,
-      user_type: selectedOption,
       room_id: room._id,
-     user_type: selectedOption,
+     name_type: selectedOption,
     name_end_date: date };
           console.log(userData)
     addUser(userData, dispatch);
@@ -127,7 +125,7 @@ const handleDropdownDate = (value) => {
          <button className="addUserButton" onClick={handleClick} disabled={loading || success} >{loading ? "بالانتظار..." : success ? "تمت الاضافة" : "تأكيد" }</button>
             <div style={{color: success ? 'green' : error ? 'red' : 'black'}}>
                {success && 'تمت اضافة المستخدم بنجاح'}
-               {error && msg}
+               {error }
       </div>
         </div>
  

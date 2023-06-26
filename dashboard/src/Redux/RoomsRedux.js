@@ -8,14 +8,13 @@ export const RoomsSlice = createSlice({
         limit : 0,
         totalRows : 0,
         isFetching :  false,
-        error : false,
+        error : null,
         isSuccess: false,
-        msg : null
     },
     reducers: { 
         getRoomsStart: (state )=> {
             state.isFetching = true
-            state.error = false
+            state.error = null
         },
         getRoomsSuccess: (state, action) =>{
             state.isFetching = false
@@ -23,68 +22,67 @@ export const RoomsSlice = createSlice({
             state.page = action.payload['current_page']
             state.limit = action.payload['per_page']
             state.totalRows = action.payload['total']
+            state.error = null
         },
     
           getRoomsFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
             state.isSuccess = false
-            state.msg = action.payload.msg
+            state.error = action.payload.msg
         },
 
          addRoomsStart: (state)=> {
             state.isFetching = true
-            state.error = false
+            state.error = null
         },
         addRoomsSuccess: (state, action) =>{
             state.isFetching = false
             state.isSuccess = true
             state.rooms.push(action.payload)
-
+            state.error = null
         },
           addRoomsFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
             state.isSuccess = false
-            state.msg = action.payload.msg
+            state.error = action.payload.msg
         },
 
           updateRoomsStart: (state)=> {
             state.isFetching = true
-            state.error = false
+            state.error = null
         },
         updateRoomsSuccess: (state, action) =>{
             state.isFetching = false
             state.isSuccess = true
+            state.error = null
             state.rooms[state.rooms.findIndex((item)=> item._id === action.payload.id)] = action.payload.data
         },
           updateRoomsFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
             state.isSuccess = false
-            state.msg = action.payload.msg
+            state.error = action.payload.msg
         },
 
          deleteRoomStart: (state)=> {
             state.isFetching = true
-            state.error = false
+            state.error = null
         },
         deleteRoomSuccess: (state, action) =>{
             state.isFetching = false
             state.isSuccess = true
+            state.error = null
             state.rooms.splice(
                 state.rooms.findIndex((item)=> item._id === action.payload), 1
             )
         },
           deleteRoomFailure: (state, action)=> {
             state.isFetching = false
-            state.error = true
             state.isSuccess = false
-            state.msg = action.payload.msg
+            state.error = action.payload.msg
         },
         resetRoomState: (state) => {
             state.isFetching = false
-            state.error = false
+            state.error = null
             state.isSuccess = false           
         }
     }
