@@ -8,7 +8,6 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
-  const msg = useSelector((state) => state.auth.msg);
   const loading = useSelector((state) => state.auth.isFetching);
   const error = useSelector((state) => state.auth.error);
 
@@ -25,7 +24,7 @@ export default function Login() {
             <span>password:</span>
             <input className= "input" type='password' placeholder="Enter your Password" onChange={(e)=> setPassword(e.target.value)}/>
             <button className="login-btn" onClick={handleLogin} disabled={loading}>{ !loading ? 'Login' : 'Logging in...'}</button>
-            {error ? <div className='error'>{error && msg}</div> : <div></div>}
+            {error ? <div className='error'>{error}</div> : <div></div>}
         </div>
     </div>
   )
