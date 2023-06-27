@@ -3,6 +3,6 @@ const {verifyTokenAndAction, verifyTokenAndAuthorization} = require('./verifyTok
 const {getAllLogs, getLogsByRoom} = require('../Controllers/LogController')
 
 router.post('/:id', verifyTokenAndAction, getLogsByRoom );
-router.post('/', verifyTokenAndAuthorization, getAllLogs );
+router.get('/', verifyTokenAndAuthorization, getAllLogs );
 
 module.exports = router;
