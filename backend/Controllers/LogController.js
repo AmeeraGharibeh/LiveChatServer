@@ -1,4 +1,5 @@
 const Logs = require('../Models/LogModel');
+const ReportsModel = require('../Models/ReportsModel');
 
 const getAllLogs = async (req, res) => {
   const page = parseInt(req.query.page) || 1; 
@@ -57,5 +58,24 @@ const getLogsByRoom = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+const deleteAllLogs = async (req, res) => {
+  try {
+    const report = new ReportsModel({
+      master_name: req.body.master,
+      action_user: req.body.username,
+      action_name_ar: "حذف جميع السجلات",
+      action_name_en: 'Delete all logs'
+    });
+    await report.save();
 
-module.exports = {getAllLogs, getLogsByRoom};
+    const deleteResult = await Logs.deleteMany({});
+    const deletedCount = deleteResult.deletedCount;
+
+    res.status(200).json({ msg: `تم حذف ${deletedCount} سجل بنجاح!` });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
+
+
+module.exports = {getAllLogs, getLogsByRoom, deleteAllLogs};
