@@ -91,7 +91,7 @@ const userLogin = async (req, res) => {
 const updateUser = async (req, res) => {
   console.log(req.body)
   const body = req.body.body;
-    if(body.password){
+    if(body.room_password){
     const salt = await bcrypt.genSalt(10);
     body.room_password = await bcrypt.hash(body.room_password, salt);
     }
