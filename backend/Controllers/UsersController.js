@@ -4,27 +4,40 @@ const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const Reports = require('../Models/ReportsModel');
 const Blocked = require('../Models/BlockedModel');
+
+
+
 const createUser = async (req, res) => {
   console.log(req.body)
+  const body = req.body.body;
 try {
     const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(req.body.room_password, salt);
-const items = await User.find({ room_id: req.body.room_id });
+    const hashedPass = await bcrypt.hash(body.room_password, salt);
+const items = await User.find({ room_id: body.room_id });
 
-const usernameExists = items.some(item => item.username === req.body.username);
+const usernameExists = items.some(item => item.username === body.username);
 if (usernameExists) {
    res.status(400).json({ msg: 'اسم المستخدم موجود بالفعل في الغرفة' });
 }
 else {
          const newUser = new User({
-    username: req.body.username,
+    username: body.username,
     room_password: hashedPass,
-    room_id: req.body.room_id,
-    name_type: req.body.name_type,
-    permissions: req.body.permissions
+    room_id: body.room_id,
+    name_type: body.name_type,
+    permissions: body.permissions
 });
     const saved = await newUser.save();
-    res.status(200).json({msg: 'تم انشاء المستخدم بنجاح!', user: saved});
+
+      const  report = new Reports({
+          master_name: req.body.master,
+          room_id: updated.room_id,
+          action_user: saved.username,
+          action_name_ar: "اضافة مستخدم",
+          action_name_en: 'Add user'
+        });
+        await report.save();
+    res.status(200).json({msg: 'تمت اضافة المستخدم بنجاح!', user: saved});
   
 }
    
@@ -110,7 +123,7 @@ const updateUser = async (req, res) => {
         await report.save();
     res.status(200).json({msg: 'تم تعديل المستخدم بنجاح!', user: updated});
     } else {
-          res.status(500).send({msg:" عذراً لا تميلك الصلاحية للقيام بهذا الاجراء"});
+          res.status(500).send({msg:" عذراً لا تملك الصلاحية للقيام بهذا الاجراء"});
     }
 
 } catch (err) {
