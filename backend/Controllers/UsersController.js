@@ -25,6 +25,7 @@ else {
     room_password: hashedPass,
     room_id: body.room_id,
     name_type: body.name_type,
+    user_type: body.user_type,
     permissions: body.permissions
 });
     const saved = await newUser.save();
@@ -109,7 +110,7 @@ const updateUser = async (req, res) => {
     body.room_password = await bcrypt.hash(body.room_password, salt);
     }
    try {
-    if(body.user_type !== 'master'){
+    if(body.username !== 'master'){
         const updated = await User.findByIdAndUpdate(req.params.id, {
             $set: body
         }, {new: true});
