@@ -66,7 +66,7 @@ socket.on("addUser", async (user) => {
     socket.userId = user._id;
     socket.emit("connected");
     // send notification of user's joining the room
-io.to(user.room_id).emit('notification', {
+socket.broadcast.to(user.room_id).emit('notification', {
         sender: user.username,
         senderId: user._id,
         message: user.username + ' انضمّ إلى الغرفة',
