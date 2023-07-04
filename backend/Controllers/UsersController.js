@@ -96,6 +96,7 @@ const updateUser = async (req, res) => {
     body.room_password = await bcrypt.hash(body.room_password, salt);
     }
    try {
+    if(body.user_type !== master){
         const updated = await User.findByIdAndUpdate(req.params.id, {
             $set: body
         }, {new: true});
@@ -108,6 +109,9 @@ const updateUser = async (req, res) => {
         });
         await report.save();
     res.status(200).json({msg: 'تم تعديل المستخدم بنجاح!', user: updated});
+    } else {
+          res.status(500).send({msg:" عذراً لا تميلك الصلاحية للقيام بهذا الاجراء"});
+    }
 
 } catch (err) {
     res.status(500).send({msg: err.message});
