@@ -32,7 +32,7 @@ else {
       const  report = new Reports({
           master_name: req.body.master,
           room_id: updated.room_id,
-          action_user: saved.username,
+          action_user: newUser.username,
           action_name_ar: "اضافة مستخدم",
           action_name_en: 'Add user'
         });
