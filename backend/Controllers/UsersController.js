@@ -96,7 +96,7 @@ const updateUser = async (req, res) => {
     body.room_password = await bcrypt.hash(body.room_password, salt);
     }
    try {
-    if(body.user_type !== master){
+    if(body.user_type !== 'master'){
         const updated = await User.findByIdAndUpdate(req.params.id, {
             $set: body
         }, {new: true});

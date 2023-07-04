@@ -85,6 +85,35 @@ const getAllRoomsByCountry = async (req, res) => {
   }
 };
 
+const getSpecialRooms = async (req, res) => {
+  const page = parseInt(req.query.page) || 1; 
+  const limit = parseInt(req.query.limit) || 10; 
+
+  try {
+    const totalItems = await Rooms.countDocuments({ room_type: 'special' }); 
+    const totalPages = Math.ceil(totalItems / limit); 
+    const currentPage = Math.min(page, totalPages); 
+    const skip = Math.max((currentPage - 1) * limit, 0);
+
+    const items = await Rooms.find({ room_type: 'special' })
+      .skip(skip)
+      .limit(limit);
+
+    const response = {
+      current_page: currentPage,
+      per_page: limit,
+      last_page: totalPages,
+      total: totalItems,
+      Rooms: items,
+    };
+
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 const getRoomUsers = async (req, res)=> {
     const page = parseInt(req.query.page) || 1; 
   const limit = parseInt(req.query.limit) || 10; 
@@ -166,5 +195,5 @@ const deleteRoom= async (req, res) => {
     res.status(500).send({msg: err.message});
 }
 };
-module.exports = {createRoom, getAllRooms, getAllRoomsByCountry,
+module.exports = {createRoom, getAllRooms, getAllRoomsByCountry, getSpecialRooms,
    getRoom, deleteRoom, updateRoom, searchRoom, getRoomUsers};
