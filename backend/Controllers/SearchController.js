@@ -15,13 +15,13 @@ const search = async (req, res)=> {
     }).toArray();
 
     if (rooms.length > 0 || countries.length > 0) {
-      return res.status(200).json({ rooms, countries });
+       res.status(200).json({ rooms, countries });
     }
 
     return res.status(200).json({ message: 'No results found.' });
 
   } catch (err) {
-    return res.status(err.code).json({ error: err.error });
+     res.status(500).json({ error: err.error });
   }
 }
 
