@@ -154,7 +154,7 @@ const searchRoom = async (req, res) => {
     : {};
 
   const rooms = await Rooms.find(keyword);
-    res.status(200).json(rooms);
+    res.status(200).json({rooms});
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Internal server error' });
