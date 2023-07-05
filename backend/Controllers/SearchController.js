@@ -12,17 +12,15 @@ const search = async (req, res)=> {
 
         ],
       } : {}
-    
 
   const rooms = await Rooms.find(keyword);
   const countries = await Country.find(keyword);
 
-
     if (rooms.length > 0 || countries.length > 0) {
-       res.status(200).json({ rooms, countries });
+       res.status(200).json({result: { rooms, countries} });
     }
 
-    return res.status(200).json({ message: 'No results found.' });
+    return res.status(200).json({ msg: 'لا توجد نتائج' });
 
   } catch (err) {
      res.status(500).json({ msg: err.message });
