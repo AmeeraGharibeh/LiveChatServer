@@ -144,16 +144,21 @@ const getRoomUsers = async (req, res)=> {
   }
 }
 const searchRoom = async (req, res) => {
-  const keyword = req.query.search
+  try{
+  const keyword = req.query.q
     ? {
         $or: [
-          { room_name: { $regex: req.query.search, $options: "i" } }
+          { room_name: { $regex: req.query.q, $options: "i" } }
         ],
       }
     : {};
 
   const rooms = await Rooms.find(keyword);
     res.status(200).json({Rooms: rooms});
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 const getRoom = async (req, res) => {
