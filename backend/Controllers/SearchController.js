@@ -15,7 +15,7 @@ const search = async (req, res)=> {
     
 
   const rooms = await Rooms.find(keyword);
-  const countries = await Rooms.find(keyword);
+  const countries = await Country.find(keyword);
 
 
     if (rooms.length > 0 || countries.length > 0) {
