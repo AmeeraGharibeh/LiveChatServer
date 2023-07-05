@@ -124,7 +124,7 @@ const updateUser = async (req, res) => {
         await report.save();
     res.status(200).json({msg: 'تم تعديل المستخدم بنجاح!', user: updated});
     } else {
-          res.status(500).send({msg:" عذراً لا تملك الصلاحية للقيام بهذا الاجراء"});
+          res.status(403).send({msg:" عذراً لا تملك الصلاحية للقيام بهذا الاجراء"});
     }
 
 } catch (err) {
