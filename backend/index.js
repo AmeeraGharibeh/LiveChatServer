@@ -13,7 +13,6 @@ const ReportsRouter = require('./Routes/ReportsRoutes');
 const BlockedRouter = require('./Routes/BlockedRoutes');
 const LogsRouter = require('./Routes/LogRoutes');
 const Logs = require('./Models/LogModel');
-const SearchRouter = require('./Routes/SearchRoutes');
 ///////////////////////////////////////////////////////////
 
 const http = require('http');
@@ -215,7 +214,6 @@ app.use('/img', UploadRouter);
 app.use('/reports', ReportsRouter);
 app.use('/blocked', BlockedRouter);
 app.use('/logs', LogsRouter);
-app.use('/search', SearchRouter)
 
 /////////////////////////////////////////////////////
 server.listen(8002, ()=> {

@@ -153,7 +153,7 @@ const searchRoom = async (req, res) => {
     : {};
 
   const rooms = await Rooms.find(keyword);
-  res.send(rooms);
+  res.send({Rooms: rooms});
 };
 
 const getRoom = async (req, res) => {
