@@ -6,17 +6,7 @@ const createRoom = async function (req, res) {
   console.log(req.body)
 const newRoom = new Rooms(req.body.body);
 try {
-    const saved = await newRoom.save().then(async (val)=>  {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(req.body.room_password, salt);
-
-    const newUser = new User({
-    username: req.body.username,
-    room_password: hashedPass,
-    room_id: val.room_id,
-});
-    await newUser.save();
-    });
+    const saved = await newRoom.save();
 
      res.status(200).json(saved);
 
