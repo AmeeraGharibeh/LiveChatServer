@@ -2,7 +2,7 @@ const Rooms = require('../Models/RoomModel');
 const User = require('../Models/UserModel')
 const bcrypt = require('bcryptjs');
 
-const createRoom = async (req, res)=> {
+const createRoom = async function (req, res) {
   console.log(req.body)
 const newRoom = new Rooms(req.body.body);
 try {
