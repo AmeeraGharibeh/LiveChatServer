@@ -6,23 +6,22 @@ const createRoom = async function (req, res) {
   console.log(req.body)
 const newRoom = new Rooms(req.body.body);
 try {
-    const saved = await newRoom.save();
-
+    const saved = await newRoom.save().then(async (val)=>  {
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(req.body.room_password, salt);
 
     const newUser = new User({
     username: req.body.username,
     room_password: hashedPass,
-    room_id: saved.room_id,
+    room_id: val.room_id,
 });
-
     await newUser.save();
-    res.status(200).json(saved);
+    });
 
+     res.status(200).json(saved);
 
 } catch (err) {
-        res.status(500).send({msg: err.message});
+    res.status(500).send({msg: err.message});
 }
 };
 
