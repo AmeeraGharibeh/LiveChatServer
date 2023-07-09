@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 
 const createRoom = async function (req, res) {
   console.log(req.body)
-  const password = req.body.room_password;
+  const password = req.body.body.room_password;
 const newRoom = new Rooms(req.body.body);
 try {
     const saved = await newRoom.save().then( async (val) => {
