@@ -10,7 +10,7 @@ try {
     const saved = await newRoom.save().then( async (val) => {
     try {
       console.log('first' + password)
-      console.log(val.data['_id'])
+      console.log(val._id)
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(password, salt);
     const newUser = new User({
