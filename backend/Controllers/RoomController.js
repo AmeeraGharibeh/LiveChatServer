@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const createRoom = async function (req, res) {
   console.log(req.body)
   const password = req.body.body.room_password;
+  const permissions = req.body.body.permissions
 const newRoom = new Rooms(req.body.body);
 try {
     await newRoom.save().then( async (val) => {
@@ -18,6 +19,7 @@ try {
     room_password: hashedPass,
     room_id: val._id.toHexString(),
     user_type: 'master',
+    permissions
 });
   await newUser.save();
      res.status(200).json(val);
