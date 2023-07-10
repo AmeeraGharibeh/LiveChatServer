@@ -13,11 +13,16 @@ export default function RoomsList() {
   const rooms = useSelector((state)=> state.room.rooms)
   const countries = useSelector((state)=> state.country.countries)
   const [currentPage, setCurrentPage] = useState(1);
-  const success = useSelector((state)=> state.room.isSuccess);
+  const {isSuccess , error} = useSelector((state)=> state.room);
   useEffect(()=> {
     dispatch(resetRoomState());
   }, []);
-  
+  useEffect(()=> {
+    {isSuccess && toast.success('تم حذف الغرفة بنجاح')}
+    { error &&  toast.error(error)}
+
+  }, [isSuccess])
+
   useEffect(()=> {
     getRooms(currentPage, 10, dispatch);
 
@@ -87,8 +92,10 @@ export default function RoomsList() {
     },
   ];
 
-  return (     
+  return (  
+       
   <>
+       <ToastContainer />
     <div className="roomsList">
     <div className="addButtonContainer">
         <Link to="/newRoom">
@@ -105,8 +112,7 @@ export default function RoomsList() {
         }}
       />
     </div>
-       {success && toast.success('تم حذف الغرفة بنجاح')}
-       <ToastContainer />
+  
   </>
   );
 }

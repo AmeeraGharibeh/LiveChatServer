@@ -1,7 +1,7 @@
 import './Sidebar.css';
 import { Link } from "react-router-dom";
 
-import {LineStyle,  PersonOutline, PublicOutlined, ForumOutlined, Star, Block, Help, Flag} from '@mui/icons-material'
+import {LineStyle,  PersonOutline, PublicOutlined, ForumOutlined, Star, Block, Help, Flag, CompareArrows} from '@mui/icons-material'
 import { useState } from 'react';
 
 export default function Sidebar() {
@@ -55,17 +55,23 @@ export default function Sidebar() {
            الأعضاء المحضورين
            {index === 5 && <div className="active"></div>}
             </div></li></Link>
-             <Link to="/support" className="link">
-            <li className="sidebarListItem" onClick={() => {setIndex(6)}}><Help/>
+            <Link to="/logs" className="link">
+            <li className="sidebarListItem" onClick={() => {setIndex(6)}}><CompareArrows/>
             <div className='label'>
-            الدعم الفني
+              سجل الدخول
            {index === 6 && <div className="active"></div>}
             </div></li></Link>
+             <Link to="/support" className="link">
+            <li className="sidebarListItem" onClick={() => {setIndex(7)}}><Help/>
+            <div className='label'>
+            الدعم الفني
+           {index === 7 && <div className="active"></div>}
+            </div></li></Link>
              <Link to="/reports" className="link">
-            <li className="sidebarListItem" onClick={() => {setIndex(7)}}><Flag/>
+            <li className="sidebarListItem" onClick={() => {setIndex(8)}}><Flag/>
             <div className='label'>
             التبليغات
-           {index === 7 && <div className="active"></div>}
+           {index === 8 && <div className="active"></div>}
             </div></li></Link>
           </ul>
         

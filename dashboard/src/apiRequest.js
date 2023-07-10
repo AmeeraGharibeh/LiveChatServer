@@ -11,9 +11,9 @@ if (storedValue) {
   const currentUser = JSON.parse(parsedValue.auth);
       console.log(currentUser)
 
-  if (currentUser) {
+  if (currentUser !== null) {
     Token = currentUser.currentUser['accessToken'];
-  }
+  } 
 }
 
 export const publicRequest = axios.create({

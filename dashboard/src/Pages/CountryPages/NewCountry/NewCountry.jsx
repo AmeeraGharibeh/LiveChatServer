@@ -12,9 +12,7 @@ export default function NewCountry() {
   const [file, setFile] = useState(null);
   const [inputs, setInputs] = useState({});
   const dispatch = useDispatch();
-  const success = useSelector((state) => state.country.isSuccess);
-  const loading = useSelector((state) => state.country.isFetching);
-  const error = useSelector((state)=> state.country.error);
+  const {isSuccess, isFetching, error} = useSelector((state) => state.country);
   const msg = useSelector((state)=> state.country.msg);
   
 
@@ -24,11 +22,16 @@ export default function NewCountry() {
       return {...prev, [e.target.name]: e.target.value}
     })
   }
+  useEffect(()=> {
+   {isSuccess && toast.success('تمت اضافة الدولة بنجاح')}
+   {error && toast.error(error)}
+
+
+  }, [])
      const uploadImage = (file) => {
       const formData = new FormData();
       formData.append('image', file);
       uploadFile(formData).then((val) => {
-        console.log(val)
         toast.success(val.msg)
         setFile(val.img_url)
       }).catch((err) => {
@@ -43,7 +46,10 @@ export default function NewCountry() {
   }
 
   return (
+    <>
+   <ToastContainer />
     <div className="newCountry">
+      
       <h1 className="addCountryTitle">إضافة دولة</h1>
       <form className="addCountryForm">
        <div className="addCountryItem">
@@ -59,11 +65,10 @@ export default function NewCountry() {
         </div>    
       </form>
       <div className="addCountryItem">
-         <button className="addCountryButton" onClick={handleClick} disabled={loading || success}>{loading ? "بالانتظار..." : success ? "تم الرفع" : "تأكيد" }</button>
+         <button className="addCountryButton" onClick={handleClick} disabled={isFetching || isSuccess}>{isFetching ? "بالانتظار..." : isSuccess ? "تم الرفع" : "تأكيد" }</button>
          <span style={{color: 'red', paddingTop: '15px'}}>{error && msg}</span>
-              {success && toast.success('تمت اضافة الدولة بنجاح')}
-              <ToastContainer />
               </div>
     </div>
+     </>
   );
 }

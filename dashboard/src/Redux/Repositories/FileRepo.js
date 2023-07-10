@@ -3,7 +3,7 @@ import { publicRequest } from "../../apiRequest";
 
 export const uploadFile = async (file) => {
   try {
-    const res = await publicRequest.post(`img/upload/`, file, {
+    const res = await publicRequest.post(`img/tmp/`, file, {
           'Content-Type': 'multipart/form-data'
         } );
     console.log(res);

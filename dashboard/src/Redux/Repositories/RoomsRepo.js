@@ -38,9 +38,8 @@ export const deleteRooms = async (id, dispatch) => {
 export const addRoom = async (room, dispatch) => {
   dispatch(addRoomsStart());
   console.log(room)
-    await userRequest.post(`rooms/`, room).then(val => {
-    console.log(val.data);
-    dispatch(addRoomsSuccess(val.data));      
+    await userRequest.post(`rooms/`, room).then( async val => {
+    dispatch(addRoomsSuccess(val.data));  
     }).catch(err => {
       console.log(err.response.data)
      dispatch(addRoomsFailure(err.response.data));

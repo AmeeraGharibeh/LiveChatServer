@@ -24,7 +24,6 @@ export const RoomsSlice = createSlice({
             state.totalRows = action.payload['total']
             state.error = null
         },
-    
           getRoomsFailure: (state, action)=> {
             state.isFetching = false
             state.isSuccess = false

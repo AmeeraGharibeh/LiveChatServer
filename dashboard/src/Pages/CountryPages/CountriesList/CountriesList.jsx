@@ -14,12 +14,18 @@ export default function CountriesList() {
   const countries = useSelector((state)=> state.country.countries);
   const totalRows = useSelector(state => state.country.totalRows);
   const limit = useSelector((state)=> state.country.Limit);
-  const success = useSelector((state)=> state.country.isSuccess);
+  const {isSuccess, error} = useSelector((state)=> state.country);
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(()=> {
     dispatch(resetCountryState());
   }, []);
+
+    useEffect(()=> {
+   { error &&  toast.error(error)}
+  {isSuccess && toast.success('تم حذف الدولة بنجاح')}
+
+  }, [isSuccess])
 
   useEffect(()=> {
     getCountries(dispatch, currentPage, limit);
@@ -84,7 +90,7 @@ export default function CountriesList() {
 
   return (   
     <>
-    
+       <ToastContainer />
       <div className="countryList">
        <div className="addButtonContainer">
          <Link to="/newcountry">
@@ -107,8 +113,6 @@ export default function CountriesList() {
         }}
       /> 
     </div>
-       {success && toast.success('تم حذف الدولة بنجاح')}
-       <ToastContainer />
     </>  
   
   );

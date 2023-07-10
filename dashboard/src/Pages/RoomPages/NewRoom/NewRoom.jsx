@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import "./NewRoom.css";
 import { useDispatch } from "react-redux";
 import { toast, ToastContainer } from 'react-toastify';
+import permisstionsData from "../../../Data/PermissionsData";
 import { addRoom } from "../../../Redux/Repositories/RoomsRepo";
 import { useSelector } from "react-redux";
 import DropdownMenu from "../../../Components/DropdownMenu";
+import { resetRoomState } from "../../../Redux/RoomsRedux";
 
 
 export default function NewRoom() {
@@ -12,8 +14,7 @@ export default function NewRoom() {
   const [limitsInput, setLimitsInput] = useState({});
   const [country, setCountry] = useState(null);
   const [type, setType] = useState(null);
-  const success = useSelector((state) => state.room.isSuccess);
-  const loading = useSelector((state) => state.room.isFetching);
+  const {isSuccess, error, isFetching} = useSelector((state) => state.room);
   const countries = useSelector((state)=> state.country.countries);
   const dispatch = useDispatch();
 
@@ -22,11 +23,10 @@ export default function NewRoom() {
     setType(roomTypes[0])
   }, []);
 
-    useEffect(() => {
-  if (success) {
-    toast.success("تمت اضافة الغرفة بنجاح");
-  }
-}, [success]);
+useEffect(()=> {
+  dispatch(resetRoomState());
+}, [])
+
 
 const handleDropdownCountry = (value) => {
   console.log(value.name_ar)
@@ -47,15 +47,26 @@ const handleDropdownCountry = (value) => {
       return {...prev, [e.target.name]: e.target.value}
     })
   }
+ 
   const handleClick = (e)=> {
     e.preventDefault();
+       const permissions = {};
+    permisstionsData.forEach((item) => {
+        permissions[item.key] = true
+    })
+    console.log(permissions)
     const roomData = { ...inputs,
       room_country: country._id,
-      room_type: type,
-           account_limits:  limitsInput};
+      room_type: type.name_en,
+      permissions, 
+      account_limits:  limitsInput};
     addRoom(roomData, dispatch);
   }
-  const roomTypes = ['مميزة', 'ذهبي', 'فضي']
+  const roomTypes = [
+    {_id: '1', name_ar: 'مميزة' , name_en: 'special'},
+    {_id: '2', name_ar: 'ذهبي', name_en: 'gold'},
+    {_id: '3', name_ar: 'فضي', name_en: 'silver'}
+  ]
   return (
     <div className="newRoom">
       <h1 className="addRoomTitle">إضافة غرفة</h1>
@@ -70,7 +81,7 @@ const handleDropdownCountry = (value) => {
         </div>
            <div className="addRoomItem">
           <label>نوع الغرفة</label>
-          <DropdownMenu className="dropdown" options={roomTypes} onDropdownChange={handleDropdownRoomType}/>
+          <DropdownMenu className="dropdown" options={roomTypes} value = {'name_ar'} onDropdownChange={handleDropdownRoomType}/>
         </div>
           <div className="addRoomItem">
           <label>اسم المالك</label>
@@ -81,7 +92,7 @@ const handleDropdownCountry = (value) => {
           <input name="username" type="text" value={'master'} readonly={true} />
         </div>
              <div className="addRoomItem">
-          <label>كلمة المرور</label>
+          <label>كلمة المرور للماستر</label>
           <input name="room_password" type="text" onChange={handleChange} />
         </div>
           <div className="addRoomItem">
@@ -106,7 +117,7 @@ const handleDropdownCountry = (value) => {
               </div>
               <div className="addRoomItem">
                <label style={{'color': "blue"}}>Super Admin</label>
-              <input name="super admin" type="number" onChange={handleLimits}/>
+              <input name="super_admin" type="number" onChange={handleLimits}/>
               </div>
               <div className="addRoomItem">
               <label style={{'color': "red"}}>Master</label>
@@ -118,9 +129,12 @@ const handleDropdownCountry = (value) => {
       </form>
          <div className="addRoomItem">
        
-        <button className="addRoomButton" onClick={handleClick} disabled={loading || success} >{loading ? "بالانتظار..." : success ? "تمت الاضافة" : "تأكيد" }</button>     
-         <ToastContainer />
-        </div>
+        <button className="addRoomButton" onClick={handleClick} disabled={isFetching || isSuccess} >{isFetching ? "بالانتظار..." : isSuccess ? "تمت الاضافة" : "تأكيد" }</button>     
+    <div style={{color: isSuccess ? 'green' : error ? 'red' : 'black'}}>
+               {isSuccess && "تمت اضافة الغرفة بنجاح"}
+               {error }
+      </div>
+    </div>
     </div>
   );
 }

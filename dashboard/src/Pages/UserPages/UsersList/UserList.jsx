@@ -27,7 +27,11 @@ export default function UserList() {
     getUsers(currentPage, 10, dispatch);
   }, [dispatch, currentPage])
 
+    useEffect(()=> {
+  {  error &&  toast.error(error)}
+  {success && toast.success('تم حذف العضو بنجاح')}
 
+  }, [success])
   function showAlert(id) {
   const result = window.confirm('هل أنت متأكد من حذف هذا العضو؟');
   if (result) {
@@ -92,6 +96,7 @@ export default function UserList() {
 
   return (
  <>
+      <ToastContainer />
     <div className="userList">
       <div className="addButtonContainer">
         <Link to="/newUser">
@@ -111,8 +116,7 @@ export default function UserList() {
         }}
       />
     </div>
-         {  error &&  toast.error(error)}
-              <ToastContainer />
+
  </>
   );
 }

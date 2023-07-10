@@ -3,6 +3,7 @@ import authReducer from "./AuthRedux";
 import countryReducer from "./CountriesRedux";
 import roomReducer from "./RoomsRedux";
 import usersReducer from "./UsersRedux"
+import logsReducer from "./LogsRedux"
 
 
 import {
@@ -27,7 +28,8 @@ const rootReducer = combineReducers({
   auth: authReducer,
   country: countryReducer,
   room: roomReducer,
-  user: usersReducer
+  user: usersReducer,
+  log: logsReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -37,7 +39,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [ PAUSE, PERSIST, PURGE, FLUSH, REGISTER ],
+        ignoredActions: [ PAUSE, PERSIST, REHYDRATE, PURGE, FLUSH, REGISTER ],
       },
     }),
 });

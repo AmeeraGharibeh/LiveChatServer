@@ -17,6 +17,7 @@ export const getCountries = async (dispatch, page, limit) => {
 
 export const addCountry = async (country, dispatch) => {
   dispatch(addCountryStart());
+  console.log(country);
       await userRequest.post(`country/`, country ).then(val => {
         console.log('res is ' + val['data']);
         dispatch(addCountrySuccess(val['data']));

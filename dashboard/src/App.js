@@ -25,6 +25,7 @@ import SupportPage from "./Pages/SupportPages/SupportPage/SupportPage.jsx"
 import BlockedPage from "./Pages/BlockedPages/BlockedList/BlockedList.jsx"
 import ReportPage from "./Pages/SupportPages/ReportPage/ReportPage.jsx"
 import { checkAuthState } from "./Redux/Repositories/AuthRepo.js";
+import LogsPage from "./Pages/Logs/Logs.jsx";
 
 
 
@@ -85,6 +86,7 @@ useEffect(() => {
               <Route exact path="/support" element={  <SupportPage />} />
               <Route exact path="/reports" element={  <ReportPage />} />
               <Route exact path="/blocked" element={  <BlockedPage />} />
+              <Route exact path="/logs" element={  <LogsPage />} />
 
 
         </Routes>
