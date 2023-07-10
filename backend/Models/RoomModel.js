@@ -64,7 +64,7 @@ close_msg: {
 },
 room_color: {
   type: Number,
-  default: 0xff1693c3
+  default: 0xff9bb1ba
 }
 
 });
