@@ -3,8 +3,7 @@ const Rooms = require('../Models/RoomModel');
 const Users = require('../Models/UserModel')
 
 const createCountry = async (req, res)=> {
-  console.log(req.body)
-const newCountry = new Country(req.body);
+const newCountry = new Country(req.body.body);
 try {
     const saved = await newCountry.save();
     res.status(200).json(saved);
