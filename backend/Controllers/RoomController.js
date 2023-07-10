@@ -7,7 +7,7 @@ const createRoom = async function (req, res) {
   const password = req.body.body.room_password;
 const newRoom = new Rooms(req.body.body);
 try {
-    const saved = await newRoom.save().then( async (val) => {
+    await newRoom.save().then( async (val) => {
     try {
       console.log('first' + password)
       console.log(val._id.toHexString())
@@ -20,12 +20,11 @@ try {
     user_type: 'master',
 });
   await newUser.save();
-
+     res.status(200).json(val);
 } catch (err) {
 res.status(500).send({msg: 'something went wrong'});
 }
     });
-     res.status(200).json(saved);
 
 
 } catch (err) {
