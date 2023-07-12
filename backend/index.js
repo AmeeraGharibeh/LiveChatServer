@@ -161,12 +161,11 @@ socket.on('profileVisit', (visitor)=>{
         type: 'notification'
       });
 });
-
-// Handle send images 
-  socket.on('sendImage', data => {
-    // Get the image bytes from the data object.
-    const imageBuffer = Buffer.from(data.img, 'base64');
-    const filename = Date.now() + '.jpg';
+// Handle send images
+socket.on('sendImage', data => {
+  // Get the image bytes from the data object.
+  const imageBuffer = Buffer.from(data.img, 'base64');
+  const filename = Date.now() + '.jpg';
 
   // Save the image to disk
   fs.writeFile(filename, imageBuffer, (err) => {
@@ -177,7 +176,7 @@ socket.on('profileVisit', (visitor)=>{
     // Notify the client that the image has been saved.
     socket.emit('imageSaved', filename);
   });
-  })
+});
 // Handle private messages
 socket.on('sendPrivateMessage', (data) => {
   console.log('private message')
