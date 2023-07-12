@@ -104,7 +104,14 @@ export default function Room() {
                  <label>كود الغرفة</label>
                   <input name="room_code" type="text"  onChange={handleChange}/>
               </div>                
-               
+                 <div className="roomFormItem">
+                 <label>اسم المالك</label>
+                  <input name="room_owner" type="text"  onChange={handleChange}/>
+              </div> 
+                   <div className="roomFormItem">
+                 <label>الإيميل</label>
+                  <input name="email" type="text"  onChange={handleChange}/>
+              </div>
               <div className="roomFormItem">
                  <label>المدة</label>
                   <input name="room_duration" type="text" placeholder={room.room_duration} onChange={handleChange}/>
