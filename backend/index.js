@@ -162,6 +162,17 @@ socket.on('profileVisit', (visitor)=>{
       });
 });
 
+// Handle send images 
+  socket.on('sendImage', data => {
+    // Get the image bytes from the data object.
+    const imageBytes = data.img;
+    // Save the image bytes to a file.
+    const fileName = Date.now() + '.jpg';
+    const file = new File(imageBytes, fileName);
+    file.save('./images/' + fileName);
+    // Notify the client that the image has been saved.
+    socket.emit('imageSaved', fileName);
+  });
 
 // Handle private messages
 socket.on('sendPrivateMessage', (data) => {
