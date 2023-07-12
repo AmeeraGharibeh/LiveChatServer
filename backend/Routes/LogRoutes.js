@@ -4,7 +4,7 @@ const {getAllLogs, getLogsByRoom, deleteAllLogs} = require('../Controllers/LogCo
 
 router.post('/:id', verifyTokenAndAction, getLogsByRoom );
 router.get('/', verifyTokenAndAuthorization, getAllLogs );
-router.delete('/', verifyTokenAndAction, deleteAllLogs );
+router.delete('/', verifyTokenAndAuthorization, deleteAllLogs );
 
 
 module.exports = router;
