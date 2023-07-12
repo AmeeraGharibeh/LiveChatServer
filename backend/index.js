@@ -176,7 +176,7 @@ socket.on('sendImage', data => {
       return;
     }
     // Notify the client that the image has been saved.
-    socket.emit('imageSaved', imageBuffer);
+    socket.emit('imageSaved', filename);
   });
 });
 // Handle private messages
