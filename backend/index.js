@@ -168,7 +168,7 @@ socket.on('profileVisit', (visitor)=>{
     const imageBytes = data.img;
     // Save the image bytes to a file.
     const fileName = Date.now() + '.jpg';
-    const file = new File(imageBytes, fileName);
+    const file = File(imageBytes, fileName);
     file.save('./images/' + fileName);
     // Notify the client that the image has been saved.
     socket.emit('imageSaved', fileName);
