@@ -14,9 +14,11 @@ export default function RoomsList() {
   const countries = useSelector((state)=> state.country.countries)
   const [currentPage, setCurrentPage] = useState(1);
   const {isSuccess , error} = useSelector((state)=> state.room);
+
   useEffect(()=> {
     dispatch(resetRoomState());
   }, []);
+
   useEffect(()=> {
     {isSuccess && toast.success('تم حذف الغرفة بنجاح')}
     { error &&  toast.error(error)}
@@ -79,9 +81,9 @@ export default function RoomsList() {
       renderCell: (params) => {
         return (
           <>
-        {   /* <Link to={"/room/" + params.row._id}>
+        { <Link to={"/room/" + params.row._id}>
               <button className="roomsListEdit">Edit</button>
-        </Link>*/}
+        </Link>}
             <DeleteOutline
               className="roomsListDelete"
               onClick={() => showAlert(params.row._id)}

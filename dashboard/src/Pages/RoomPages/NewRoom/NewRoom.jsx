@@ -96,6 +96,10 @@ const handleDropdownCountry = (value) => {
           <input name="room_password" type="text" onChange={handleChange} />
         </div>
           <div className="addRoomItem">
+          <label>كود الغرفة</label>
+          <input name="room_code" type="text" onChange={handleChange} />
+        </div>
+          <div className="addRoomItem">
           <label>الإيميل</label>
           <input name="email" type="text" onChange={handleChange}/>
         </div>
@@ -103,6 +107,10 @@ const handleDropdownCountry = (value) => {
           <div className="addRoomItem">
           <label>سعة الغرفة</label>
           <input name="room_capacity" type="number" onChange={handleChange}/>
+        </div>
+          <div className="addRoomItem">
+          <label>مدة الغرفة</label>
+          <input name="room_duration" type="text" onChange={handleChange} />
         </div>
        <div className="addRoomItem">
           <label>حد الحسابات</label>

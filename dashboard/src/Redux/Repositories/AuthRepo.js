@@ -38,11 +38,10 @@ export const logoutUser = (dispatch) => {
 };
 
 export const checkAuthState = (token) => (dispatch) => {
-  try {
-    isTokenExpired(token);
-  } catch (error) {
+  if (isTokenExpired(token)){
     dispatch(logout());
   }
+
 }; 
 
 export const getAllAdmins = async (dispatch) => {

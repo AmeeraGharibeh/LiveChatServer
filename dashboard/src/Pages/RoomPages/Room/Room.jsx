@@ -76,8 +76,8 @@ export default function Room() {
                       <span className="roomInfoValue">{room.end_date}</span>
                   </div>
                    <div className="roomInfoItem">
-                      <span className="roomInfoKey">رسالة الترحيب:</span>
-                      <span className="roomInfoValue">{room.welcome_msg}</span>
+                      <span className="roomInfoKey">كود الغرفة:</span>
+                      <span className="roomInfoValue">{room.room_code}</span>
                   </div>
                   <div className="roomInfoItem">
                       <span className="roomInfoKey">سعة الغرفة:</span>
@@ -97,25 +97,19 @@ export default function Room() {
                   <input name="room_name" type="text" placeholder={room.room_name} onChange={handleChange}/>
               </div>
               <div className="roomFormItem">
-                 <label>الوصف</label>
-                  <input name="description" type="text" placeholder={room.description} onChange={handleChange}/>
+                 <label>كلمة مرور الغرفة</label>
+                  <input name="room_password" type="text"  onChange={handleChange}/>
               </div>
               <div className="roomFormItem">
-                 <label>رسالة الترحيب</label>
-                  <input name="welcome_msg" type="text" placeholder={room.welcome_msg} onChange={handleChange}/>
+                 <label>كود الغرفة</label>
+                  <input name="room_code" type="text"  onChange={handleChange}/>
               </div>                
-              <div className="roomFormItem">
-                 <label>سعة الغرفة</label>
-                  <input name="room_capacity" type="text" placeholder={room.room_capacity} onChange={handleChange}/>
-              </div>   
+               
               <div className="roomFormItem">
                  <label>المدة</label>
                   <input name="room_duration" type="text" placeholder={room.room_duration} onChange={handleChange}/>
               </div>        
-              <div className="roomFormItem">
-                 <label>تاريخ الإنتهاء</label>
-                  <input name="end_date" type="text" placeholder={room.end_date} onChange={handleChange}/>
-              </div>                               
+                                       
           </form>
         <button className="roomUpdateButton" onClick={handleClick} disabled={loading || success} >{loading ? "بالانتظار..." : success ? "تم التعديل" : "تأكيد" }</button>     
         <span style={{color: 'red', paddingTop: '15px'}}>{error && msg}</span>
