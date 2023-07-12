@@ -172,7 +172,7 @@ socket.on('sendImage', data => {
   // Save the image to disk
   fs.writeFile(filename, imageBuffer, (err) => {
     if (err) {
-      console.error(err);
+      console.error(err); 
       return;
     }
     // Notify the client that the image has been saved.
