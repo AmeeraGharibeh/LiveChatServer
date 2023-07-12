@@ -33,6 +33,14 @@ function App() {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
 const navigate = useNavigate();
+
+
+useEffect(() => {
+  if (currentUser !== null){
+        dispatch(checkAuthState(currentUser['accessToken']));
+  }
+  }, [dispatch]);
+  
 useEffect(() => {
     const checkUser = async()=> {
       try {
@@ -47,11 +55,6 @@ useEffect(() => {
     }
     checkUser();
   }, [currentUser]);
-
-useEffect(() => {
-    dispatch(checkAuthState());
-  }, [dispatch]);
-
   return (
         <>
       <Routes>

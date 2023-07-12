@@ -11,7 +11,7 @@ if (storedValue) {
   const currentUser = JSON.parse(parsedValue.auth);
       console.log(currentUser)
 
-  if (currentUser !== null) {
+  if (currentUser.currentUser !== null) {
     Token = currentUser.currentUser['accessToken'];
   } 
 }

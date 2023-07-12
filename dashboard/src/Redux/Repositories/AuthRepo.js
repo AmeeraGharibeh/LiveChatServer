@@ -3,6 +3,9 @@ import { loginFailure, loginStart, loginSuccess , logout,
         signupStart, signupSuccess, signupFailure,
         updateAdminStart, updateAdminSuccess, updateAdminFailure} from "../AuthRedux";
 import { publicRequest, userRequest } from "../../apiRequest";
+import jwtDecode from 'jwt-decode';
+
+
 
 
 export const login = async (dispatch, user) => {
@@ -17,10 +20,16 @@ export const login = async (dispatch, user) => {
     });
 
 };
-export const checkTokenExpiration = (token) => {
-  const expirationTime = localStorage.getItem('tokenExpiration');
-  if (!expirationTime || Date.now() > parseInt(expirationTime)) {
-    throw new Error('Token expired');
+const isTokenExpired = (token) => {
+  try {
+    const decodedToken = jwtDecode(token);
+    if (!decodedToken || !decodedToken.exp) {
+      return true;
+    }
+    const currentTime = Date.now() / 1000; // Convert to seconds
+    return decodedToken.exp < currentTime;
+  } catch (error) {
+    return true;
   }
 };
 export const logoutUser = (dispatch) => {
@@ -28,9 +37,9 @@ export const logoutUser = (dispatch) => {
   dispatch(logout());
 };
 
-export const checkAuthState = () => (dispatch) => {
+export const checkAuthState = (token) => (dispatch) => {
   try {
-    checkTokenExpiration();
+    isTokenExpired(token);
   } catch (error) {
     dispatch(logout());
   }
