@@ -165,7 +165,7 @@ socket.on('profileVisit', (visitor)=>{
 // Handle send images 
   socket.on('sendImage', data => {
     // Get the image bytes from the data object.
-    const imageBuffer = Buffer.from(base64Image, 'base64');
+    const imageBuffer = Buffer.from(data.img, 'base64');
     const filename = Date.now() + '.jpg';
 
   // Save the image to disk
