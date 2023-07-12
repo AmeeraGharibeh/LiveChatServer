@@ -13,6 +13,8 @@ const ReportsRouter = require('./Routes/ReportsRoutes');
 const BlockedRouter = require('./Routes/BlockedRoutes');
 const LogsRouter = require('./Routes/LogRoutes');
 const Logs = require('./Models/LogModel');
+const fs = require('fs');
+
 ///////////////////////////////////////////////////////////
 
 const http = require('http');
