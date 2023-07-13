@@ -13,7 +13,10 @@ router.post('/tmp', upload.single('image'), async (req, res, next) => {
       return res.status(400).send({ message: "Please upload a file!" });
     }
 
-    const blob = bucket.file(req.file.originalname.replace(/ /g, "_"));
+    const timestamp = Date.now();
+    const uniqueFilename = `${timestamp}_${req.file.originalname.replace(/ /g, "_")}`;
+
+    const blob = bucket.file(uniqueFilename);
     const blobStream = blob.createWriteStream({
       resumable: false,
     });
