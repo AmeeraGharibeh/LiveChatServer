@@ -52,12 +52,12 @@ const userLogin = async (req, res) => {
     let user;
     let visitor;
     
-
     if (req.body.room_password) {
       // Member login
       user = await User.findOne({
         username: req.body.username,
-        room_id: req.body.room_id
+        room_id: req.body.room_id,
+        icon: req.body.icon
       });
       if (!user) return res.status(404).send({ msg: 'المستخدم غير موجود!' });
 
