@@ -1,3 +1,56 @@
+// const router = require('express').Router();
+// const multer = require('multer');
+// const { Storage } = require('@google-cloud/storage');
+// const gc = require('../Config');
+// const bucket = gc.bucket('grocery-372908.appspot.com');
+
+// const storage = new Storage();
+// const upload = multer();
+
+// router.post('/tmp', upload.single('image'), async (req, res, next) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).send({ message: "Please upload a file!" });
+//     }
+
+//     const timestamp = Date.now();
+//     const uniqueFilename = `${timestamp}_${req.file.originalname.replace(/ /g, "_")}`;
+
+//     const blob = bucket.file(uniqueFilename);
+//     const blobStream = blob.createWriteStream({
+//       resumable: false,
+//     });
+
+//     blobStream.on("error", (err) => {
+//       res.status(500).send({ message: err.message });
+//     });
+
+//     blobStream.on("finish", async (data) => {
+//       const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+//       try {
+//         // Make the file public
+//         await blob.makePublic();
+//       } catch {
+//         return res.status(500).send({
+//           msg: "Uploaded the file successfully, but public access is denied!",
+//           img_url: publicUrl,
+//         });
+//       }
+//       res.status(200).send({
+//         msg: "Uploaded the file successfully",
+//         img_url: publicUrl,
+//       });
+//     });
+
+//     blobStream.end(req.file.buffer);
+//   } catch (err) {
+//     res.status(500).send({
+//       message: `Could not upload the file: ${req.file.originalname}. ${err}`,
+//     });
+//   }
+// });
+
+// module.exports = router;
 const router = require('express').Router();
 const multer = require('multer');
 const { Storage } = require('@google-cloud/storage');
@@ -7,45 +60,61 @@ const bucket = gc.bucket('grocery-372908.appspot.com');
 const storage = new Storage();
 const upload = multer();
 
-router.post('/tmp', upload.single('image'), async (req, res, next) => {
+router.post('/tmp', upload.array('images', 10), async (req, res, next) => {
   try {
-    if (!req.file) {
-      return res.status(400).send({ message: "Please upload a file!" });
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).send({ message: "Please upload at least one file!" });
     }
 
-    const timestamp = Date.now();
-    const uniqueFilename = `${timestamp}_${req.file.originalname.replace(/ /g, "_")}`;
+    const folder = 'icons'; // Specify the desired folder path
 
-    const blob = bucket.file(uniqueFilename);
-    const blobStream = blob.createWriteStream({
-      resumable: false,
-    });
+    const uploadPromises = req.files.map((file) => {
+      // Generate a unique filename using a timestamp and original filename
+      const timestamp = Date.now();
+      const uniqueFilename = `${folder}/${timestamp}_${file.originalname.replace(/ /g, "_")}`;
 
-    blobStream.on("error", (err) => {
-      res.status(500).send({ message: err.message });
-    });
+      const blob = bucket.file(uniqueFilename);
+      const blobStream = blob.createWriteStream({
+        resumable: false,
+      });
 
-    blobStream.on("finish", async (data) => {
-      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-      try {
-        // Make the file public
-        await blob.makePublic();
-      } catch {
-        return res.status(500).send({
-          msg: "Uploaded the file successfully, but public access is denied!",
-          img_url: publicUrl,
+      return new Promise((resolve, reject) => {
+        blobStream.on("error", (err) => {
+          reject(err);
         });
-      }
-      res.status(200).send({
-        msg: "Uploaded the file successfully",
-        img_url: publicUrl,
+
+        blobStream.on("finish", async (data) => {
+          const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+          try {
+            // Make the file public
+            await blob.makePublic();
+            resolve({ filename: uniqueFilename, url: publicUrl });
+          } catch {
+            reject(new Error(`Uploaded the file '${uniqueFilename}' successfully, but public access is denied!`));
+          }
+        });
+
+        blobStream.end(file.buffer);
       });
     });
 
-    blobStream.end(req.file.buffer);
+    Promise.all(uploadPromises)
+      .then((results) => {
+        res.status(200).send({
+          msg: "Uploaded files successfully",
+          files: results,
+        });
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: "Could not upload one or more files",
+          error: err.message,
+        });
+      });
   } catch (err) {
     res.status(500).send({
-      message: `Could not upload the file: ${req.file.originalname}. ${err}`,
+      message: "Could not upload the files",
+      error: err.message,
     });
   }
 });
