@@ -66,7 +66,7 @@ router.post('/tmp', upload.array('images', 10), async (req, res, next) => {
       return res.status(400).send({ message: "Please upload at least one file!" });
     }
 
-    const folder = 'icons'; // Specify the desired folder path
+    const folder = 'backgrounds'; // Specify the desired folder path
 
     const uploadPromises = req.files.map((file) => {
       // Generate a unique filename using a timestamp and original filename
