@@ -1,17 +1,18 @@
 const router = require('express').Router();
 const multer = require('multer');
 const { Storage } = require('@google-cloud/storage');
-const gc = require('../Config')
-const bucket = gc.bucket('grocery-372908.appspot.com') 
+const gc = require('../Config');
+const bucket = gc.bucket('grocery-372908.appspot.com');
 
-
-const upload = multer({ dest: '/tmp' });
+const storage = new Storage();
+const upload = multer();
 
 router.post('/tmp', upload.single('image'), async (req, res, next) => {
-   try {
+  try {
     if (!req.file) {
       return res.status(400).send({ message: "Please upload a file!" });
     }
+
     const blob = bucket.file(req.file.originalname.replace(/ /g, "_"));
     const blobStream = blob.createWriteStream({
       resumable: false,
@@ -20,17 +21,15 @@ router.post('/tmp', upload.single('image'), async (req, res, next) => {
     blobStream.on("error", (err) => {
       res.status(500).send({ message: err.message });
     });
+
     blobStream.on("finish", async (data) => {
-      const publicUrl = (
-        `https://storage.googleapis.com/${'grocery-372908.appspot.com'}/${blob.name}`
-      );
+      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
       try {
         // Make the file public
-        await bucket.file(req.file.originalname).makePublic();
+        await blob.makePublic();
       } catch {
         return res.status(500).send({
-          msg:
-            `Uploaded the file successfully, but public access is denied!`,
+          msg: "Uploaded the file successfully, but public access is denied!",
           img_url: publicUrl,
         });
       }
@@ -47,4 +46,5 @@ router.post('/tmp', upload.single('image'), async (req, res, next) => {
     });
   }
 });
+
 module.exports = router;
