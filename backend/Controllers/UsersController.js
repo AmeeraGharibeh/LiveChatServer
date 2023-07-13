@@ -95,7 +95,7 @@ const userLogin = async (req, res) => {
     );
 
     const { room_password, name_password, ...others } = visitor ? user :  user._doc;
-    return res.status(200).send({ user: { ...others, icon: req.body.icon }, accessToken: accessToken });
+    return res.status(200).send({ user: { icon: req.body.icon, ...others }, accessToken: accessToken });
   } catch (err) {
     return res.status(500).send({ msg: err.message });
   }
