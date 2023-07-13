@@ -57,7 +57,6 @@ const userLogin = async (req, res) => {
       user = await User.findOne({
         username: req.body.username,
         room_id: req.body.room_id,
-        icon: req.body.icon
       });
       if (!user) return res.status(404).send({ msg: 'المستخدم غير موجود!' });
 
@@ -83,7 +82,8 @@ const userLogin = async (req, res) => {
         room_id: req.body.room_id,
         _id: visitorId,
         user_type: 'visitor',
-        icon: req.body.icon}
+        icon: req.body.icon
+      }
     }
 
     const accessToken = jwt.sign(
@@ -95,7 +95,7 @@ const userLogin = async (req, res) => {
     );
 
     const { room_password, name_password, ...others } = visitor ? user :  user._doc;
-    return res.status(200).send({ user: { ...others }, accessToken: accessToken });
+    return res.status(200).send({ user: { ...others, icon: req.body.icon }, accessToken: accessToken });
   } catch (err) {
     return res.status(500).send({ msg: err.message });
   }
