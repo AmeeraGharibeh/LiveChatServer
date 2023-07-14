@@ -165,8 +165,16 @@ socket.on('profileVisit', (visitor)=>{
 });
 // Handle send images
 socket.on('sendImage', data => {
+   const img = data.img;
+  const sender = data.sender;
+  const senderId = data.senderId
+  const room_id = data.room_id;
+  const time = data.time;
+  const type = data.type
+
   // Get the image bytes from the data object.
-  const imageBuffer = Buffer.from(data.img, 'base64');
+
+  const imageBuffer = Buffer.from(img, 'base64');
   const filename = Date.now() + '.jpg';
 
   // Save the image to disk
@@ -176,7 +184,13 @@ socket.on('sendImage', data => {
       return;
     }
     // Notify the client that the image has been saved.
-    socket.emit('imageSaved', imageBuffer);
+    io.to(data.room_id).emit.emit('imageSaved', {
+      msg: imageBuffer,
+      sender,
+      senderId,
+      type,
+      time,
+    });
   });
 });
 // Handle private messages
