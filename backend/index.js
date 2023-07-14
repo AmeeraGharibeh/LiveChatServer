@@ -184,7 +184,7 @@ socket.on('sendImage', data => {
       return;
     }
     // Notify the client that the image has been saved.
-    io.to(data.room_id).emit.emit('imageSaved', {
+    io.to(data.room_id).emit('imageSaved', {
       msg: imageBuffer,
       sender,
       senderId,
