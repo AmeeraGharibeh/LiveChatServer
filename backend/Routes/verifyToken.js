@@ -60,7 +60,7 @@ if(adminUser && types.includes(adminUser.user_type)) {
  } else if (dashboardUser && dashboardUser.is_dashboard_admin) {
         master = dashboardUser.username
     console.log('dashboard')
-    req.body = body;
+    req.body = {master , body};
     next();
 } else{
         return res.status(403).send({msg: 'عذراً, لا تملك الصلاحية للقيام هذا الإجراء'});
