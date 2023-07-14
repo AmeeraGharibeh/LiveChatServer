@@ -20,10 +20,8 @@ if (usernameExists) {
    res.status(400).json({ msg: 'اسم المستخدم موجود بالفعل في الغرفة' });
 }
 else {
-
   const data = {
     username: body.username,
-    name_password: hashedPass,
     room_id: body.room_id,
     name_type: body.name_type,
     user_type: body.user_type,
