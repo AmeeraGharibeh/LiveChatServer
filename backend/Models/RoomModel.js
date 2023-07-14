@@ -6,6 +6,11 @@ const RoomSchema = mongoose.Schema({
     type: String,
     required: true
   },
+    room_password: {
+    type: String,
+    required: true
+  },
+  
    room_owner: {
     type: String,
     required: true

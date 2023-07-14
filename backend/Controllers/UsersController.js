@@ -1,4 +1,5 @@
 const User = require('../Models/UserModel');
+const Rooms = require('../Models/RoomModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
@@ -10,9 +11,8 @@ const Blocked = require('../Models/BlockedModel');
 const createUser = async (req, res) => {
   console.log(req.body)
   const body = req.body.body;
-try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(body.room_password, salt);
+try { 
+
 const items = await User.find({ room_id: body.room_id });
 
 const usernameExists = items.some(item => item.username === body.username);
@@ -20,14 +20,21 @@ if (usernameExists) {
    res.status(400).json({ msg: 'اسم المستخدم موجود بالفعل في الغرفة' });
 }
 else {
-         const newUser = new User({
+
+  const data = {
     username: body.username,
-    room_password: hashedPass,
+    name_password: hashedPass,
     room_id: body.room_id,
     name_type: body.name_type,
     user_type: body.user_type,
     permissions: body.permissions
-});
+  }
+    if(body.name_password) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPass = await bcrypt.hash(body.name_password, salt);
+    data.name_password = hashedPass
+  }
+    const newUser = new User(data);
     const saved = await newUser.save();
 
       const  report = new Reports({
@@ -51,28 +58,33 @@ const userLogin = async (req, res) => {
   try {
     let user;
     let visitor;
+    let room;
     
     if (req.body.room_password) {
       // Member login
+      room = await Rooms.findOne({_id: req.body.room_id,})
       user = await User.findOne({
         username: req.body.username,
         room_id: req.body.room_id,
       });
       if (!user) return res.status(404).send({ msg: 'المستخدم غير موجود!' });
 
-      const valid = await bcrypt.compare(req.body.room_password, user.room_password);
+      const valid = await bcrypt.compare(req.body.room_password, room.room_password);
       if (!valid) return res.status(400).send({ msg: 'المستخدم أو كلمة المرور غير صحيحة' });
 
     } else if (req.body.name_password) {
       // Registered user login
-      user = await User.findOne({ username: req.body.username });
+      user = await User.findOne({ 
+         username: req.body.username ,        
+         room_id: req.body.room_id,
+});
       if (!user) return res.status(404).send({ msg: 'المستخدم غير موجود!' });
 
-      const validName = await bcrypt.compare(req.body.name_password, user.name_password);
-      const validPass = await bcrypt.compare(req.body.room_password, user.room_password);
+      const validRoomPass = await bcrypt.compare(req.body.room_password, room.room_password);
+      const validNamePass = await bcrypt.compare(req.body.name_password, user.name_password);
 
-      if (!validName) return res.status(400).send({ msg: 'المستخدم أو كلمة مرور الاسم غير صحيحة' });
-      if (!validPass) return res.status(400).send({ msg: 'المستخدم أو كلمة مرور الغرفة غير صحيحة' });
+      if (!validNamePass) return res.status(400).send({ msg: 'المستخدم أو كلمة مرور الاسم غير صحيحة' });
+      if (!validRoomPass) return res.status(400).send({ msg: 'المستخدم أو كلمة مرور الغرفة غير صحيحة' });
 
     } else {
       const visitorId = uuidv4();
