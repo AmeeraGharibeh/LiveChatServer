@@ -25,7 +25,6 @@ const createUser = async (req, res) => {
         const users = await User.find({ username: body.username });
         if (users.length > 0) {
           res.status(400).json({ msg: 'هذا الاسم مستخدم بالفعل' });
-          return;
         }
       }
 
