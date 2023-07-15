@@ -5,54 +5,6 @@ const { v4: uuidv4 } = require("uuid");
 const Reports = require("../Models/ReportsModel");
 const Blocked = require("../Models/BlockedModel");
 
-// const createUser = async (req, res) => {
-//   console.log(req.body);
-//   const { body } = req.body.body;
-//   try {
-//     const salt = await bcrypt.genSalt(10);
-//     const hashedPass = await bcrypt.hash(body.room_password, salt);
-//     const hashedNamePass = body.name_password ? await bcrypt.hash(body.name_password, salt) : '';
-
-//     const items = await User.find({ room_id: body.room_id });
-
-//     const usernameExists = items.some((item) => item.username === body.username);
-//     if (usernameExists) {
-//       res.status(400).json({ msg: 'اسم المستخدم موجود بالفعل في الغرفة' });
-//     } else {
-//       if (body.name_type) {
-//         const users = await User.find({ username: body.username });
-//         if (users.length > 0) {
-//           res.status(400).json({ msg: 'هذا الاسم مستخدم بالفعل' });
-//         }
-//       }
-
-//       const newUser = new User({
-//         username: body.username,
-//         room_password: hashedPass,
-//         room_id: body.room_id,
-//         name_type: body.name_type,
-//         user_type: body.user_type,
-//         permissions: body.permissions,
-//         name_password: hashedNamePass
-//       });
-
-//       const saved = await newUser.save();
-
-//       const report = new Reports({
-//         master_name: req.body.master,
-//         room_id: body.room_id,
-//         action_user: body.username,
-//         action_name_ar: "اضافة مستخدم",
-//         action_name_en: 'Add user'
-//       });
-//       await report.save();
-//       res.status(200).json({ msg: 'تمت اضافة المستخدم بنجاح!', user: saved });
-//     }
-//   } catch (err) {
-//     res.status(500).send({ msg: 'something went wrong' });
-//   }
-// };
-
 const createUser = async (req, res) => {
   console.log(req.body);
   const body = req.body.body;
