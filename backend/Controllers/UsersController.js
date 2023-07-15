@@ -10,7 +10,7 @@ const createUser = async (req, res) => {
   const body = req.body.body;
   try {
     const salt = await bcrypt.genSalt(10);
-    const hashedPass = body.name_password
+    const hashedPass = body.room_password
       ? await bcrypt.hash(body.room_password, salt)
       : "";
     const hashedNamePass = body.name_password
