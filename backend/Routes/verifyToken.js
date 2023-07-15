@@ -24,35 +24,57 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-const verifyTokenAndAdmin = async (req, res, next) => {
-        body = req.body;
-  try {
-    await verifyToken(req, res, async () => {
-      const types = ['admin', 'super_admin', 'master'];
-      const adminUser = await UserModel.findById(req.body.id);
-      const dashboardUser = await AuthModel.findById(req.body.id);
+// const verifyTokenAndAdmin = async (req, res, next) => {
+//         body = req.body;
+//   try {
+//     await verifyToken(req, res, async () => {
+//       const types = ['admin', 'super_admin', 'master'];
+//       const adminUser = await UserModel.findById(req.body.id);
+//       const dashboardUser = await AuthModel.findById(req.body.id);
 
-      let master;
+//       let master;
 
-      if (adminUser && types.includes(adminUser.user_type)) {
-        master = adminUser.username;
-        console.log('admin');
-      } else if (dashboardUser && dashboardUser.is_dashboard_admin) {
-        master = dashboardUser.username;
-        console.log('dashboard');
-      } else {
-        return res.status(403).send({ msg: 'Permission denied' });
-      }
+//       if (adminUser && types.includes(adminUser.user_type)) {
+//         master = adminUser.username;
+//         console.log('admin');
+//       } else if (dashboardUser && dashboardUser.is_dashboard_admin) {
+//         master = dashboardUser.username;
+//         console.log('dashboard');
+//       } else {
+//         return res.status(403).send({ msg: 'Permission denied' });
+//       }
 
-      req.body = { master, body };
-      next();
-    });
-  } catch (err) {
-    return res.status(500).send({ msg: 'Internal server error' });
-  }
-};
+//       req.body = { master, body };
+//       next();
+//     });
+//   } catch (err) {
+//     return res.status(500).send({ msg: 'Internal server error' });
+//   }
+// };
 
+const verifyTokenAndAdmin = (req, res, next)=> {
+    body = req.body;
+    let master;
+    const types = ['admin', 'super_admin', 'master']
+    verifyToken(req, res, async ()=> {
+    const adminUser = await UserModel.findById(req.body.id);
+    const dashboardUser = await AuthModel.findById(req.body.id);
 
+if(adminUser && types.includes(adminUser.user_type)) {
+    master = adminUser.username
+    console.log('admin')
+        req.body = {master, body};
+        next();    
+ } else if (dashboardUser && dashboardUser.is_dashboard_admin) {
+        master = dashboardUser.username
+    console.log('dashboard')
+    req.body = {master , body};
+    next();
+} else{
+        return res.status(403).send({msg: 'عذراً, لا تملك الصلاحية للقيام هذا الإجراء'});
+    }
+    })
+}
 const verifyTokenAndAuthorization = (req, res, next)=> {
     body = req.body;
     let master;
