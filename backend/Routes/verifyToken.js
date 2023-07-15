@@ -40,7 +40,7 @@ const verifyTokenAndAdmin = async (req, res, next) => {
         master = adminUser.username;
         console.log("admin");
       } else if (dashboardUser && dashboardUser.is_dashboard_admin) {
-        master = dashboardUser.username;
+        master = "dashboard";
         console.log("dashboard");
       } else {
         return res.status(403).send({ msg: "Permission denied" });
@@ -67,11 +67,9 @@ const verifyTokenAndAuthorization = (req, res, next) => {
         console.log(req.body);
         next();
       } else {
-        return res
-          .status(403)
-          .json({
-            msg: "عذراً, يُسمح فقط لمدراء لوحة التحكم القيام بهذا الإجراء",
-          });
+        return res.status(403).json({
+          msg: "عذراً, يُسمح فقط لمدراء لوحة التحكم القيام بهذا الإجراء",
+        });
       }
     });
   } catch (err) {
