@@ -61,6 +61,7 @@ const createName = async (req, res) => {
         name_password: hashedNamePass,
       });
       const saved = await newUser.save();
+
       res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
     }
   } catch (err) {

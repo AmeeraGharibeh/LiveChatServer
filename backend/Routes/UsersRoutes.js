@@ -6,6 +6,7 @@ const {
 } = require("./verifyToken");
 const {
   createUser,
+  createName,
   userLogin,
   updateUser,
   deleteUser,
@@ -17,7 +18,7 @@ const {
 } = require("../Controllers/UsersController");
 
 router.post("/", verifyTokenAndAdmin, createUser);
-router.post("/name", verifyTokenAndAuthorization, createUser);
+router.post("/name", verifyTokenAndAuthorization, createName);
 router.post("/login", userLogin);
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.delete("/:id", verifyTokenAndAdmin, deleteUser);
