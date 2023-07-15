@@ -36,7 +36,7 @@ const createUser = async (req, res) => {
         name_type: body.name_type,
         user_type: body.user_type,
         permissions: body.permissions,
-        name_password: hashedNamePass // Add hashed name_password if present
+        name_password: hashedNamePass 
       });
 
       const saved = await newUser.save();
