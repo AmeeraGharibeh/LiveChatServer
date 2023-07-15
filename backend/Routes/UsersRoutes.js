@@ -16,7 +16,8 @@ const {
   unblockUser,
 } = require("../Controllers/UsersController");
 
-router.post("/", verifyTokenAndAuthorization, createUser);
+router.post("/", verifyTokenAndAdmin, createUser);
+router.post("/name", verifyTokenAndAuthorization, createUser);
 router.post("/login", userLogin);
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.delete("/:id", verifyTokenAndAdmin, deleteUser);
