@@ -3,26 +3,43 @@ const jwt = require('jsonwebtoken');
 const UserModel = require('../Models/UserModel');
 const AuthModel = require('../Models/AuthModel');
 
-const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  try {
-    if (authHeader) {
-      const token = authHeader.split(' ')[1];
-      jwt.verify(token, process.env.JWTSECRET, (err, user) => {
-        if (err) {
-          return res.status(401).send({ msg: 'Session is not valid or expired' });
-        }
-        req.body = user;
-        next();
-      });
-    } else {
-      return res.status(401).send({ msg: 'Unauthorized access' });
+const verifyToken = (req, res, next)=> {
+    const authHeader = req.headers.authorization;
+    try{
+        if(authHeader){
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, process.env.JWTSECRET, (err, user)=> {
+            if(err) res.status(401).send({msg: 'session is not valid or expired ' + err});
+            req.body = user;
+            next();
+        })
+    }else{
+        return res.status(401).send({msg: 'دخول غير مسموح'});
     }
-  } catch (err) {
-    return res.status(500).send({ msg: 'Internal server error' });
-  }
-};
+    }catch(err){
+        return res.status(500).send({msg: 'we have some glitches!'});
+    }
+}
+// const verifyToken = (req, res, next) => {
+//   const authHeader = req.headers.authorization;
+
+//   try {
+//     if (authHeader) {
+//       const token = authHeader.split(' ')[1];
+//       jwt.verify(token, process.env.JWTSECRET, (err, user) => {
+//         if (err) {
+//           return res.status(401).send({ msg: 'Session is not valid or expired' });
+//         }
+//         req.body = user;
+//         next();
+//       });
+//     } else {
+//       return res.status(401).send({ msg: 'Unauthorized access' });
+//     }
+//   } catch (err) {
+//     return res.status(500).send({ msg: 'Internal server error' });
+//   }
+// };
 
 // const verifyTokenAndAdmin = async (req, res, next) => {
 //         body = req.body;
