@@ -99,19 +99,11 @@ const userLogin = async (req, res) => {
         req.body.name_password,
         user.name_password
       );
-      const validPass = await bcrypt.compare(
-        req.body.room_password,
-        user.room_password
-      );
 
       if (!validName)
         return res
           .status(400)
           .send({ msg: "المستخدم أو كلمة مرور الاسم غير صحيحة" });
-      if (!validPass)
-        return res
-          .status(400)
-          .send({ msg: "المستخدم أو كلمة مرور الغرفة غير صحيحة" });
     } else {
       const visitorId = uuidv4();
       visitor = true;
