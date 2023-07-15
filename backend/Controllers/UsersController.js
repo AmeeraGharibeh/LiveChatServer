@@ -9,11 +9,11 @@ const Blocked = require('../Models/BlockedModel');
 
 const createUser = async (req, res) => {
   console.log(req.body);
-  const { body } = req;
+  const { body } = req.body.body;
   try {
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(body.room_password, salt);
-    const hashedNamePass = body.name_password ? await bcrypt.hash(body.name_password, salt) : null;
+    const hashedNamePass = body.name_password ? await bcrypt.hash(body.name_password, salt) : '';
 
     const items = await User.find({ room_id: body.room_id });
 
