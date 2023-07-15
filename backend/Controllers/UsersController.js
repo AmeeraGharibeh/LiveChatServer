@@ -144,6 +144,7 @@ const updateUser = async (req, res) => {
 
 
 const deleteUser = async (req, res) => {
+  console.log(req.body)
    try {
          const user = await User.findById(req.params.id);
           const  report = new Reports({
