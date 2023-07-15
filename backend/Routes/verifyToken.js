@@ -25,12 +25,10 @@ const verifyToken = (req, res, next) => {
 };
 
 const verifyTokenAndAdmin = async (req, res, next) => {
+        body = req.body;
   try {
     await verifyToken(req, res, async () => {
       const types = ['admin', 'super_admin', 'master'];
-      
-      console.log(req.body)
-
       const adminUser = await UserModel.findById(req.body.id);
       const dashboardUser = await AuthModel.findById(req.body.id);
 
@@ -46,7 +44,7 @@ const verifyTokenAndAdmin = async (req, res, next) => {
         return res.status(403).send({ msg: 'Permission denied' });
       }
 
-      req.body = { master, body: req.body };
+      req.body = { master, body };
       next();
     });
   } catch (err) {
