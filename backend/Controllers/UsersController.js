@@ -10,7 +10,13 @@ const createUser = async (req, res) => {
   const body = req.body.body;
   try {
     const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(body.room_password, salt);
+    const hashedPass = body.name_password
+      ? await bcrypt.hash(body.room_password, salt)
+      : "";
+    const hashedNamePass = body.name_password
+      ? await bcrypt.hash(body.name_password, salt)
+      : "";
+
     if (body.name_type) {
       const users = await User.find({ username: body.username });
       if (users.length > 0) {
@@ -31,6 +37,7 @@ const createUser = async (req, res) => {
           name_type: body.name_type,
           user_type: body.user_type,
           permissions: body.permissions,
+          name_password: hashedNamePass,
         });
         const saved = await newUser.save();
 
