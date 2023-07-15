@@ -13,7 +13,7 @@ const verifyToken = (req, res, next) => {
         if (err) {
           return res.status(401).send({ msg: 'Session is not valid or expired' });
         }
-        req.user = user;
+        req.body = user;
         next();
       });
     } else {
