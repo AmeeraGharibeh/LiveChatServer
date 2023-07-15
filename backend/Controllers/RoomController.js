@@ -5,16 +5,18 @@ const bcrypt = require('bcryptjs');
 const createRoom = async function (req, res) {
   console.log(req.body)
   const password = req.body.body.room_password;
-  const salt = await bcrypt.genSalt(10);
-  const hashedPass = await bcrypt.hash(password, salt);
   const permissions = req.body.body.permissions
-const newRoom = new Rooms({...req.body.body, room_password: hashedPass});
+const newRoom = new Rooms(req.body.body);
 try {
     await newRoom.save().then( async (val) => {
     try {
+      console.log('first' + password)
       console.log(val._id.toHexString())
+    const salt = await bcrypt.genSalt(10);
+    const hashedPass = await bcrypt.hash(password, salt);
     const newUser = new User({
     username: 'master',
+    room_password: hashedPass,
     room_id: val._id.toHexString(),
     user_type: 'master',
     permissions
@@ -209,6 +211,7 @@ const deleteRoom = async (req, res) => {
     return;
   }
   const deletedCount = await User.deleteMany({room_id: req.params.id});
+
   res.status(200).json({
     msg: `${deletedCount} users deleted`,
   });

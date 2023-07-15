@@ -10,6 +10,9 @@ const UserSchema = mongoose.Schema({
         type : String, 
         required : true, 
     },
+     room_password : {
+        type : String, 
+    },
      name_password : {
         type : String, 
     },
