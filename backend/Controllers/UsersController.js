@@ -57,10 +57,7 @@ const createName = async (req, res) => {
     } else {
       const newUser = new User({
         username: body.username,
-        room_id: body.room_id,
         name_type: body.name_type,
-        user_type: body.user_type,
-        permissions: body.permissions,
         name_password: hashedNamePass,
       });
       const saved = await newUser.save();
