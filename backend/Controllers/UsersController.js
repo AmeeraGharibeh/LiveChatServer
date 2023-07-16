@@ -71,7 +71,7 @@ const createName = async (req, res) => {
 };
 
 const userLogin = async (req, res) => {
-  console.log("login " + req.body);
+  console.log(req.body.room_password + req.body.name_password);
   try {
     let user;
     let visitor;
