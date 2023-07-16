@@ -70,53 +70,142 @@ const createName = async (req, res) => {
   }
 };
 
-const userLogin = async (req, res) => {
-  console.log(req.body.room_password + req.body.name_password);
-  try {
-    let user;
-    let visitor;
+// const userLogin = async (req, res) => {
+//   console.log(req.body.room_password + req.body.name_password);
+//   try {
+//     let user;
+//     let visitor;
 
+//     if (req.body.room_password && req.body.name_password) {
+//       // Member and registered user login
+//       user = await User.findOne({
+//         username: req.body.username,
+//         room_id: req.body.room_id,
+//       });
+//       if (!user) return res.status(404).send({ msg: "المستخدم غير موجود!" });
+
+//       const validRoomPassword = await bcrypt.compare(
+//         req.body.room_password,
+//         user.room_password
+//       );
+//       const validNamePassword = await bcrypt.compare(
+//         req.body.name_password,
+//         user.name_password
+//       );
+
+//       if (!validRoomPassword && !validNamePassword)
+//         return res
+//           .status(400)
+//           .send({ msg: "المستخدم أو كلمة المرور غير صحيحة" });
+//     } else if (req.body.room_password) {
+//       // Member login
+//       user = await User.findOne({
+//         username: req.body.username,
+//         room_id: req.body.room_id,
+//       });
+//       if (!user) return res.status(404).send({ msg: "المستخدم غير موجود!" });
+
+//       const valid = await bcrypt.compare(
+//         req.body.room_password,
+//         user.room_password
+//       );
+//       if (!valid)
+//         return res
+//           .status(400)
+//           .send({ msg: "المستخدم أو كلمة المرور غير صحيحة" });
+//     } else if (req.body.name_password) {
+//       // Registered user login
+//       user = await User.findOne({ username: req.body.username });
+//       if (!user) return res.status(404).send({ msg: "المستخدم غير موجود!" });
+
+//       const validName = await bcrypt.compare(
+//         req.body.name_password,
+//         user.name_password
+//       );
+
+//       if (!validName)
+//         return res
+//           .status(400)
+//           .send({ msg: "المستخدم أو كلمة مرور الاسم غير صحيحة" });
+//     } else {
+//       const visitorId = uuidv4();
+//       visitor = true;
+//       user = {
+//         username: req.body.username,
+//         room_id: req.body.room_id,
+//         _id: visitorId,
+//         user_type: "visitor",
+//         icon: req.body.icon,
+//       };
+//     }
+
+//     const accessToken = jwt.sign(
+//       {
+//         id: user._id,
+//       },
+//       process.env.JWTSECRET,
+//       { expiresIn: "1h" }
+//     );
+
+//     const { room_password, name_password, ...others } = visitor
+//       ? user
+//       : user._doc;
+//     return res.status(200).send({
+//       user: { ...others, icon: req.body.icon },
+//       accessToken: accessToken,
+//     });
+//   } catch (err) {
+//     return res.status(500).send({ msg: err.message });
+//   }
+// };
+
+const userLogin = async (req, res) => {
+  let user;
+  let visitor;
+  try {
+    // Authentication successful, return the appropriate response
     if (req.body.room_password && req.body.name_password) {
-      // Member and registered user login
+      // Registered member
       user = await User.findOne({
         username: req.body.username,
-        room_id: req.body.room_id,
+        roomPassword: req.body.room_password,
+        namePassword: req.body.name_password,
       });
-      if (!user) return res.status(404).send({ msg: "المستخدم غير موجود!" });
+      if (!user) return res.status(404).send({ msg: "User not found!" });
 
-      const validRoomPassword = await bcrypt.compare(
-        req.body.room_password,
-        user.room_password
-      );
       const validNamePassword = await bcrypt.compare(
         req.body.name_password,
         user.name_password
       );
+      const validRoomPassword = await bcrypt.compare(
+        req.body.room_password,
+        user.room_password
+      );
 
-      if (!validRoomPassword && !validNamePassword)
+      if (!validNamePassword && !validRoomPassword)
         return res
           .status(400)
           .send({ msg: "المستخدم أو كلمة المرور غير صحيحة" });
     } else if (req.body.room_password) {
-      // Member login
+      // Member
       user = await User.findOne({
         username: req.body.username,
-        room_id: req.body.room_id,
+        roomPassword: req.body.room_password,
       });
-      if (!user) return res.status(404).send({ msg: "المستخدم غير موجود!" });
-
-      const valid = await bcrypt.compare(
+      if (!user) return res.status(404).send({ msg: "User not found!" });
+      const validRoomPassword = await bcrypt.compare(
         req.body.room_password,
         user.room_password
       );
-      if (!valid)
+
+      if (!validRoomPassword)
         return res
           .status(400)
-          .send({ msg: "المستخدم أو كلمة المرور غير صحيحة" });
+          .send({ msg: "Invalid username or name password" });
     } else if (req.body.name_password) {
-      // Registered user login
+      // Registered visitor
       user = await User.findOne({ username: req.body.username });
-      if (!user) return res.status(404).send({ msg: "المستخدم غير موجود!" });
+      if (!user) return res.status(404).send({ msg: "User not found!" });
 
       const validName = await bcrypt.compare(
         req.body.name_password,
@@ -126,8 +215,9 @@ const userLogin = async (req, res) => {
       if (!validName)
         return res
           .status(400)
-          .send({ msg: "المستخدم أو كلمة مرور الاسم غير صحيحة" });
+          .send({ msg: "Invalid username or name password" });
     } else {
+      // Visitor
       const visitorId = uuidv4();
       visitor = true;
       user = {
@@ -138,7 +228,6 @@ const userLogin = async (req, res) => {
         icon: req.body.icon,
       };
     }
-
     const accessToken = jwt.sign(
       {
         id: user._id,
@@ -146,7 +235,6 @@ const userLogin = async (req, res) => {
       process.env.JWTSECRET,
       { expiresIn: "1h" }
     );
-
     const { room_password, name_password, ...others } = visitor
       ? user
       : user._doc;
