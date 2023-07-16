@@ -173,7 +173,7 @@ const userLogin = async (req, res) => {
       const name = await User.findOne({
         username: req.body.username,
       });
-      if (!user) {
+      if (!member || !name) {
         return res.status(404).send({ msg: "User not found!" });
       }
 
