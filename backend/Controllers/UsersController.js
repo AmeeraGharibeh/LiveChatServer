@@ -168,8 +168,8 @@ const userLogin = async (req, res) => {
       // Registered member
       user = await User.findOne({
         username: req.body.username,
-        roomPassword: req.body.room_password,
-        namePassword: req.body.name_password,
+        room_password: req.body.room_password,
+        name_password: req.body.name_password,
       });
       if (!user) return res.status(404).send({ msg: "User not found!" });
 
@@ -190,7 +190,7 @@ const userLogin = async (req, res) => {
       // Member
       user = await User.findOne({
         username: req.body.username,
-        roomPassword: req.body.room_password,
+        room_password: req.body.room_password,
       });
       if (!user) return res.status(404).send({ msg: "User not found!" });
       const validRoomPassword = await bcrypt.compare(
