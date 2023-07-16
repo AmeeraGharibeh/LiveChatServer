@@ -58,6 +58,7 @@ const createName = async (req, res) => {
       const newUser = new User({
         username: body.username,
         name_type: body.name_type,
+        user_type: "visitor",
         name_password: hashedNamePass,
       });
       const saved = await newUser.save();
@@ -128,7 +129,7 @@ const userLogin = async (req, res) => {
       ? user
       : user._doc;
     return res.status(200).send({
-      user: { icon: req.body.icon, ...others },
+      user: { ...others, icon: req.body.icon },
       accessToken: accessToken,
     });
   } catch (err) {
