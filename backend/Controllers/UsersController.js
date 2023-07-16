@@ -170,7 +170,9 @@ const userLogin = async (req, res) => {
         username: req.body.username,
         room_id: req.body.room_id,
       });
-      if (!user) return res.status(404).send({ msg: "User not found!" });
+      if (!user) {
+        return res.status(404).send({ msg: "User not found!" });
+      }
 
       const validNamePassword = await bcrypt.compare(
         req.body.name_password,
@@ -191,7 +193,9 @@ const userLogin = async (req, res) => {
         username: req.body.username,
         room_id: req.body.room_id,
       });
-      if (!user) return res.status(404).send({ msg: "User not found!" });
+      if (!user) {
+        return res.status(404).send({ msg: "User not found!" });
+      }
       const validRoomPassword = await bcrypt.compare(
         req.body.room_password,
         user.room_password
@@ -204,7 +208,9 @@ const userLogin = async (req, res) => {
     } else if (req.body.name_password) {
       // Registered visitor
       user = await User.findOne({ username: req.body.username });
-      if (!user) return res.status(404).send({ msg: "User not found!" });
+      if (!user) {
+        return res.status(404).send({ msg: "User not found!" });
+      }
 
       const validName = await bcrypt.compare(
         req.body.name_password,
