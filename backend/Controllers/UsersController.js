@@ -71,6 +71,7 @@ const createName = async (req, res) => {
 };
 
 const userLogin = async (req, res) => {
+  console.log("login " + req.body);
   try {
     let user;
     let visitor;
