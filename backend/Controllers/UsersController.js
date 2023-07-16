@@ -75,7 +75,28 @@ const userLogin = async (req, res) => {
     let user;
     let visitor;
 
-    if (req.body.room_password) {
+    if (req.body.room_password && req.body.name_password) {
+      // Member and registered user login
+      user = await User.findOne({
+        username: req.body.username,
+        room_id: req.body.room_id,
+      });
+      if (!user) return res.status(404).send({ msg: "المستخدم غير موجود!" });
+
+      const validRoomPassword = await bcrypt.compare(
+        req.body.room_password,
+        user.room_password
+      );
+      const validNamePassword = await bcrypt.compare(
+        req.body.name_password,
+        user.name_password
+      );
+
+      if (!validRoomPassword && !validNamePassword)
+        return res
+          .status(400)
+          .send({ msg: "المستخدم أو كلمة المرور غير صحيحة" });
+    } else if (req.body.room_password) {
       // Member login
       user = await User.findOne({
         username: req.body.username,
