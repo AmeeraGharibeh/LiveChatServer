@@ -190,6 +190,7 @@ const userLogin = async (req, res) => {
         return res
           .status(400)
           .send({ msg: "المستخدم أو كلمة المرور غير صحيحة" });
+      user = { ...name, room_id: member.room_id, user_type: member.user_type };
     } else if (req.body.room_password) {
       // Member
       user = await User.findOne({
