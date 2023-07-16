@@ -179,11 +179,11 @@ const userLogin = async (req, res) => {
 
       const validNamePassword = await bcrypt.compare(
         req.body.name_password,
-        user.name_password
+        name.name_password
       );
       const validRoomPassword = await bcrypt.compare(
         req.body.room_password,
-        user.room_password
+        member.room_password
       );
 
       if (!validNamePassword && !validRoomPassword)
