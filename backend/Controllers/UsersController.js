@@ -177,6 +177,7 @@ const userLogin = async (req, res) => {
       if (!member || !name) {
         return res.status(404).send({ msg: "User not found!" });
       }
+      console.log("name " + name + "member " + member);
 
       const validNamePassword = await bcrypt.compare(
         req.body.name_password,
@@ -187,10 +188,12 @@ const userLogin = async (req, res) => {
         member.room_password
       );
 
-      if (!validNamePassword && !validRoomPassword)
+      if (!validNamePassword && !validRoomPassword) {
         return res
           .status(400)
           .send({ msg: "المستخدم أو كلمة المرور غير صحيحة" });
+      }
+
       user = { ...name, room_id: member.room_id, user_type: member.user_type };
     } else if (req.body.room_password) {
       // Member
