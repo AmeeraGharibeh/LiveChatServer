@@ -194,7 +194,7 @@ const userLogin = async (req, res) => {
           .send({ msg: "المستخدم أو كلمة المرور غير صحيحة" });
       }
 
-      user = { room_id: member.room_id, user_type: member.user_type };
+      user = { name, room_id: member.room_id, user_type: member.user_type };
     } else if (req.body.room_password) {
       // Member
       user = await User.findOne({
