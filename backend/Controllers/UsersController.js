@@ -163,16 +163,17 @@ const userLogin = async (req, res) => {
   let user;
   let visitor;
   try {
-    // Authentication successful, return the appropriate response
     if (req.body.room_password && req.body.name_password) {
       // Registered member
+      const name = await User.findOne({
+        username: req.body.username,
+      });
+
       const member = await User.findOne({
         username: req.body.username,
         room_id: req.body.room_id,
       });
-      const name = await User.findOne({
-        username: req.body.username,
-      });
+
       if (!member || !name) {
         return res.status(404).send({ msg: "User not found!" });
       }
@@ -209,7 +210,7 @@ const userLogin = async (req, res) => {
         return res
           .status(400)
           .send({ msg: "Invalid username or name password" });
-    } else if (req.body.name_password) {
+    } else if (req.body.name_password && !req.body.room_password) {
       // Registered visitor
       user = await User.findOne({ username: req.body.username });
       if (!user) {
