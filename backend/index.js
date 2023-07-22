@@ -233,7 +233,9 @@ const time = () => {
   };
   console.log(timeZone);
 
-  return now.toLocaleString("en-US", options);
+  return now
+    .setUTCHours(now.getUTCHours() + 3)
+    .toLocaleString("en-US", options);
 };
 
 ///////////////////////////////////////////////////
