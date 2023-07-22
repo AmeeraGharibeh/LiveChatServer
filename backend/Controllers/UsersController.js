@@ -165,7 +165,7 @@ const userLogin = async (req, res) => {
   try {
     if (req.body.room_password && req.body.name_password) {
       // Registered member
-      const name = await User.findOne({
+      user = await User.findOne({
         username: req.body.username,
       });
 
@@ -174,14 +174,14 @@ const userLogin = async (req, res) => {
         room_id: req.body.room_id,
       });
 
-      if (!member || !name) {
+      if (!member || !user) {
         return res.status(404).send({ msg: "User not found!" });
       }
-      console.log("name " + name + "member " + member);
+      console.log("name " + user + "member " + member);
 
       const validNamePassword = await bcrypt.compare(
         req.body.name_password,
-        name.name_password
+        user.name_password
       );
       const validRoomPassword = await bcrypt.compare(
         req.body.room_password,
@@ -194,7 +194,7 @@ const userLogin = async (req, res) => {
           .send({ msg: "المستخدم أو كلمة المرور غير صحيحة" });
       }
 
-      user = { name, room_id: member.room_id, user_type: member.user_type };
+      user = { ...user, room_id: member.room_id, user_type: member.user_type };
     } else if (req.body.room_password) {
       // Member
       user = await User.findOne({
