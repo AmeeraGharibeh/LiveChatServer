@@ -218,9 +218,8 @@ io.on("connection", async (socket) => {
 });
 //////////////////////////////////////////////////////////////////////
 const time = () => {
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
   const now = new Date();
+  now.setUTCHours(now.getUTCHours() + 3);
   const options = {
     year: "numeric",
     month: "2-digit",
@@ -229,13 +228,9 @@ const time = () => {
     minute: "2-digit",
     second: "2-digit",
     hour12: true,
-    timeZone: timeZone,
+    timeZone: "UTC",
   };
-  console.log(timeZone);
-
-  return now
-    .setUTCHours(now.getUTCHours() + 3)
-    .toLocaleString("en-US", options);
+  return now.toLocaleString("en-US", options);
 };
 
 ///////////////////////////////////////////////////
