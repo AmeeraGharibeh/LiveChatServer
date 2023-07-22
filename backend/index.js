@@ -219,7 +219,7 @@ io.on("connection", async (socket) => {
 //////////////////////////////////////////////////////////////////////
 const time = () => {
   const now = new Date();
-  now.setUTCHours(now.getUTCHours() + 3);
+  //now.setUTCHours(now.getUTCHours() + 3);
   const options = {
     year: "numeric",
     month: "2-digit",
