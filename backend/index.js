@@ -218,6 +218,8 @@ io.on("connection", async (socket) => {
 });
 //////////////////////////////////////////////////////////////////////
 const time = () => {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const now = new Date();
   const options = {
     year: "numeric",
@@ -228,7 +230,10 @@ const time = () => {
     second: "2-digit",
     hour12: true,
     timeZoneName: "short",
+    timeZone,
   };
+  console.log(timeZone);
+
   return now.toLocaleString("en-US", options);
 };
 
