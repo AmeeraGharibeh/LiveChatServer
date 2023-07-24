@@ -68,13 +68,13 @@ const getLogsByRoom = async (req, res) => {
 };
 const deleteAllLogs = async (req, res) => {
   try {
-    const report = new ReportsModel({
-      master_name: req.body.master,
-      action_user: req.body.username,
-      action_name_ar: "حذف جميع السجلات",
-      action_name_en: "Delete all logs",
-    });
-    await report.save();
+    // const report = new ReportsModel({
+    //   master_name: req.body.master,
+    //   action_user: req.body.username,
+    //   action_name_ar: "حذف جميع السجلات",
+    //   action_name_en: "Delete all logs",
+    // });
+    // await report.save();
 
     const deleteResult = await Logs.deleteMany({});
     const deletedCount = deleteResult.deletedCount;
