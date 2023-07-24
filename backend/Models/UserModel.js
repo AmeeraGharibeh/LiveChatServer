@@ -47,8 +47,8 @@ const UserSchema = mongoose.Schema(
     },
 
     talk_time: {
-      type: Number,
-      default: 0,
+      type: String,
+      default: "0",
     },
 
     online: {
