@@ -52,8 +52,8 @@ const UserSchema = mongoose.Schema(
     },
 
     online: {
-      type: Number,
-      default: 0,
+      type: String,
+      default: "0",
     },
 
     visitors: {
