@@ -193,7 +193,6 @@ io.on("connection", async (socket) => {
   });
   // Handle private messages
   socket.on("sendPrivateMessage", (data) => {
-    console.log("private message");
     const friendId = data.friendId;
     const username = data.sender;
     const senderId = data.senderId;
