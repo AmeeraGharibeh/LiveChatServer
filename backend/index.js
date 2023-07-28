@@ -197,10 +197,11 @@ io.on("connection", async (socket) => {
     const username = data.sender;
     const senderId = data.senderId;
     const message = data.message;
+    const threadId = data.threadId;
 
     // Send the private message to the recipient socket
     io.to(friendId).emit("privateMessage", {
-      threadId: friendId + senderId,
+      threadId: threadId,
       sender: username,
       friendSocket: friendId,
       senderId: senderId,
