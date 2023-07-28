@@ -200,6 +200,7 @@ io.on("connection", async (socket) => {
 
     // Send the private message to the recipient socket
     io.to(friendId).emit("privateMessage", {
+      threadId: friendId + senderId,
       sender: username,
       friendSocket: friendId,
       senderId: senderId,
