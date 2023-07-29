@@ -208,6 +208,8 @@ io.on("connection", async (socket) => {
         { sender: friendName, id: friendId },
       ],
       message: message,
+      senderId: senderId,
+      sender: username,
     });
 
     console.log(`${message} sent from ${username} to ${friendId}`);
