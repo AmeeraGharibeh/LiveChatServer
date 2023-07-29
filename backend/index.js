@@ -204,8 +204,8 @@ io.on("connection", async (socket) => {
     io.to(friendId).emit("privateMessage", {
       threadId: threadId,
       between: [
-        { sender: username, senderId },
-        { friendId, friendName },
+        { sender: username, id: senderId },
+        { sender: friendName, id: friendId },
       ],
       message: message,
     });
