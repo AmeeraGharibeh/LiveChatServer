@@ -203,10 +203,10 @@ io.on("connection", async (socket) => {
     // Send the private message to the recipient socket
     io.to(friendId).emit("privateMessage", {
       threadId: threadId,
-      sender: username,
-      friendSocket: friendId,
-      friendName: friendName,
-      senderId: senderId,
+      between: [
+        { sender: username, senderId },
+        { friendId, friendName },
+      ],
       message: message,
     });
 
