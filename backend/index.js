@@ -201,7 +201,9 @@ io.on("connection", async (socket) => {
     const senderId = data.senderId;
     const message = data.message;
     const friendName = data.friendName;
-    const threadId = uuidv4();
+
+    // Generate a unique threadId based on the combination of senderId and friendId
+    const threadId = [senderId, friendId].sort().join("_");
 
     console.log("thread is " + threadId);
     // Send the private message to the recipient socket
