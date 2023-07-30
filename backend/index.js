@@ -192,6 +192,8 @@ io.on("connection", async (socket) => {
     });
   });
   // Handle private messages
+  const activeConversations = {};
+
   socket.on("sendPrivateMessage", (data) => {
     const friendId = data.friendId;
     const username = data.sender;
@@ -202,15 +204,23 @@ io.on("connection", async (socket) => {
 
     console.log("thread is " + threadId);
     // Send the private message to the recipient socket
-    io.to(threadId).emit("privateMessage", {
-      threadId: threadId,
-      between: [
-        { sender: username, id: senderId },
-        { sender: friendName, id: friendId },
-      ],
-      message: message,
-      senderId: senderId,
-      sender: username,
+    if (!activeConversations[threadId]) {
+      activeConversations[threadId] = [friendId, socket.id];
+    } else if (!activeConversations[threadId].includes(friendId)) {
+      activeConversations[threadId].push(friendId);
+    }
+
+    activeConversations[threadId].forEach((socketId) => {
+      io.to(socketId).emit("privateMessage", {
+        threadId: threadId,
+        between: [
+          { sender: username, id: senderId },
+          { sender: friendName, id: friendId },
+        ],
+        message: message,
+        senderId: senderId,
+        sender: username,
+      });
     });
 
     console.log(`${message} sent from ${username} to ${friendId}`);
