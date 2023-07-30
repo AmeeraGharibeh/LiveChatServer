@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const { v4: uuidv4 } = require("uuid");
 const AuthRouter = require("./Routes/AuthRoutes");
 const UserRouter = require("./Routes/UsersRoutes");
 const CountryRouter = require("./Routes/CountryRoutes");
@@ -199,13 +200,13 @@ io.on("connection", async (socket) => {
     const username = data.sender;
     const senderId = data.senderId;
     const message = data.message;
-    const threadId = data.threadId;
     const friendName = data.friendName;
+    const threadId = uuidv4();
 
     console.log("thread is " + threadId);
     // Send the private message to the recipient socket
     if (!activeConversations[threadId]) {
-      activeConversations[threadId] = [friendId, socket.id];
+      activeConversations[threadId] = [friendId];
     } else if (!activeConversations[threadId].includes(friendId)) {
       activeConversations[threadId].push(friendId);
     }
