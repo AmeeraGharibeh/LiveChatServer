@@ -206,7 +206,7 @@ io.on("connection", async (socket) => {
     console.log("thread is " + threadId);
     // Send the private message to the recipient socket
     if (!activeConversations[threadId]) {
-      activeConversations[threadId] = [friendId];
+      activeConversations[threadId] = [friendId, socket.id];
     } else if (!activeConversations[threadId].includes(friendId)) {
       activeConversations[threadId].push(friendId);
     }
