@@ -229,6 +229,18 @@ io.on("connection", async (socket) => {
     console.log(`${message} sent from ${username} to ${friendId}`);
   });
 
+  // Handle reading the message
+  socket.on("messageRead", (data) => {
+    const threadId = data.threadId;
+
+    // Check if the conversation exists
+    if (activeConversations[threadId]) {
+      activeConversations[threadId].participants.forEach((socketId) => {
+        io.to(socketId).emit("messageActive", { threadId: threadId });
+      });
+    }
+  });
+
   // Handle disconnection event
 
   socket.on("disconnect", () => {
