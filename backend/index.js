@@ -230,7 +230,7 @@ io.on("connection", async (socket) => {
   });
 
   // Handle reading the message
-  socket.on("messageRecieved", (data) => {
+  socket.on("messageReceived", (data) => {
     const threadId = data.threadId;
     io.to(socket.id).emit("messageUnread", { threadId: threadId });
   });
