@@ -230,15 +230,19 @@ io.on("connection", async (socket) => {
   });
 
   // Handle reading the message
-  socket.on("messageRead", (data) => {
+  socket.on("messageRecieved", (data) => {
     const threadId = data.threadId;
+    io.to(socket.id).emit("messageUnread", { threadId: threadId });
+  });
 
+  socket.on("messageActive", (data) => {
+    const threadId = data.threadId;
     // Check if the conversation exists
-    if (activeConversations[threadId]) {
-      activeConversations[threadId].participants.forEach((socketId) => {
-        io.to(socketId).emit("messageActive", { threadId: threadId });
-      });
-    }
+    // if (activeConversations[threadId]) {
+    //   activeConversations[threadId].participants.forEach((socketId) => {
+    //   });
+    // }
+    io.to(socket.id).emit("messageRead", { threadId: threadId });
   });
 
   // Handle disconnection event
