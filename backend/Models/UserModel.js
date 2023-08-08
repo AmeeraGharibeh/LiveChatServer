@@ -75,6 +75,10 @@ const UserSchema = mongoose.Schema(
       type: String,
       default: "-",
     },
+    lock_device: {
+      type: Boolean,
+      default: false,
+    },
 
     country: {
       type: String,
