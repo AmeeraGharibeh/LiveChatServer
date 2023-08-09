@@ -1,6 +1,8 @@
 const BlockedModel = require("../Models/BlockedModel");
 const blockedMiddleware = async (req, res, next) => {
-  console.log("middleware  " + req.body);
+  console.log("middleware  " + req);
+  console.log("middleware  " + req.body.toString());
+
   try {
     const blockedUser = await BlockedModel.findOne({
       $or: [{ ip: req.body.ip }, { device: req.body.device }],
