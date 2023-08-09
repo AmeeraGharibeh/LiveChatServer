@@ -65,7 +65,7 @@ export default function UserList() {
       renderCell: (params) => {
         return (
           <div >
-              <span>{getRoom(params.row.room_id)}</span>
+              <span>{params.row.room_id && getRoom(params.row.room_id)}</span>
           </div>
         );
       },

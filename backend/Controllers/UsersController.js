@@ -286,11 +286,39 @@ const userStats = async (req, res) => {
   }
 };
 
-const blockUser = async (req, res) => {
+const blockUserIp = async (req, res) => {
   try {
     const userId = req.params.id;
 
-    await User.updateOne({ _id: userId }, { is_blocked: true });
+    await User.updateOne({ _id: userId }, { is_ip_blocked: true });
+    const blocked = new Blocked({
+      username: req.body.username,
+      master: req.body.master,
+      ip: req.body.ip,
+      period: req.body.period,
+      ip: req.body.ip,
+    });
+    await blocked.save();
+    const report = new Reports({
+      master_name: req.body.master,
+      action_user: req.body.username,
+      room_id: req.body.room_id,
+      action_name_ar: "حظر مستخدم",
+      action_name_en: "Block user",
+    });
+    await report.save();
+    res.status(200).json({ msg: "تم حظر المستخدم بنجاح!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+};
+
+const blockUserDevice = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    await User.updateOne({ _id: userId }, { is_device_blocked: true });
     const blocked = new Blocked({
       username: req.body.username,
       master: req.body.master,
@@ -314,12 +342,32 @@ const blockUser = async (req, res) => {
   }
 };
 
-const unblockUser = async (req, res) => {
+const unblockUserIp = async (req, res) => {
   try {
     const userId = req.params.id;
-    await Blocked.findByIdAndDelete(req.params.id);
+    await Blocked.findOne({ ip: req.body.ip });
 
-    await User.updateOne({ _id: userId }, { is_blocked: false });
+    await User.updateOne({ _id: userId }, { is_ip_blocked: false });
+    const report = new Reports({
+      master_name: req.body.master,
+      action_user: req.body.username,
+      room_id: req.body.room_id,
+      action_name_ar: "فك الحظر عن المستخدم",
+      action_name_en: "Unblock user",
+    });
+    await report.save();
+    res.status(200).json({ msg: "تم فك الحظر عن المستخدم بنجاح!" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error" });
+  }
+};
+const unblockUserDevice = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    await Blocked.findOne({ device: req.body.device });
+
+    await User.updateOne({ _id: userId }, { is_device_blocked: false });
     const report = new Reports({
       master_name: req.body.master,
       action_user: req.body.username,
@@ -343,6 +391,8 @@ module.exports = {
   getUser,
   getAllUsers,
   userStats,
-  blockUser,
-  unblockUser,
+  blockUserIp,
+  blockUserDevice,
+  unblockUserIp,
+  unblockUserDevice,
 };

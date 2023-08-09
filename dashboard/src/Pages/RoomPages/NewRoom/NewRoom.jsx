@@ -92,7 +92,7 @@ const handleDropdownCountry = (value) => {
           <input name="username" type="text" value={'master'} readonly={true} />
         </div>
              <div className="addRoomItem">
-          <label>كلمة المرور للماستر</label>
+          <label>كلمة المرور للغرفة</label>
           <input name="room_password" type="text" onChange={handleChange} />
         </div>
           <div className="addRoomItem">

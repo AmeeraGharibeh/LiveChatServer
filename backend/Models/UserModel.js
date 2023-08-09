@@ -36,11 +36,14 @@ const UserSchema = mongoose.Schema(
       default: "-",
     },
 
-    is_blocked: {
+    is_ip_blocked: {
       type: Boolean,
       default: false,
     },
-
+    is_device_blocked: {
+      type: Boolean,
+      default: false,
+    },
     is_owner: {
       type: Boolean,
       default: false,

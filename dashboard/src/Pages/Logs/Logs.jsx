@@ -31,7 +31,10 @@ export default function LogsPage() {
 
 const getRoom = ((id)=> {
       const room = rooms.find(c => c._id === id);
-        return room.room_name
+        if(room){
+          return room.room_name
+        } 
+        return '-'
       })
   const columns = [
     { field: "_id", headerName: "ID", width: 120 },
