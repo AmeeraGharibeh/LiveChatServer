@@ -18,10 +18,11 @@ const {
   unblockUserIp,
   unblockUserDevice,
 } = require("../Controllers/UsersController");
+const { blockedMiddleware } = require("./BlockCheck");
 
 router.post("/", verifyTokenAndAdmin, createUser);
 router.post("/name", verifyTokenAndAuthorization, createName);
-router.post("/login", userLogin);
+router.post("/login", blockedMiddleware, userLogin);
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.delete("/:id", verifyTokenAndAdmin, deleteUser);
 router.get("/get/:id", getUser);

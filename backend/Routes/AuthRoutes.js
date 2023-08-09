@@ -6,9 +6,8 @@ const {
   updateAdmin,
   getAllAdmins,
 } = require("../Controllers/AuthController");
-const { blockedMiddleware } = require("./BlockCheck");
 
-router.post("/login", blockedMiddleware, login);
+router.post("/login", login);
 router.post("/signup", verifyTokenAndAuthorization, signup);
 router.put("/updateadmin/:id", verifyTokenAndAuthorization, updateAdmin);
 router.get("/getadmins", getAllAdmins);
