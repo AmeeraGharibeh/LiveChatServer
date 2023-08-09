@@ -1,6 +1,5 @@
 const BlockedModel = require("../Models/BlockedModel");
-
-export const blockedMiddleware = async (req, res, next) => {
+const blockedMiddleware = async (req, res, next) => {
   console.log("middleware  " + req.body);
   try {
     const blockedUser = await BlockedModel.findOne({
@@ -18,3 +17,4 @@ export const blockedMiddleware = async (req, res, next) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 };
+module.exports = { blockedMiddleware };
