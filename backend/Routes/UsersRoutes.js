@@ -13,8 +13,10 @@ const {
   getUser,
   getAllUsers,
   userStats,
-  blockUser,
-  unblockUser,
+  blockUserIp,
+  blockUserDevice,
+  unblockUserIp,
+  unblockUserDevice,
 } = require("../Controllers/UsersController");
 
 router.post("/", verifyTokenAndAdmin, createUser);
@@ -25,7 +27,9 @@ router.delete("/:id", verifyTokenAndAdmin, deleteUser);
 router.get("/get/:id", getUser);
 router.get("/", getAllUsers);
 router.get("/stats", userStats);
-router.post("/:id/block", verifyTokenAndAction, blockUser);
-router.post("/:id/unblock", verifyTokenAndAction, unblockUser);
+router.post("/:id/blockip", verifyTokenAndAction, blockUserIp);
+router.post("/:id/blockdevice", verifyTokenAndAction, blockUserDevice);
+router.post("/:id/unblockip", verifyTokenAndAction, unblockUserIp);
+router.post("/:id/unblockdevice", verifyTokenAndAction, unblockUserDevice);
 
 module.exports = router;
