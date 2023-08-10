@@ -21,7 +21,7 @@ const getBlockedUsers = async (req, res) => {
     const currentPage = Math.min(page, totalPages);
 
     items = await Blocked.find(search)
-      .skip((currentPage - 1) * limit)
+      .skip((currentPage <= 0 ? 1 : currentPage - 1) * limit)
       .limit(limit);
 
     const response = {
