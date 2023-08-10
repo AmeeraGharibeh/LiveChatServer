@@ -288,36 +288,38 @@ const userStats = async (req, res) => {
 
 const blockUser = async (req, res) => {
   console.log("block body " + JSON.stringify(req.body));
+  const body = req.body.body;
+
   try {
     const userId = req.params.id;
 
     const blockedData = {
-      username: req.body.username,
-      master: req.body.master,
-      period: req.body.period,
+      username: body.username,
+      master: body.master,
+      period: body.period,
       user_id: userId,
     };
 
-    if (req.body.ip && req.body.device) {
-      blockedData.ip = req.body.ip;
-      blockedData.device = req.body.device;
+    if (body.ip && body.device) {
+      blockedData.ip = body.ip;
+      blockedData.device = body.device;
       await User.updateOne(
         { _id: userId },
         { is_device_blocked: true, is_ip_blocked: true }
       );
-    } else if (req.body.ip) {
-      blockedData.ip = req.body.ip;
+    } else if (body.ip) {
+      blockedData.ip = body.ip;
       await User.updateOne({ _id: userId }, { is_ip_blocked: true });
     } else if (req.body.device) {
-      blockedData.device = req.body.device;
+      blockedData.device = body.device;
       await User.updateOne({ _id: userId }, { is_device_blocked: true });
     }
     const blocked = new Blocked(blockedData);
     await blocked.save();
     const report = new Reports({
       master_name: req.body.master,
-      action_user: req.body.username,
-      room_id: req.body.room_id,
+      action_user: body.username,
+      room_id: body.room_id,
       action_name_ar: "حظر مستخدم",
       action_name_en: "Block user",
     });
