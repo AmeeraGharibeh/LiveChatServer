@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 const Reports = require("../Models/ReportsModel");
 const Blocked = require("../Models/BlockedModel");
+const { time } = require("../Config/Helpers/time_helper");
 
 const createUser = async (req, res) => {
   console.log(req.body);
@@ -298,6 +299,7 @@ const blockUser = async (req, res) => {
       master: req.body.master,
       period: body.period,
       user_id: userId,
+      date: time(),
     };
 
     if (body.ip && body.device) {

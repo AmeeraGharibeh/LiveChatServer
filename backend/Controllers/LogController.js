@@ -1,5 +1,4 @@
 const Logs = require("../Models/LogModel");
-const ReportsModel = require("../Models/ReportsModel");
 
 const getAllLogs = async (req, res) => {
   const page = parseInt(req.query.page) || 1;

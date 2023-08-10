@@ -19,6 +19,7 @@ const fs = require("fs");
 
 const http = require("http");
 const socketIo = require("socket.io");
+const { time } = require("./Config/Helpers/time_helper");
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
@@ -250,21 +251,6 @@ io.on("connection", async (socket) => {
     console.log("disconnect");
   });
 });
-//////////////////////////////////////////////////////////////////////
-const time = () => {
-  const now = new Date();
-  now.setUTCHours(now.getUTCHours() + 3);
-  const options = {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  };
-  return now.toLocaleString("en-US", options);
-};
 
 ///////////////////////////////////////////////////
 app.use(cors());
