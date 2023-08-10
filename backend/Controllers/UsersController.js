@@ -287,7 +287,7 @@ const userStats = async (req, res) => {
 };
 
 const blockUser = async (req, res) => {
-  console.log("block body " + req.body);
+  console.log("block body " + JSON.stringify(req.body));
   try {
     const userId = req.params.id;
 
