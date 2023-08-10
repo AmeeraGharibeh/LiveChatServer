@@ -80,6 +80,7 @@ const verifyTokenAndAuthorization = (req, res, next) => {
 const verifyTokenAndAction = (req, res, next) => {
   body = req.body;
   action = req.body.action;
+  console.log("verify" + body);
   try {
     verifyToken(req, res, async () => {
       const currentUser = await UserModel.findById(req.body.id);
