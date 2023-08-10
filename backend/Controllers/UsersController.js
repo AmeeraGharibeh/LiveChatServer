@@ -332,24 +332,26 @@ const blockUser = async (req, res) => {
 };
 
 const unblockUser = async (req, res) => {
+  const body = req.body.body;
+
   try {
     const userId = req.params.id;
 
     const unblockConditions = {
       user_id: userId,
     };
-    if (req.body.ip && req.body.device) {
-      unblockConditions.ip = req.body.ip;
-      unblockConditions.device = req.body.device;
+    if (body.ip && body.device) {
+      unblockConditions.ip = body.ip;
+      unblockConditions.device = body.device;
       await User.updateOne(
         { _id: userId },
         { is_device_blocked: false, is_ip_blocked: false }
       );
-    } else if (req.body.ip) {
-      unblockConditions.ip = req.body.ip;
+    } else if (body.ip) {
+      unblockConditions.ip = body.ip;
       await User.updateOne({ _id: userId }, { is_ip_blocked: false });
-    } else if (req.body.device) {
-      unblockConditions.device = req.body.device;
+    } else if (body.device) {
+      unblockConditions.device = body.device;
       await User.updateOne({ _id: userId }, { is_device_blocked: false });
     }
 
@@ -357,8 +359,8 @@ const unblockUser = async (req, res) => {
 
     const report = new Reports({
       master_name: req.body.master,
-      action_user: req.body.username,
-      room_id: req.body.room_id,
+      action_user: body.username,
+      room_id: body.room_id,
       action_name_ar: "إلغاء حظر مستخدم",
       action_name_en: "Unblock user",
     });
