@@ -295,7 +295,7 @@ const blockUser = async (req, res) => {
 
     const blockedData = {
       username: body.username,
-      master: body.master,
+      master: req.body.master,
       period: body.period,
       user_id: userId,
     };
