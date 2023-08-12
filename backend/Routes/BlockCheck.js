@@ -1,4 +1,5 @@
 const BlockedModel = require("../Models/BlockedModel");
+
 const blockedMiddleware = async (req, res, next) => {
   console.log("middleware  " + req);
   console.log("middleware  " + req.body.toString());

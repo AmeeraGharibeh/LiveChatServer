@@ -305,16 +305,10 @@ const blockUser = async (req, res) => {
     if (body.ip && body.device) {
       blockedData.ip = body.ip;
       blockedData.device = body.device;
-      await User.updateOne(
-        { _id: userId },
-        { is_device_blocked: true, is_ip_blocked: true }
-      );
     } else if (body.ip) {
       blockedData.ip = body.ip;
-      await User.updateOne({ _id: userId }, { is_ip_blocked: true });
     } else if (req.body.device) {
       blockedData.device = body.device;
-      await User.updateOne({ _id: userId }, { is_device_blocked: true });
     }
     const blocked = new Blocked(blockedData);
     await blocked.save();
