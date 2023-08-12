@@ -22,6 +22,9 @@ const BlockedSchema = mongoose.Schema(
       type: String,
       default: "forever",
     },
+    date: {
+      type: String,
+    },
   },
   { timestamp: true }
 );
