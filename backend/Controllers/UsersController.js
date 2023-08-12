@@ -303,12 +303,12 @@ const blockUser = async (req, res) => {
     };
 
     if (body.ip && body.device) {
-      blockedData["ip"] = body.ip;
-      blockedData["device"] = body.device;
+      blockedData.set("ip", body.ip);
+      blockedData.set("device", body.device);
     } else if (body.ip) {
-      blockedData["ip"] = body.ip;
+      blockedData.set("ip", body.ip);
     } else if (req.body.device) {
-      blockedData["device"] = body.device;
+      blockedData.set("device", body.device);
     }
     const blocked = new Blocked(blockedData);
     await blocked.save();
