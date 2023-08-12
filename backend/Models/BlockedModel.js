@@ -13,11 +13,9 @@ const BlockedSchema = mongoose.Schema(
 
     device: {
       type: String,
-      required: true,
     },
     ip: {
       type: String,
-      default: false,
     },
 
     period: {
