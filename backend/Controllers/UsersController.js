@@ -299,18 +299,16 @@ const blockUser = async (req, res) => {
       master: req.body.master,
       period: body.period,
       user_id: userId,
+      location: body.location,
       date: time(),
     };
 
     if (body.ip && body.device) {
-      // Add ip and device attributes if both are present
       blockedData.ip = body.ip;
       blockedData.device = body.device;
     } else if (body.ip) {
-      // Add only ip attribute if ip is present
       blockedData.ip = body.ip;
     } else if (body.device) {
-      // Add only device attribute if device is present
       blockedData.device = body.device;
     }
 

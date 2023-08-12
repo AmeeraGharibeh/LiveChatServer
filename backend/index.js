@@ -53,6 +53,7 @@ let log;
 io.on("connection", async (socket) => {
   console.log("A user connected");
   const ip = socket.handshake.query.ip;
+  const device = socket.handshake.query.device;
   const location = socket.handshake.query.location;
 
   // room joins to socket
@@ -92,6 +93,7 @@ io.on("connection", async (socket) => {
       username: user.username,
       user_id: user._id,
       ip,
+      device,
       location,
       time_in: time(),
       icon: user.icon,
