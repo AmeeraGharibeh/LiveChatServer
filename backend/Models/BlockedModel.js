@@ -10,7 +10,9 @@ const BlockedSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-
+    location: {
+      type: String,
+    },
     device: {
       type: String,
     },
