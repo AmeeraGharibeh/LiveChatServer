@@ -299,6 +299,7 @@ const blockUser = async (req, res) => {
       master: req.body.master,
       period: body.period,
       user_id: userId,
+      room_id: body.room_id,
       location: body.location,
       date: time(),
     };
