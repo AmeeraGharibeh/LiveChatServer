@@ -11,9 +11,9 @@ const getBlockedUsers = async (req, res) => {
     let search = {};
 
     if (query === "ip") {
-      search = { ip: { $exists: true } };
+      search = { is_ip_blocked: true };
     } else if (query === "device") {
-      search = { device: { $exists: true } };
+      search = { is_device_blocked: true };
     }
 
     const totalItems = await Blocked.countDocuments(search);
