@@ -6,6 +6,10 @@ const BlockedSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    user_id: {
+      type: String,
+      required: true,
+    },
     master: {
       type: String,
       required: true,
