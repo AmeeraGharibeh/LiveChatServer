@@ -324,7 +324,7 @@ const blockUser = async (req, res) => {
     });
     await report.save();
 
-    res.status(200).json({ msg: "تم حظر المستخدم بنجاح!" });
+    res.status(200).json(blocked);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
@@ -349,10 +349,8 @@ const unblockUser = async (req, res) => {
       );
     } else if (body.ip) {
       unblockConditions.ip = body.ip;
-      await User.updateOne({ _id: userId }, { is_ip_blocked: false });
     } else if (body.device) {
       unblockConditions.device = body.device;
-      await User.updateOne({ _id: userId }, { is_device_blocked: false });
     }
 
     await Blocked.deleteOne(unblockConditions);
@@ -366,7 +364,7 @@ const unblockUser = async (req, res) => {
     });
     await report.save();
 
-    res.status(200).json({ msg: "تم إلغاء حظر المستخدم بنجاح!" });
+    res.status(200).json({ user_id: userId });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
