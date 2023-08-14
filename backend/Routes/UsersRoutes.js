@@ -11,6 +11,7 @@ const {
   updateUser,
   deleteUser,
   getUser,
+  getUsersByRoom,
   getAllUsers,
   userStats,
   blockUser,
@@ -24,6 +25,7 @@ router.post("/login", blockedMiddleware, userLogin);
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.delete("/:id", verifyTokenAndAdmin, deleteUser);
 router.get("/get/:id", getUser);
+router.get("/:id/users", getUsersByRoom);
 router.get("/", getAllUsers);
 router.get("/stats", userStats);
 router.post("/:id/block", verifyTokenAndAction, blockUser);
