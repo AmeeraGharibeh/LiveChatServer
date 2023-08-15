@@ -327,22 +327,17 @@ const blockUser = async (req, res) => {
       username: body.username,
       master: req.body.master,
       period: body.period,
+      ip: body.ip,
+      device: body.device,
       user_id: userId,
       room_id: body.room_id,
       location: body.location,
       date: time(),
     };
 
-    if (body.ip && body.device) {
-      blockedData.ip = body.ip;
-      blockedData.device = body.device;
-      blockedData.is_device_blocked = true;
-      blockedData.is_ip_blocked = true;
-    } else if (body.ip) {
-      blockedData.ip = body.ip;
+    if (body.ip) {
       blockedData.is_ip_blocked = true;
     } else if (body.device) {
-      blockedData.device = body.device;
       blockedData.is_device_blocked = true;
     }
 
