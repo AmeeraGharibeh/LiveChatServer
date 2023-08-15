@@ -10,13 +10,14 @@ const BlockedSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    room_id: {
+      type: String,
+    },
     is_ip_blocked: {
       type: Boolean,
-      default: false,
     },
     is_device_blocked: {
       type: Boolean,
-      default: false,
     },
     master: {
       type: String,
