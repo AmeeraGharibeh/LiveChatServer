@@ -337,8 +337,10 @@ const blockUser = async (req, res) => {
 
     if (body.ip) {
       blockedData.is_ip_blocked = true;
+      blockedData.is_device_blocked = false;
     } else if (body.device) {
       blockedData.is_device_blocked = true;
+      blockedData.is_ip_blocked = false;
     }
 
     const blocked = new Blocked(blockedData);
