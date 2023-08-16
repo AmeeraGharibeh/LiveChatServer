@@ -337,17 +337,15 @@ const blockUser = async (req, res) => {
       date: time(),
     };
 
-    // Check if a document with the same userId already exists
     const existingBlocked = await Blocked.findOne({ user_id: userId });
 
     if (existingBlocked) {
-      // Update the existing document with new data
-      blocked = await Blocked.updateOne(
-        { user_id: userId },
-        { $set: blockedData }
+      blocked = await Blocked.findByIdAndUpdate(
+        existingBlocked._id,
+        blockedData,
+        { new: true, upsert: true }
       );
     } else {
-      // Create a new document
       blocked = new Blocked(blockedData);
       await blocked.save();
     }
@@ -377,13 +375,6 @@ const unblockUser = async (req, res) => {
     const unblockConditions = {
       user_id: userId,
     };
-    await User.updateOne(
-      { _id: userId },
-      {
-        is_device_blocked: body.is_device_blocked,
-        is_ip_blocked: body.is_ip_blocked,
-      }
-    );
     if (body.is_ip_blocked) {
       unblockConditions.is_ip_blocked = body.is_ip_blocked;
     } else if (body.is_device_blocked) {
