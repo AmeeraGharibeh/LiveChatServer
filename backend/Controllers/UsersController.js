@@ -337,8 +337,17 @@ const blockUser = async (req, res) => {
       date: time(),
     };
 
-    const blocked = new Blocked(blockedData);
-    await blocked.save();
+    // Check if a document with the same userId already exists
+    const existingBlocked = await Blocked.findOne({ user_id: userId });
+
+    if (existingBlocked) {
+      // Update the existing document with new data
+      await Blocked.updateOne({ user_id: userId }, { $set: blockedData });
+    } else {
+      // Create a new document
+      const blocked = new Blocked(blockedData);
+      await blocked.save();
+    }
 
     const report = new Reports({
       master_name: req.body.master,
@@ -349,7 +358,7 @@ const blockUser = async (req, res) => {
     });
     await report.save();
 
-    res.status(200).json(blocked);
+    res.status(200).json({ msg: "Operation completed successfully" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
