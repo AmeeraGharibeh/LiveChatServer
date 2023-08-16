@@ -322,7 +322,7 @@ const blockUser = async (req, res) => {
 
   try {
     const userId = req.params.id;
-
+    let blocked;
     const blockedData = {
       username: body.username,
       master: req.body.master,
@@ -342,10 +342,13 @@ const blockUser = async (req, res) => {
 
     if (existingBlocked) {
       // Update the existing document with new data
-      await Blocked.updateOne({ user_id: userId }, { $set: blockedData });
+      blocked = await Blocked.updateOne(
+        { user_id: userId },
+        { $set: blockedData }
+      );
     } else {
       // Create a new document
-      const blocked = new Blocked(blockedData);
+      blocked = new Blocked(blockedData);
       await blocked.save();
     }
 
@@ -358,7 +361,7 @@ const blockUser = async (req, res) => {
     });
     await report.save();
 
-    res.status(200).json({ msg: "Operation completed successfully" });
+    res.status(200).json(blocked);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
