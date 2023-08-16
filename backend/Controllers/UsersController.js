@@ -375,12 +375,21 @@ const unblockUser = async (req, res) => {
     const unblockConditions = {
       user_id: userId,
     };
-    if (body.is_ip_blocked) {
+    const existingBlocked = await Blocked.findOne({ user_id: userId });
+
+    if (existingBlocked) {
       unblockConditions.is_ip_blocked = body.is_ip_blocked;
-    } else if (body.is_device_blocked) {
-      unblockConditions.is_device_blocked = body.is_device_blocked;
+      await Blocked.findByIdAndUpdate(
+        existingBlocked._id,
+        {
+          is_ip_blocked: body.is_ip_blocked,
+          is_device_blocked: body.is_device_blocked,
+        },
+        { new: true, upsert: true }
+      );
+    } else {
+      await Blocked.deleteOne(unblockConditions);
     }
-    await Blocked.deleteOne(unblockConditions);
 
     const report = new Reports({
       master_name: req.body.master,
