@@ -332,16 +332,10 @@ const blockUser = async (req, res) => {
       user_id: userId,
       room_id: body.room_id,
       location: body.location,
+      is_ip_blocked: body.is_ip_blocked,
+      is_device_blocked: body.is_device_blocked,
       date: time(),
     };
-
-    if (body.ip) {
-      blockedData.is_ip_blocked = true;
-      blockedData.is_device_blocked = false;
-    } else if (body.device) {
-      blockedData.is_device_blocked = true;
-      blockedData.is_ip_blocked = false;
-    }
 
     const blocked = new Blocked(blockedData);
     await blocked.save();
@@ -371,19 +365,18 @@ const unblockUser = async (req, res) => {
     const unblockConditions = {
       user_id: userId,
     };
-    if (body.ip && body.device) {
-      unblockConditions.ip = body.ip;
-      unblockConditions.device = body.device;
-      await User.updateOne(
-        { _id: userId },
-        { is_device_blocked: false, is_ip_blocked: false }
-      );
-    } else if (body.ip) {
-      unblockConditions.ip = body.ip;
-    } else if (body.device) {
-      unblockConditions.device = body.device;
+    await User.updateOne(
+      { _id: userId },
+      {
+        is_device_blocked: body.is_device_blocked,
+        is_ip_blocked: body.is_ip_blocked,
+      }
+    );
+    if (body.is_ip_blocked) {
+      unblockConditions.is_ip_blocked = body.is_ip_blocked;
+    } else if (body.is_device_blocked) {
+      unblockConditions.is_device_blocked = body.is_device_blocked;
     }
-
     await Blocked.deleteOne(unblockConditions);
 
     const report = new Reports({
