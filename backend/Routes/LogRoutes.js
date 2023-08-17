@@ -13,6 +13,6 @@ const {
 router.post("/:id", verifyTokenAndAction, getLogsByRoom);
 router.get("/:id", getLogsByUserID);
 router.get("/", verifyTokenAndAuthorization, getAllLogs);
-router.delete("/", deleteAllLogs);
+router.delete("/:id", deleteAllLogs);
 
 module.exports = router;
