@@ -67,7 +67,7 @@ const getLogsByRoom = async (req, res) => {
 };
 const deleteAllLogs = async (req, res) => {
   try {
-    const deleteResult = await Logs.deleteMany({ _id: req.params.id });
+    const deleteResult = await Logs.deleteMany({ room_id: req.params.id });
     const deletedCount = deleteResult.deletedCount;
 
     res.status(200).json({ msg: `تم حذف ${deletedCount} سجل بنجاح!` });
