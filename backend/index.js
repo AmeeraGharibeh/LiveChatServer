@@ -78,7 +78,8 @@ io.on("connection", async (socket) => {
 
     // update online users list and sent it to the room
     if (!onlineUsers[user.room_id]) {
-      onlineUsers[user.room_id] = [];
+      online;
+      Users[user.room_id] = [];
     }
 
     if (!onlineUsers[user.room_id].includes(socket.id)) {
@@ -113,6 +114,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("leaveRoom", async (user) => {
+    socket.leave(user.room_id);
     //filter the list to remove left user
     if (onlineUsers[user.room_id]) {
       onlineUsers[user.room_id] = onlineUsers[user.room_id].filter(
@@ -120,7 +122,6 @@ io.on("connection", async (socket) => {
       );
       console.log("user removed");
     }
-    socket.leave(user.room_id);
     console.log(user.username + ` left room`);
 
     // Emit the updated online users list to all users in the room
@@ -128,8 +129,6 @@ io.on("connection", async (socket) => {
       ...new Set(onlineUsers[user.room_id]),
     ]);
     console.log(onlineUsers[user.room_id]);
-    socket.leave(user._id);
-    // send notification of left user
 
     io.to(user.room_id).emit("notification", {
       sender: user.username,
