@@ -78,8 +78,7 @@ io.on("connection", async (socket) => {
 
     // update online users list and sent it to the room
     if (!onlineUsers[user.room_id]) {
-      online;
-      Users[user.room_id] = [];
+      onlineUsers[user.room_id] = [];
     }
 
     if (!onlineUsers[user.room_id].includes(socket.id)) {
