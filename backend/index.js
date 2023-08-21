@@ -101,17 +101,6 @@ io.on("connection", async (socket) => {
     log = await newLog.save();
   });
 
-  // Handle chat events
-  socket.on("message", (data) => {
-    console.log(
-      "Received message:",
-      data["message"] + "from: " + data["sender"]
-    );
-
-    // Broadcast the message to all connected clients in room
-    io.to(data.room_id).emit("message", data);
-  });
-
   socket.on("leaveRoom", async (user) => {
     socket.leave(user.room_id);
     //filter the list to remove left user
@@ -139,6 +128,17 @@ io.on("connection", async (socket) => {
     //update room log on db
     await Logs.updateOne({ _id: log._id }, { time_out: time() });
     console.log("A user disconnected at " + time());
+  });
+
+  // Handle chat events
+  socket.on("message", (data) => {
+    console.log(
+      "Received message:",
+      data["message"] + "from: " + data["sender"]
+    );
+
+    // Broadcast the message to all connected clients in room
+    io.to(data.room_id).emit("message", data);
   });
 
   // send notification when master edits the room
@@ -243,6 +243,46 @@ io.on("connection", async (socket) => {
     //   });
     // }
     io.to(socket.id).emit("messageRead", { threadId: threadId });
+  });
+
+  // Handle user kick
+  socket.on("kickUser", async (data) => {
+    const { room_id, user_socket } = data;
+
+    // Find the socket of the user to be kicked
+    const kickedSocket = onlineUsers[user_socket];
+
+    if (kickedSocket) {
+      // Remove the kicked user's socket from the room
+      kickedSocket.leave(room_id);
+
+      // Remove the user from onlineUsers
+      if (onlineUsers[user.room_id]) {
+        onlineUsers[user.room_id] = onlineUsers[user.room_id].filter(
+          (user) => user.id !== socket.id
+        );
+        console.log("user removed");
+      }
+      console.log(user.username + ` left room`);
+
+      // Emit the updated online users list to all users in the room
+      io.to(user.room_id).emit("onlineUsers", [
+        ...new Set(onlineUsers[user.room_id]),
+      ]);
+
+      // Emit a notification to the room
+      io.to(room_id).emit("notification", {
+        sender: "Admin",
+        message: "تم طرد المستخدم",
+        color: 0xfffaa2a2,
+        type: "notification",
+      });
+
+      kickedSocket.emit("logout", { msg: "تم طردك من الغرفة" });
+
+      // Remove the kicked user's socket from the userSockets object
+      // delete userSockets[user_id];
+    }
   });
 
   // Handle disconnection event
