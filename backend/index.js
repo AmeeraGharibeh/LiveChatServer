@@ -250,8 +250,9 @@ io.on("connection", async (socket) => {
     const room_id = data.room_id;
     const user_socket = data.user_socket;
     console.log("kick socket");
+
     // Remove the kicked user's socket from the room
-    kickedSocket.leave(room_id);
+    user_socket.leave(user.room_id);
 
     // Remove the user from onlineUsers
     if (onlineUsers[user.room_id]) {
