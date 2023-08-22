@@ -259,7 +259,7 @@ io.on("connection", async (socket) => {
     // Remove the user from onlineUsers
     if (onlineUsers[room_id]) {
       onlineUsers[room_id] = onlineUsers[room_id].filter(
-        (user) => user.id !== socket.id
+        (user) => user.id !== user_socket
       );
       console.log("user removed");
     }
