@@ -261,7 +261,7 @@ io.on("connection", async (socket) => {
       );
       console.log("user removed");
     }
-    console.log(user.username + ` left room`);
+    //console.log(user.username + ` left room`);
 
     // Emit the updated online users list to all users in the room
     io.to(room_id).emit("onlineUsers", [...new Set(onlineUsers[room_id])]);
