@@ -247,8 +247,9 @@ io.on("connection", async (socket) => {
 
   // Handle user kick
   socket.on("kickUser", async (data) => {
-    const { room_id, user_socket } = data;
-
+    const room_id = data.room_id;
+    const user_socket = data.user_socket;
+    console.log("kick socket");
     // Find the socket of the user to be kicked
     const kickedSocket = onlineUsers[user_socket];
 
