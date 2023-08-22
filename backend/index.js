@@ -251,6 +251,7 @@ io.on("connection", async (socket) => {
     const user_socket = data.user_socket;
     const master = data.master;
     const master_id = data.master_id;
+    const username = data.username;
     console.log("kick socket");
 
     // Remove the kicked user's socket from the room
@@ -272,12 +273,12 @@ io.on("connection", async (socket) => {
     io.to(room_id).emit("notification", {
       sender: master,
       senderId: master_id,
-      message: "تم طرد المستخدم",
+      message: `تم طرد ${username}`,
       color: 0xfffaa2a2,
       type: "notification",
     });
 
-    user_socket.emit("logout", { msg: "تم طردك من الغرفة" });
+    io.to(user_socket).emit("logout", { msg: "تم طردك من الغرفة" });
 
     // Remove the kicked user's socket from the userSockets object
     // delete userSockets[user_id];
