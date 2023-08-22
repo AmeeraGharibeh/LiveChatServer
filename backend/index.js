@@ -252,7 +252,7 @@ io.on("connection", async (socket) => {
     console.log("kick socket");
 
     // Remove the kicked user's socket from the room
-    user_socket.leave(room_id);
+    // user_socket.leave(room_id);
 
     // Remove the user from onlineUsers
     if (onlineUsers[user.room_id]) {
