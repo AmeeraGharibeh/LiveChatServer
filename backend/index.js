@@ -252,10 +252,6 @@ io.on("connection", async (socket) => {
     const master = data.master;
     const master_id = data.master_id;
     const username = data.username;
-    console.log("kick socket");
-
-    // Remove the kicked user's socket from the room
-    // user_socket.leave(room_id);
 
     // Remove the user from onlineUsers
     if (onlineUsers[room_id]) {
@@ -264,7 +260,6 @@ io.on("connection", async (socket) => {
       );
       console.log("user removed");
     }
-    //console.log(user.username + ` left room`);
 
     // Emit the updated online users list to all users in the room
     io.to(room_id).emit("onlineUsers", [...new Set(onlineUsers[room_id])]);
@@ -273,15 +268,12 @@ io.on("connection", async (socket) => {
     io.to(room_id).emit("notification", {
       sender: master,
       senderId: master_id,
-      message: `تم طرد ${username}`,
+      message: `${username} تم طرد`,
       color: 0xfffaa2a2,
       type: "notification",
     });
 
     io.to(user_socket).emit("logout", { msg: "تم طردك من الغرفة" });
-
-    // Remove the kicked user's socket from the userSockets object
-    // delete userSockets[user_id];
   });
 
   // Handle disconnection event

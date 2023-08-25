@@ -227,6 +227,21 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const updateUserProfile = async (req, res) => {
+  try {
+    const updated = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: body,
+      },
+      { new: true }
+    );
+    res.status(200).json({ msg: "تم تعديل المستخدم بنجاح!", user: updated });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
+
 const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -412,6 +427,7 @@ module.exports = {
   createName,
   userLogin,
   updateUser,
+  updateUserProfile,
   deleteUser,
   getUser,
   getUsersByRoom,
