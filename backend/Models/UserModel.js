@@ -95,7 +95,7 @@ const UserSchema = mongoose.Schema(
 
     state: {
       type: String,
-      default: "-",
+      default: "Available",
     },
 
     about: {
