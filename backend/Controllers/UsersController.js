@@ -232,7 +232,7 @@ const updateUserProfile = async (req, res) => {
     const updated = await User.findByIdAndUpdate(
       req.params.id,
       {
-        $set: body,
+        $set: req.body,
       },
       { new: true }
     );
