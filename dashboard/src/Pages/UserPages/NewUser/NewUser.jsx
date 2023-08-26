@@ -5,10 +5,13 @@ import { addUser } from "../../../Redux/Repositories/UsersRepo";
 import { useEffect, useState } from "react";
 import { resetUserState } from "../../../Redux/UsersRedux";
 import RadioGroup from '../../../Components/RadioGroup/RadioGroup';
+import { useLocation } from "react-router-dom";
 
 
 export default function NewUser() {
   const [inputs, setInputs] = useState({});
+    const location = useLocation();
+  const type = location.pathname.split('/')[2];
   const [room, setRoom] = useState(null);
   const [date, setDate] = useState(null);
   const [selectedOption, setSelectedOption] = useState('');
@@ -19,16 +22,17 @@ export default function NewUser() {
  const dates = ["شهر", '3 أشهر', '6 أشهر', 'سنة']
   const dispatch = useDispatch();
 
-  const options = [
-    { value: 'royal', label: 'اسم ملكي' },
-    { value: 'protected', label: 'اسم محمي' },
-    { value: 'root', label: 'اسم روت' },
+  // const options = [
+  //   { value: 'royal', label: 'اسم ملكي' },
+  //   { value: 'protected', label: 'اسم محمي' },
+  //   { value: 'root', label: 'اسم روت' },
 
-  ];
+  // ];
   useEffect(()=>{
     setRoom(rooms[0]);
     setDate(dates[0]);
-    setSelectedOption(options[0].value);
+    console.log(type)
+    //setSelectedOption(options[0].value);
   }, []);
 
   useEffect(()=> {
@@ -57,7 +61,7 @@ const handleDropdownDate = (value) => {
  
   const userData = { 
       ...inputs,
-    name_type: selectedOption,
+    name_type: type,
    // name_end_date: date 
   };
     console.log(userData)
@@ -76,14 +80,14 @@ const handleDropdownDate = (value) => {
           <label>كلمة المرور</label>
           <input name="name_password" type="password"  onChange={handleChange}/>
         </div>
-        <div className="addUserItem">
+  {/* {      <div className="addUserItem">
         <label>نوع الاسم</label>
           <RadioGroup
         options={options}
         selectedOption={selectedOption}
         onChange={handleOptionChange}
       />  
-          </div>
+          </div>} */}
       {/*  <div className="addUserItem">
           <label>الغرفة</label>
           <DropdownMenu className="dropdown" options={rooms} value = {'room_name'} default = {room} onDropdownChange={handleDropdownRooms}/>

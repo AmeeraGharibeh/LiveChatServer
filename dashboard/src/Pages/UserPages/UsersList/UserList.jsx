@@ -99,10 +99,19 @@ export default function UserList() {
       <ToastContainer />
     <div className="userList">
       <div className="addButtonContainer">
-        <Link to="/newUser">
-          <button className="userAddButton">اضافة مستخدم</button>
+          <Link to="/newUser/root">
+          <button className="userAddButton">اضافة روت</button>
         </Link>
+          <Link to="/newUser/protected">
+          <button className="userAddButton">اضافة اسم محمي</button>
+        </Link>
+      
+        <Link to="/newUser/royal">
+          <button className="userAddButton">اضافة اسم ملكي</button>
+        </Link> 
+      
       </div>
+      
       <DataGrid style={{padding: '0px 10px'}}
         rows={users}
         disableSelectionOnClic

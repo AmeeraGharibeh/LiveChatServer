@@ -1,6 +1,6 @@
 import Navbar from "./Components/Navbar/Navbar.jsx";
 import Sidebar from "./Components/Sidebar/Sidebar.jsx";
-import './App.css'
+import "./App.css";
 import Home from "./Pages/Home/Home.jsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import UserList from "./Pages/UserPages/UsersList/UserList.jsx";
@@ -11,8 +11,8 @@ import Room from "./Pages/RoomPages/Room/Room.jsx";
 import NewRoom from "./Pages/RoomPages/NewRoom/NewRoom.jsx";
 import Login from "./Pages/Login/Login.jsx";
 import React from "react";
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import CountriesList from "./Pages/CountryPages/CountriesList/CountriesList.jsx";
 import NewCountry from "./Pages/CountryPages/NewCountry/NewCountry.jsx";
@@ -21,82 +21,77 @@ import NamesList from "./Pages/NamePages/NamesList/NamesList.jsx";
 import RootsList from "./Pages/RootPages/RootsList/RootsList.jsx";
 import NewName from "./Pages/NamePages/NewName/NewName.jsx";
 import NewRoot from "./Pages/RootPages/NewRoot/NewRoot.jsx";
-import SupportPage from "./Pages/SupportPages/SupportPage/SupportPage.jsx"
-import BlockedPage from "./Pages/BlockedPages/BlockedList/BlockedList.jsx"
-import ReportPage from "./Pages/SupportPages/ReportPage/ReportPage.jsx"
+import SupportPage from "./Pages/SupportPages/SupportPage/SupportPage.jsx";
+import BlockedPage from "./Pages/BlockedPages/BlockedList/BlockedList.jsx";
+import ReportPage from "./Pages/SupportPages/ReportPage/ReportPage.jsx";
 import { checkAuthState } from "./Redux/Repositories/AuthRepo.js";
 import LogsPage from "./Pages/Logs/Logs.jsx";
-
-
 
 function App() {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.currentUser);
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-
-useEffect(() => {
-  if (currentUser !== null){
-        dispatch(checkAuthState(currentUser['accessToken']));
-  }
+  useEffect(() => {
+    if (currentUser !== null) {
+      dispatch(checkAuthState(currentUser["accessToken"]));
+    }
   }, [dispatch]);
-  
-useEffect(() => {
-    const checkUser = async()=> {
+
+  useEffect(() => {
+    const checkUser = async () => {
       try {
-        if (currentUser ){
-          navigate('/');
+        if (currentUser) {
+          navigate("/");
         } else {
-          navigate('/login');
+          navigate("/login");
         }
       } catch (error) {
-        navigate('/login');
+        navigate("/login");
       }
-    }
+    };
     checkUser();
   }, [currentUser]);
   return (
-        <>
+    <>
       <Routes>
-      <Route exact path="/login" element={<Login />} />
-       </Routes>
-        {currentUser && (
-          <>
-      <Navbar/>
-    <div className="container">
-    <Sidebar/>
-    <Routes>
+        <Route exact path="/login" element={<Login />} />
+      </Routes>
+      {currentUser && (
+        <>
+          <Navbar />
+          <div className="container">
+            <Sidebar />
+            <Routes>
               <Route exact path="/" element={<Home />} />
 
               <Route exact path="/user" element={<UserList />} />
-              <Route exact path="/user/:userId" element={  <User />} />
-              <Route exact path="/newUser" element={  <NewUser />} />
+              <Route exact path="/user/:userId" element={<User />} />
+              <Route exact path="/newUser/:type" element={<NewUser />} />
 
-              <Route exact path="/rooms" element={  <RoomsList />} />
-              <Route exact path="/room/:roomId" element={  <Room />} />
-              <Route exact path="/newroom" element={  <NewRoom />} />
-              
-              <Route exact path="/countries" element={  <CountriesList />} />
-              <Route exact path="/newcountry" element={  <NewCountry />} />
-              <Route exact path="/country/:countryId" element={  <Country />} />
+              <Route exact path="/rooms" element={<RoomsList />} />
+              <Route exact path="/room/:roomId" element={<Room />} />
+              <Route exact path="/newroom" element={<NewRoom />} />
 
-              <Route exact path="/roots" element={  <RootsList />} />
-              <Route exact path="/newroot" element={  <NewRoot />} />
+              <Route exact path="/countries" element={<CountriesList />} />
+              <Route exact path="/newcountry" element={<NewCountry />} />
+              <Route exact path="/country/:countryId" element={<Country />} />
 
-              <Route exact path="/names" element={  <NamesList />} />
-              <Route exact path="/newname" element={  <NewName />} />
+              <Route exact path="/roots" element={<RootsList />} />
+              <Route exact path="/newroot" element={<NewRoot />} />
 
-              <Route exact path="/support" element={  <SupportPage />} />
-              <Route exact path="/reports" element={  <ReportPage />} />
-              <Route exact path="/blocked" element={  <BlockedPage />} />
-              <Route exact path="/logs" element={  <LogsPage />} />
+              <Route exact path="/names" element={<NamesList />} />
+              <Route exact path="/newname" element={<NewName />} />
 
-
-        </Routes>
- </div>
-</>
-        )}  
+              <Route exact path="/support" element={<SupportPage />} />
+              <Route exact path="/reports" element={<ReportPage />} />
+              <Route exact path="/blocked" element={<BlockedPage />} />
+              <Route exact path="/logs" element={<LogsPage />} />
+            </Routes>
+          </div>
         </>
+      )}
+    </>
   );
 }
 
