@@ -71,7 +71,7 @@ router.post("/tmp", upload.array("images", 1), async (req, res, next) => {
     const uploadPromises = req.files.map((file) => {
       // Generate a unique filename using a timestamp and original filename
       const timestamp = Date.now();
-      const uniqueFilename = `${folder}/${timestamp}_${file.originalname.replace(
+      const uniqueFilename = `${timestamp}_${file.originalname.replace(
         / /g,
         "_"
       )}`;
