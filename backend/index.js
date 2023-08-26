@@ -129,6 +129,19 @@ io.on("connection", async (socket) => {
     await Logs.updateOne({ _id: log._id }, { time_out: time() });
     console.log("A user disconnected at " + time());
   });
+  // handle update online users list
+  socket.on("updateOnlineUsers", (data) => {
+    if (!onlineUsers[user.room_id]) {
+      onlineUsers[user.room_id] = [];
+    }
+
+    if (!onlineUsers[user.room_id].includes(socket.id)) {
+      onlineUsers[user.room_id].push({ id: socket.id, user });
+      io.to(user.room_id).emit("onlineUsers", [
+        ...new Set(onlineUsers[user.room_id]),
+      ]);
+    }
+  });
 
   // Handle chat events
   socket.on("message", (data) => {

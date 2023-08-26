@@ -51,27 +51,30 @@
 // });
 
 // module.exports = router;
-const router = require('express').Router();
-const multer = require('multer');
-const { Storage } = require('@google-cloud/storage');
-const gc = require('../Config');
-const bucket = gc.bucket('grocery-372908.appspot.com');
+const router = require("express").Router();
+const multer = require("multer");
+const { Storage } = require("@google-cloud/storage");
+const gc = require("../Config");
+const bucket = gc.bucket("grocery-372908.appspot.com");
 
 const storage = new Storage();
 const upload = multer();
 
-router.post('/tmp', upload.array('images', 10), async (req, res, next) => {
+router.post("/tmp", upload.array("images", 1), async (req, res, next) => {
   try {
     if (!req.files || req.files.length === 0) {
-      return res.status(400).send({ message: "Please upload at least one file!" });
+      return res
+        .status(400)
+        .send({ message: "Please upload at least one file!" });
     }
-
-    const folder = 'backgrounds'; // Specify the desired folder path
 
     const uploadPromises = req.files.map((file) => {
       // Generate a unique filename using a timestamp and original filename
       const timestamp = Date.now();
-      const uniqueFilename = `${folder}/${timestamp}_${file.originalname.replace(/ /g, "_")}`;
+      const uniqueFilename = `${folder}/${timestamp}_${file.originalname.replace(
+        / /g,
+        "_"
+      )}`;
 
       const blob = bucket.file(uniqueFilename);
       const blobStream = blob.createWriteStream({
@@ -90,7 +93,11 @@ router.post('/tmp', upload.array('images', 10), async (req, res, next) => {
             await blob.makePublic();
             resolve({ filename: uniqueFilename, url: publicUrl });
           } catch {
-            reject(new Error(`Uploaded the file '${uniqueFilename}' successfully, but public access is denied!`));
+            reject(
+              new Error(
+                `Uploaded the file '${uniqueFilename}' successfully, but public access is denied!`
+              )
+            );
           }
         });
 
