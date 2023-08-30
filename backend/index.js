@@ -296,8 +296,8 @@ io.on("connection", async (socket) => {
       });
 
       // Emit updated online users list to all users in the room
-      io.to(user.room_id).emit("onlineUsers", [
-        ...new Set(onlineUsers[user.room_id]),
+      io.to(data.room_id).emit("onlineUsers", [
+        ...new Set(onlineUsers[data.room_id]),
       ]);
     }
   });
