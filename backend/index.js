@@ -292,9 +292,7 @@ io.on("connection", async (socket) => {
     // Update the user's status in the onlineUsers list
     if (onlineUsers[data.room_id] && socket.id) {
       onlineUsers[data.room_id].forEach((user) => {
-        if (data.id === socket.id) {
-          user.user.state = data.status;
-        }
+        user.user.state = data.status;
       });
 
       // Emit updated online users list to all users in the room
