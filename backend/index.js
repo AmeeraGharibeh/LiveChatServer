@@ -75,7 +75,7 @@ io.on("connection", async (socket) => {
       color: 0xffc7f9cc,
       type: "notification",
     });
-
+    // {id, username, status, icon, pic, user_type, name_type, socket}
     // update online users list and sent it to the room
     if (!onlineUsers[user.room_id]) {
       onlineUsers[user.room_id] = [];
@@ -288,7 +288,21 @@ io.on("connection", async (socket) => {
 
     io.to(user_socket).emit("logout", { msg: "تم طردك من الغرفة" });
   });
+  socket.on("userStatus", (status) => {
+    // Update the user's status in the onlineUsers list
+    if (onlineUsers[user.room_id] && socket.id) {
+      onlineUsers[user.room_id].forEach((user) => {
+        if (user.user._id === socket.id) {
+          user.user.state = status;
+        }
+      });
 
+      // Emit updated online users list to all users in the room
+      io.to(user.room_id).emit("onlineUsers", [
+        ...new Set(onlineUsers[user.room_id]),
+      ]);
+    }
+  });
   // Handle disconnection event
 
   socket.on("disconnect", () => {
