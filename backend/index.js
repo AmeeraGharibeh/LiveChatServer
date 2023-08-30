@@ -288,12 +288,12 @@ io.on("connection", async (socket) => {
 
     io.to(user_socket).emit("logout", { msg: "تم طردك من الغرفة" });
   });
-  socket.on("userStatus", (status) => {
+  socket.on("userStatus", (data) => {
     // Update the user's status in the onlineUsers list
-    if (onlineUsers[user.room_id] && socket.id) {
-      onlineUsers[user.room_id].forEach((user) => {
-        if (user.user._id === socket.id) {
-          user.user.state = status;
+    if (onlineUsers[data.room_id] && socket.id) {
+      onlineUsers[data.room_id].forEach((user) => {
+        if (data.id === socket.id) {
+          user.user.state = data.status;
         }
       });
 
