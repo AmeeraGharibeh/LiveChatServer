@@ -92,6 +92,10 @@ const UserSchema = mongoose.Schema(
       type: String,
       default: "-",
     },
+    love: {
+      type: String,
+      default: "-",
+    },
 
     state: {
       type: String,
