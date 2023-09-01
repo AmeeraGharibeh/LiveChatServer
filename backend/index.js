@@ -131,6 +131,7 @@ io.on("connection", async (socket) => {
   });
   // handle update online users list
   socket.on("updateOnlineUsers", (data) => {
+    console.log("updateonline");
     if (onlineUsers[data.room_id] && socket.id) {
       onlineUsers[data.room_id].forEach((user) => {
         if (user.id === socket.id) {
