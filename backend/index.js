@@ -131,14 +131,16 @@ io.on("connection", async (socket) => {
   });
   // handle update online users list
   socket.on("updateOnlineUsers", (data) => {
-    if (!onlineUsers[user.room_id]) {
-      onlineUsers[user.room_id] = [];
-    }
+    if (onlineUsers[data.room_id] && socket.id) {
+      onlineUsers[data.room_id].forEach((user) => {
+        if (user.id === socket.id) {
+          user.user = data;
+        }
+      });
 
-    if (!onlineUsers[user.room_id].includes(socket.id)) {
-      onlineUsers[user.room_id].push({ id: socket.id, user });
-      io.to(user.room_id).emit("onlineUsers", [
-        ...new Set(onlineUsers[user.room_id]),
+      // Emit updated online users list to all users in the room
+      io.to(data.room_id).emit("onlineUsers", [
+        ...new Set(onlineUsers[data.room_id]),
       ]);
     }
   });

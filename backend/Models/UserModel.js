@@ -36,6 +36,10 @@ const UserSchema = mongoose.Schema(
       default: "-",
     },
 
+    status: {
+      type: String,
+      default: "",
+    },
     is_ip_blocked: {
       type: Boolean,
       default: false,
