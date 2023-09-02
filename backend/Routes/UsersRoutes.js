@@ -26,7 +26,7 @@ router.post("/name", verifyTokenAndAuthorization, createName);
 router.post("/login", blockedMiddleware, userLogin);
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.put("/update/:id", updateUserProfile);
-router.put("/updatealbum/:id", updateUserAlbum);
+router.put("/album/:id", updateUserAlbum);
 router.delete("/:id", verifyTokenAndAdmin, deleteUser);
 router.get("/get/:id", getUser);
 router.get("/:id/users", getUsersByRoom);
