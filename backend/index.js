@@ -132,17 +132,18 @@ io.on("connection", async (socket) => {
   // handle update online users list
   socket.on("updateOnlineUsers", (data) => {
     console.log("data of online" + data["room_id"]);
+    if (onlineUsers[data.room_id] && socket.id) {
+      onlineUsers[data.room_id].forEach((user) => {
+        if (user.id === socket.id) {
+          user.user = data["user"];
+        }
+      });
 
-    onlineUsers[data.room_id].forEach((user) => {
-      if (user.id === socket.id) {
-        user.user = data["user"];
-      }
-    });
-
-    // Emit updated online users list to all users in the room
-    io.to(data.room_id).emit("onlineUsers", [
-      ...new Set(onlineUsers[data.room_id]),
-    ]);
+      // Emit updated online users list to all users in the room
+      io.to(data.room_id).emit("onlineUsers", [
+        ...new Set(onlineUsers[data.room_id]),
+      ]);
+    }
   });
 
   // Handle chat events
