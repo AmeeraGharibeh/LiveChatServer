@@ -256,7 +256,8 @@ const updateUserAlbum = async (req, res) => {
 
     const updated = await User.updateOne(
       { _id: req.params.id },
-      { $set: { album: user.album } }
+      { $set: { album: user.album } },
+      { new: true }
     );
 
     res.status(200).json({ msg: "تم تعديل المستخدم بنجاح!", user: updated });
