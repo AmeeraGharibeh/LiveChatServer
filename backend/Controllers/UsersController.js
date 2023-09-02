@@ -242,6 +242,27 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+const updateUserAlbum = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.id });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    user.album.push(req.body.pic);
+
+    const updated = await User.updateOne(
+      { _id: req.params.id },
+      { $set: { album: user.album } }
+    );
+
+    res.status(200).json({ msg: "تم تعديل المستخدم بنجاح!", user: updated });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
+
 const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -428,6 +449,7 @@ module.exports = {
   userLogin,
   updateUser,
   updateUserProfile,
+  updateUserAlbum,
   deleteUser,
   getUser,
   getUsersByRoom,
