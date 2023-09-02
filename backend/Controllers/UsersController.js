@@ -249,7 +249,9 @@ const updateUserAlbum = async (req, res) => {
     if (!user) {
       throw new Error("User not found");
     }
-
+    if (!user.album) {
+      user.album = [];
+    }
     user.album.push(req.body.pic);
 
     const updated = await User.updateOne(
