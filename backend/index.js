@@ -133,9 +133,9 @@ io.on("connection", async (socket) => {
   socket.on("updateOnlineUsers", (data) => {
     console.log("data of online" + data["username"]);
     if (onlineUsers[data["room_id"]] && socket.id) {
-      onlineUsers[data["room_id"]].forEach((user) => {
+      onlineUsers[data["room_id"]].forEach((user, index) => {
         if (user.id === socket.id) {
-          user.user = data;
+          onlineUsers[data["room_id"]][index] = data;
         }
       });
 
