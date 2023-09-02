@@ -75,7 +75,7 @@ io.on("connection", async (socket) => {
       color: 0xffc7f9cc,
       type: "notification",
     });
-    // {id, username, status, icon, pic, user_type, name_type, socket}
+
     // update online users list and sent it to the room
     if (!onlineUsers[user.room_id]) {
       onlineUsers[user.room_id] = [];
@@ -132,16 +132,16 @@ io.on("connection", async (socket) => {
   // handle update online users list
   socket.on("updateOnlineUsers", (data) => {
     console.log("data of online" + data["username"]);
-    if (onlineUsers[data.room_id] && socket.id) {
-      onlineUsers[data.room_id].forEach((user) => {
+    if (onlineUsers[data["room_id"]] && socket.id) {
+      onlineUsers[data["room_id"]].forEach((user) => {
         if (user.id === socket.id) {
           user.user = data;
         }
       });
 
       // Emit updated online users list to all users in the room
-      io.to(data.room_id).emit("onlineUsers", [
-        ...new Set(onlineUsers[data.room_id]),
+      io.to(data["room_id"]).emit("onlineUsers", [
+        ...new Set(onlineUsers[data["room_id"]]),
       ]);
     }
   });
