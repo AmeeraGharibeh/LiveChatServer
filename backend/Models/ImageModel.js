@@ -10,6 +10,11 @@ const ImageSchema = mongoose.Schema({
     required: true,
   },
 
+  caption: {
+    type: String,
+    required: true,
+  },
+
   date: {
     type: String,
     default: "-",
