@@ -247,7 +247,7 @@ const addPhotoToAlbum = async (req, res) => {
   const newImg = new ImageModel(req.body.pic);
   try {
     const saved = await newImg.save();
-    res.status(200).json(saved);
+    res.status(200).json({ msg: "تمت إضافة الصورة بنجاح", pic: saved });
   } catch (err) {
     res.status(500).send({ msg: err.message });
   }
