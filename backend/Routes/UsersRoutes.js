@@ -10,6 +10,7 @@ const {
   userLogin,
   updateUser,
   updateUserProfile,
+  addPhotoToAlbum,
   updateUserAlbum,
   deleteUser,
   getUser,
@@ -26,6 +27,7 @@ router.post("/name", verifyTokenAndAuthorization, createName);
 router.post("/login", blockedMiddleware, userLogin);
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.put("/update/:id", updateUserProfile);
+router.post("/album/", addPhotoToAlbum);
 router.put("/album/:id", updateUserAlbum);
 router.delete("/:id", verifyTokenAndAdmin, deleteUser);
 router.get("/get/:id", getUser);

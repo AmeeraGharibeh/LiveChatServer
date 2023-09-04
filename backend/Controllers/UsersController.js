@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 const Reports = require("../Models/ReportsModel");
 const Blocked = require("../Models/BlockedModel");
 const { time } = require("../Config/Helpers/time_helper");
+const ImageModel = require("../Models/ImageModel");
 
 const createUser = async (req, res) => {
   console.log(req.body);
@@ -242,6 +243,16 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+const addPhotoToAlbum = async (req, res) => {
+  const newImg = new ImageModel(req.body.pic);
+  try {
+    const saved = await newImg.save();
+    res.status(200).json(saved);
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
+
 const updateUserAlbum = async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.params.id });
@@ -452,6 +463,7 @@ module.exports = {
   userLogin,
   updateUser,
   updateUserProfile,
+  addPhotoToAlbum,
   updateUserAlbum,
   deleteUser,
   getUser,
