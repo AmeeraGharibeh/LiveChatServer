@@ -277,6 +277,20 @@ const updateUserAlbum = async (req, res) => {
   }
 };
 
+const getUserAlbum = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ album: user.album });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
 const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -465,6 +479,7 @@ module.exports = {
   updateUserProfile,
   addPhotoToAlbum,
   updateUserAlbum,
+  getUserAlbum,
   deleteUser,
   getUser,
   getUsersByRoom,
