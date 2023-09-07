@@ -280,7 +280,7 @@ const updateUserAlbum = async (req, res) => {
 const getUserAlbum = async (req, res) => {
   try {
     const userId = req.params.id;
-    const album = await ImageModel.findOne({ user_id: userId });
+    const album = await ImageModel.find({ user_id: userId });
 
     if (!album) {
       return res.status(200).json({ album: [] });
