@@ -280,13 +280,13 @@ const updateUserAlbum = async (req, res) => {
 const getUserAlbum = async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await User.findById(userId);
+    const album = await ImageModel.findOne({ user_id: userId });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!album) {
+      return res.status(404).json({ album: [] });
     }
 
-    res.json({ album: user.album });
+    res.json({ album: album });
   } catch (err) {
     res.status(500).send({ msg: err.message });
   }
