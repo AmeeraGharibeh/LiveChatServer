@@ -244,7 +244,7 @@ const updateUserProfile = async (req, res) => {
 };
 
 const addPhotoToAlbum = async (req, res) => {
-  const newImg = new ImageModel(req.body.body);
+  const newImg = new ImageModel(req.body);
   try {
     const saved = await newImg.save();
     res.status(200).json({ msg: "تمت إضافة الصورة بنجاح", pic: saved });
@@ -283,7 +283,7 @@ const getUserAlbum = async (req, res) => {
     const album = await ImageModel.findOne({ user_id: userId });
 
     if (!album) {
-      return res.status(404).json({ album: [] });
+      return res.status(200).json({ album: [] });
     }
 
     res.json({ album: album });
