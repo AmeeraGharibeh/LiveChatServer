@@ -244,7 +244,7 @@ const updateUserProfile = async (req, res) => {
 };
 
 const addPhotoToAlbum = async (req, res) => {
-  const newImg = new ImageModel(req.body.pic);
+  const newImg = new ImageModel(req.body.body);
   try {
     const saved = await newImg.save();
     res.status(200).json({ msg: "تمت إضافة الصورة بنجاح", pic: saved });
