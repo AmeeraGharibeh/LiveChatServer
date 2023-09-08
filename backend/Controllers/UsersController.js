@@ -291,6 +291,17 @@ const getUserAlbum = async (req, res) => {
     res.status(500).send({ msg: err.message });
   }
 };
+
+const getPicture = async (req, res) => {
+  try {
+    const picId = req.params.id;
+    const pic = await ImageModel.findOne({ _id: picId });
+
+    res.status(200).json(pic);
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
 const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -480,6 +491,7 @@ module.exports = {
   addPhotoToAlbum,
   updateUserAlbum,
   getUserAlbum,
+  getPicture,
   deleteUser,
   getUser,
   getUsersByRoom,
