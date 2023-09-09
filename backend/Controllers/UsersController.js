@@ -314,6 +314,30 @@ const deletePicture = async (req, res) => {
   }
 };
 
+const addComment = async (req, res) => {
+  try {
+    const pic = await ImageModel.findOne({ _id: req.params.id });
+
+    if (!pic) {
+      throw new Error("pic not found");
+    }
+    if (!pic.comment) {
+      pic.comments = [];
+    }
+    pic.comments.push(req.body.comment);
+
+    const updated = await ImageModel.updateOne(
+      { _id: req.params.id },
+      { $set: { comments: pic.comments } },
+      { new: true }
+    );
+
+    res.status(200).json({ msg: "تمت اضافة تعليقك بنجاح!", pic: updated });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
+
 const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -505,6 +529,7 @@ module.exports = {
   getUserAlbum,
   getPicture,
   deletePicture,
+  addComment,
   deleteUser,
   getUser,
   getUsersByRoom,

@@ -16,6 +16,7 @@ const {
   getPicture,
   deletePicture,
   deleteUser,
+  addComment,
   getUser,
   getUsersByRoom,
   getAllUsers,
@@ -35,6 +36,7 @@ router.put("/album/:id", updateUserAlbum);
 router.get("/album/:id", getUserAlbum);
 router.get("/picture/:id", getPicture);
 router.delete("/picture/:id", deletePicture);
+router.put("/picture/comment/:id", addComment);
 router.delete("/:id", verifyTokenAndAdmin, deleteUser);
 router.get("/get/:id", getUser);
 router.get("/:id/users", getUsersByRoom);
