@@ -302,6 +302,18 @@ const getPicture = async (req, res) => {
     res.status(500).send({ msg: err.message });
   }
 };
+
+const deletePicture = async (req, res) => {
+  try {
+    const picId = req.params.id;
+    await ImageModel.deleteOne({ _id: picId });
+
+    res.status(200).json({ msg: "تم حذف الصورة بنجاح" });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
+
 const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -492,6 +504,7 @@ module.exports = {
   updateUserAlbum,
   getUserAlbum,
   getPicture,
+  deletePicture,
   deleteUser,
   getUser,
   getUsersByRoom,
