@@ -321,18 +321,16 @@ const addComment = async (req, res) => {
     if (!pic) {
       throw new Error("pic not found");
     }
-    if (!pic.comment) {
+
+    if (!pic.comments) {
       pic.comments = [];
     }
+
     pic.comments.push(req.body.comment);
 
-    const updated = await ImageModel.updateOne(
-      { _id: req.params.id },
-      { $set: { comments: pic.comments } },
-      { new: true }
-    );
+    await pic.save();
 
-    res.status(200).json({ msg: "تمت اضافة تعليقك بنجاح!", pic: updated });
+    res.status(200).json({ msg: "تمت اضافة تعليقك بنجاح!", pic });
   } catch (err) {
     res.status(500).send({ msg: err.message });
   }
