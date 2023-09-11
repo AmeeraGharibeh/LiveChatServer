@@ -305,6 +305,53 @@ io.on("connection", async (socket) => {
       ]);
     }
   });
+  // Handle audio streaming
+
+  // Store the socket reference for this client
+  clients[socket.id] = socket;
+
+  // Signaling: When a client wants to make a call
+  socket.on("offer", (data) => {
+    const { targetSocketId, offer } = data;
+    const targetSocket = clients[targetSocketId];
+
+    if (targetSocket) {
+      // Send the offer to the target client
+      targetSocket.emit("offer", { sourceSocketId: socket.id, offer });
+    } else {
+      // Handle the case when the target client is not found
+      socket.emit("error", "Target client not found");
+    }
+  });
+
+  // Signaling: When a client answers a call
+  socket.on("answer", (data) => {
+    const { sourceSocketId, answer } = data;
+    const sourceSocket = clients[sourceSocketId];
+
+    if (sourceSocket) {
+      // Send the answer to the source client
+      sourceSocket.emit("answer", { targetSocketId: socket.id, answer });
+    } else {
+      // Handle the case when the source client is not found
+      socket.emit("error", "Source client not found");
+    }
+  });
+
+  // Signaling: ICE candidate exchange
+  socket.on("ice-candidate", (data) => {
+    const { targetSocketId, iceCandidate } = data;
+    const targetSocket = clients[targetSocketId];
+
+    if (targetSocket) {
+      // Send the ICE candidate to the target client
+      targetSocket.emit("ice-candidate", {
+        sourceSocketId: socket.id,
+        iceCandidate,
+      });
+    }
+  });
+
   // Handle disconnection event
 
   socket.on("disconnect", () => {
