@@ -48,6 +48,7 @@ mongoose
 ///////////////////////////////////////////////////////////
 //------------------SOCKET------------------------------//
 const onlineUsers = {};
+const clients = {};
 let log;
 
 io.on("connection", async (socket) => {
