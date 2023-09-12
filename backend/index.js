@@ -318,6 +318,7 @@ io.on("connection", async (socket) => {
     if (targetSocket) {
       // Send the offer to the target client
       targetSocket.emit("offer", { sourceSocketId: socket.id, offer });
+      console.log("offer sended from server");
     } else {
       // Handle the case when the target client is not found
       socket.emit("error", "Target client not found");
@@ -332,6 +333,7 @@ io.on("connection", async (socket) => {
     if (sourceSocket) {
       // Send the answer to the source client
       sourceSocket.emit("answer", { targetSocketId: socket.id, answer });
+      console.log("answer sended from server");
     } else {
       // Handle the case when the source client is not found
       socket.emit("error", "Source client not found");
