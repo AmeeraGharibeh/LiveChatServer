@@ -32,8 +32,8 @@ const io = socketIo(server, {
 });
 dotenv.config();
 
-const appId = "104e87620771434cbfba90ac0ab35b3c";
-const appCertificate = "487dfed547d14c94a0b6edefa842a724";
+const appId = "717af643b1f44b85aa1a98fee5cdd6a1";
+const appCertificate = "401739e3af104160baf5ee08a6f4e567";
 
 ///////////////////////////////////////////////////////////
 /*app.use(cors(
