@@ -314,8 +314,9 @@ io.on("connection", async (socket) => {
   // Handle audio streaming
 
   socket.on("startAudioStream", (data) => {
-    const userId = data.userId;
-    const channelName = data.channel;
+    console.log("start stream data is " + data);
+    const userId = data["userId"];
+    const channelName = data["channelName"];
     const agoraConfig = {
       appId: appId,
       appCertificate: appCertificate,
