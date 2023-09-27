@@ -14,7 +14,7 @@ const BlockedRouter = require("./Routes/BlockedRoutes");
 const LogsRouter = require("./Routes/LogRoutes");
 const Logs = require("./Models/LogModel");
 const fs = require("fs");
-const agora = require("agora-access-token");
+const agora = require("agora-token");
 
 ///////////////////////////////////////////////////////////
 
