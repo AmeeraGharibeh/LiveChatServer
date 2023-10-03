@@ -321,7 +321,7 @@ io.on("connection", async (socket) => {
       appId: appId,
       appCertificate: appCertificate,
     };
-    // Generate a temporary token for the streamer
+    // Generate a temporary token for the stream
 
     const token = agora.RtcTokenBuilder.buildTokenWithUid(
       agoraConfig.appId,
@@ -333,7 +333,7 @@ io.on("connection", async (socket) => {
     );
     console.log("token is " + token);
     // emit token to client
-    socket.emit("streamerToken", { streamerToken: token });
+    socket.emit("streamToken", { streamToken: token, streamerId: userId });
   });
 
   // Handle disconnection event
