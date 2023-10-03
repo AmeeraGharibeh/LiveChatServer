@@ -333,7 +333,10 @@ io.on("connection", async (socket) => {
     );
     console.log("token is " + token);
     // emit token to client
-    socket.emit("streamToken", { streamToken: token, streamerId: userId });
+    io.to(data.room_id).emit("streamToken", {
+      streamToken: token,
+      streamerId: userId,
+    });
   });
 
   // Handle disconnection event
