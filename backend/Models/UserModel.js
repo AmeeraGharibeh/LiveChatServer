@@ -120,6 +120,10 @@ const UserSchema = mongoose.Schema(
       type: String,
       default: "-",
     },
+    mic_status: {
+      type: String,
+      default: "none",
+    },
 
     icon: {
       type: String,

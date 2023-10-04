@@ -311,6 +311,22 @@ io.on("connection", async (socket) => {
       ]);
     }
   });
+
+  socket.on("micStatus", (data) => {
+    // Update the user's status in the onlineUsers list
+    if (onlineUsers[data.room_id] && socket.id) {
+      onlineUsers[data.room_id].forEach((user) => {
+        if (user.id === socket.id) {
+          user.user.mic_status = data.mic_status;
+        }
+      });
+
+      // Emit updated online users list to all users in the room
+      io.to(data.room_id).emit("onlineUsers", [
+        ...new Set(onlineUsers[data.room_id]),
+      ]);
+    }
+  });
   // Handle audio streaming
 
   socket.on("startAudioStream", (data) => {
