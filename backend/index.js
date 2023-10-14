@@ -344,7 +344,7 @@ io.on("connection", async (socket) => {
       agoraConfig.appId,
       agoraConfig.appCertificate,
       channelName,
-      userId,
+      0,
       agora.RtcRole.PUBLISHER,
       3600
     );
