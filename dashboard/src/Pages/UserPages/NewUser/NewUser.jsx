@@ -5,15 +5,16 @@ import { addUser } from "../../../Redux/Repositories/UsersRepo";
 import { useEffect, useState } from "react";
 import { resetUserState } from "../../../Redux/UsersRedux";
 import { useLocation } from "react-router-dom";
+import MultiSelectDropdown from "../../../Components/MultiSelectDropdown";
 
 
 export default function NewUser() {
   const [inputs, setInputs] = useState({});
     const location = useLocation();
   const type = location.pathname.split('/')[2];
-  const [room, setRoom] = useState(null);
+  const [rooms, setRooms] = useState([]);
   const [date, setDate] = useState(null);
-  const rooms = useSelector((state)=> state.room.rooms);
+  const allRooms = useSelector((state)=> state.room.rooms);
   const success = useSelector((state) => state.user.success);
   const loading = useSelector((state) => state.user.isFetching);
   const error = useSelector((state) => state.user.error);
@@ -21,8 +22,8 @@ export default function NewUser() {
   const dispatch = useDispatch();
 
   useEffect(()=>{
-    setRoom(rooms[0]);
     setDate(dates[0]);
+    setRooms(allRooms);
     console.log(type)
   }, []);
 
@@ -32,7 +33,7 @@ export default function NewUser() {
 
 
 const handleDropdownDate = (value) => {
-  setDate(value);
+  setRooms(value);
     };
 
 
@@ -68,7 +69,11 @@ const handleDropdownDate = (value) => {
         <div className="addUserItem">
           <label>تاريخ الانتهاء</label>
           <DropdownMenu className="dropdown" options={dates} default = {date} onDropdownChange={handleDropdownDate}/>
-        </div>
+        </div> 
+           <div className="addUserItem">
+          <label> اضافةالروت إلى غرفة أو عدة غرف</label>
+          <MultiSelectDropdown className="dropdown" options={rooms} />
+        </div> 
         </form>
         
       <div className="addUserItem">
