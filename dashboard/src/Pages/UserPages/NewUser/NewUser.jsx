@@ -13,6 +13,7 @@ export default function NewUser() {
     const location = useLocation();
   const type = location.pathname.split('/')[2];
   const [rooms, setRooms] = useState([]);
+  const [selectedRooms, setSelectedRooms] = useState([]);
   const [date, setDate] = useState(null);
   const allRooms = useSelector((state)=> state.room.rooms);
   const success = useSelector((state) => state.user.success);
@@ -36,7 +37,10 @@ const handleDropdownDate = (value) => {
   setRooms(value);
     };
 
-
+const handleSelectedOptionsChange = (newSelectedOptions) => {
+    setSelectedRooms(newSelectedOptions);
+    console.log(selectedRooms)
+  };
   const handleChange = (e)=> {
     setInputs(prev => {
       return {...prev, [e.target.name]: e.target.value}
@@ -49,6 +53,7 @@ const handleDropdownDate = (value) => {
   const userData = { 
       ...inputs,
     name_type: type,
+    rooms: rooms
   };
     console.log(userData)
     addUser(userData, dispatch);
@@ -71,8 +76,9 @@ const handleDropdownDate = (value) => {
           <DropdownMenu className="dropdown" options={dates} default = {date} onDropdownChange={handleDropdownDate}/>
         </div> 
            <div className="addUserItem">
-          <label> اضافةالروت إلى غرفة أو عدة غرف</label>
-          <MultiSelectDropdown className="dropdown" options={rooms} />
+          <label> اضافة الروت إلى غرفة أو عدة غرف</label>
+          <MultiSelectDropdown className="dropdown" options={rooms} onSelectedOptionsChange={handleSelectedOptionsChange}
+/>
         </div> 
         </form>
         

@@ -1,19 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function MultiSelectDropdown(props) {
-  const [selectedOptions, setSelectedOptions] = useState([]);
+  const [selectedValues, setSelectedValues] = useState([]); // Holds selected option values (as strings)
+  const [selectedOptions, setSelectedOptions] = useState([]); // Holds selected option objects
 
+  useEffect(() => {
+    // Call the parent's callback function whenever selectedOptions changes
+    props.onSelectedOptionsChange(selectedOptions);
+  }, [selectedOptions]);
   const handleChange = (event) => {
-    const selectedValues = Array.from(event.target.selectedOptions, (option) =>
-      props.value != null ? option.value : option.label
+    const selectedValueStrings = Array.from(
+      event.target.selectedOptions,
+      (option) => option.value
     );
-    setSelectedOptions(selectedValues);
 
     const selectedObjects = props.options.filter((option) =>
-      selectedValues.includes(props.value != null ? option._id : option)
+      selectedValueStrings.includes(option.room_name)
     );
-    // props.onDropdownChange(selectedObjects);
-    console.log(selectedObjects);
+
+    setSelectedValues([selectedValueStrings, ...selectedValues]); // Update selected values
+    setSelectedOptions(selectedObjects); // Update selected objects
+    console.log(selectedOptions);
+  };
+
+  const handleRemove = (index) => {
+    const updatedSelectedValues = [...selectedValues];
+    updatedSelectedValues.splice(index, 1);
+
+    setSelectedValues(updatedSelectedValues);
+
+    const updatedSelectedObjects = selectedOptions.filter(
+      (option) => option.room_name !== selectedValues[index]
+    );
+
+    setSelectedOptions(updatedSelectedObjects);
   };
 
   return (
@@ -22,7 +42,7 @@ function MultiSelectDropdown(props) {
         id="options"
         style={{ width: "100%", padding: "10px" }}
         multiple
-        value={selectedOptions}
+        value={selectedValues}
         onChange={handleChange}
       >
         {props.options.map((option) => (
@@ -37,7 +57,7 @@ function MultiSelectDropdown(props) {
       </select>
 
       <div style={{ display: "flex", flexWrap: "wrap", marginTop: "10px" }}>
-        {selectedOptions.map((selectedValue, index) => (
+        {selectedValues.map((selectedOption, index) => (
           <div
             key={index}
             style={{
@@ -50,21 +70,13 @@ function MultiSelectDropdown(props) {
               alignItems: "center",
             }}
           >
-            {selectedValue}
+            {selectedOption}
             <span
-              style={{ marginLeft: "5px", cursor: "pointer" }}
-              onClick={() => {
-                const updatedSelectedOptions = [...selectedOptions];
-                updatedSelectedOptions.splice(index, 1);
-                setSelectedOptions(updatedSelectedOptions);
-                const selectedObjects = props.options.filter((option) =>
-                  updatedSelectedOptions.includes(
-                    props.value != null ? option._id : option
-                  )
-                );
-                props.onDropdownChange(selectedObjects);
-              }}
-            ></span>
+              style={{ margin: "0px 5px", cursor: "pointer", color: "red" }}
+              onClick={() => handleRemove(index)}
+            >
+              x
+            </span>
           </div>
         ))}
       </div>
