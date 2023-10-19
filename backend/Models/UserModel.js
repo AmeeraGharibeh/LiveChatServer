@@ -35,6 +35,10 @@ const UserSchema = mongoose.Schema(
       type: String,
       default: "-",
     },
+    rooms: {
+      type: Array,
+      default: [],
+    },
 
     status: {
       type: String,
