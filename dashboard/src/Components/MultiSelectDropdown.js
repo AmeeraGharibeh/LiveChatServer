@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 
 function MultiSelectDropdown(props) {
-  const [selectedValues, setSelectedValues] = useState([]); // Holds selected option values (as strings)
-  const [selectedOptions, setSelectedOptions] = useState([]); // Holds selected option objects
+  const [selectedValues, setSelectedValues] = useState([]);
+  const [selectedOptions, setSelectedOptions] = useState([]);
 
   useEffect(() => {
-    // Call the parent's callback function whenever selectedOptions changes
     props.onSelectedOptionsChange(selectedOptions);
   }, [selectedOptions]);
   const handleChange = (event) => {
@@ -20,7 +19,6 @@ function MultiSelectDropdown(props) {
 
     setSelectedValues([selectedValueStrings, ...selectedValues]); // Update selected values
     setSelectedOptions(selectedObjects); // Update selected objects
-    console.log(selectedOptions);
   };
 
   const handleRemove = (index) => {

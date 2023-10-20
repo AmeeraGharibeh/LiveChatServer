@@ -28,16 +28,23 @@ export default function NewCountry() {
 
 
   }, [])
-     const uploadImage = (file) => {
-      const formData = new FormData();
-      formData.append('image', file);
-      uploadFile(formData).then((val) => {
-        toast.success(val.msg)
-        setFile(val.img_url)
-      }).catch((err) => {
-        toast.error(err)
-      });
-    };
+
+ const uploadImage = async (file) => {
+  try {
+    const response = await uploadFile(file);
+
+    if (response && response.msg && response.files && response.files.length > 0) {
+      toast.success(response.msg);
+      console.log(response);
+      setFile(response.files[0].url);
+    } else {
+      toast.error("Invalid response data");
+    }
+  } catch (err) {
+    toast.error(err.message);
+  }
+};
+
 
   const handleClick = (e)=> {
     e.preventDefault();

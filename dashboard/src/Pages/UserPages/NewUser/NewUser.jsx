@@ -53,7 +53,7 @@ const handleSelectedOptionsChange = (newSelectedOptions) => {
   const userData = { 
       ...inputs,
     name_type: type,
-    rooms: rooms
+    rooms: selectedRooms
   };
     console.log(userData)
     addUser(userData, dispatch);
@@ -75,11 +75,11 @@ const handleSelectedOptionsChange = (newSelectedOptions) => {
           <label>تاريخ الانتهاء</label>
           <DropdownMenu className="dropdown" options={dates} default = {date} onDropdownChange={handleDropdownDate}/>
         </div> 
-           <div className="addUserItem">
+      {   type === 'root' ?  <div className="addUserItem">
           <label> اضافة الروت إلى غرفة أو عدة غرف</label>
           <MultiSelectDropdown className="dropdown" options={rooms} onSelectedOptionsChange={handleSelectedOptionsChange}
 />
-        </div> 
+        </div> : <div></div>}
         </form>
         
       <div className="addUserItem">

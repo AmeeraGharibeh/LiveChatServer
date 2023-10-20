@@ -12,7 +12,7 @@ import {
   updateUserSuccess,
   updateUserFailure,
 } from "../UsersRedux";
-import { publicRequest, userRequest } from "../../apiRequest";
+import { publicRequest, initializeUserRequest } from "../../apiRequest";
 
 export const getUsers = async (page, limit, dispatch) => {
   dispatch(getUsersStart());
@@ -38,23 +38,25 @@ export const getUserByID = async (id, dispatch) => {
 };
 export const deleteUser = async (id, dispatch) => {
   dispatch(deleteUserStart());
-  await userRequest
-    .delete(`users/${id}`)
-    .then((val) => {
-      console.log(val.data);
+  initializeUserRequest()
+    .then(async (Request) => {
+      await Request.delete(`users/${id}`);
       dispatch(deleteUserSuccess(id));
     })
     .catch((err) => {
-      console.log(err.response.data);
-      dispatch(deleteUserFailure(err.response.data));
+      console.log(err.response.data.msg);
+      dispatch(deleteUserFailure(err.response.data.msg));
     });
 };
 
 export const addUser = async (user, dispatch) => {
   dispatch(addUserStart());
   try {
-    const val = await userRequest.post(`users/name/`, user);
-    dispatch(addUserSuccess(val.data));
+    initializeUserRequest().then(async (Request) => {
+      const val = await Request.post(`users/name/`, user);
+      console.log(val.data.user);
+      dispatch(addUserSuccess(val.data.user));
+    });
   } catch (err) {
     dispatch(addUserFailure({ msg: "فشلت اضافة المستخدم" }));
   }
@@ -62,11 +64,10 @@ export const addUser = async (user, dispatch) => {
 
 export const updateUser = async (id, user, dispatch) => {
   dispatch(updateUserStart());
-  await userRequest
-    .put(`users/${id}`, user)
-    .then((val) => {
-      console.log(val.data);
-      dispatch(updateUserSuccess(val.data));
+  initializeUserRequest
+    .then(async (Request) => {
+      const val = await Request.put(`users/${id}`, user);
+      dispatch(updateUserSuccess(val.data.msg));
     })
     .catch((err) => {
       dispatch(updateUserFailure(err.response.data));

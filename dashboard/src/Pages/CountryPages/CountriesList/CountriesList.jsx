@@ -21,11 +21,7 @@ export default function CountriesList() {
     dispatch(resetCountryState());
   }, []);
 
-    useEffect(()=> {
-   { error &&  toast.error(error)}
-  {isSuccess && toast.success('تم حذف الدولة بنجاح')}
 
-  }, [isSuccess])
 
   useEffect(()=> {
     getCountries(dispatch, currentPage, limit);

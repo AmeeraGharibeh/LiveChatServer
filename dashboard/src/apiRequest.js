@@ -1,25 +1,38 @@
 import axios from "axios";
-
 const BASE_URL = "https://syriachatserver.onrender.com/";
 
-const storedValue = localStorage.getItem("persist:root");
-let Token = "";
+// Define a function to retrieve the token from local storage.
+const getTokenFromLocalStorage = () => {
+  const storedValue = localStorage.getItem("persist:root");
+  let Token = "";
 
-if (storedValue) {
-  const parsedValue = JSON.parse(storedValue);
+  if (storedValue) {
+    const parsedValue = JSON.parse(storedValue);
+    const currentUser = JSON.parse(parsedValue.auth);
 
-  const currentUser = JSON.parse(parsedValue.auth);
-      console.log(currentUser)
+    if (currentUser.currentUser !== null) {
+      Token = currentUser.currentUser["accessToken"];
+    }
+  }
 
-  if (currentUser.currentUser !== null) {
-    Token = currentUser.currentUser['accessToken'];
-  } 
-}
+  return Token;
+};
+
+export const initializeUserRequest = async () => {
+  const Token = getTokenFromLocalStorage();
+
+  const userRequest = axios.create({
+    baseURL: BASE_URL,
+    headers: { authorization: `Bearer ${Token}` },
+  });
+
+  return userRequest;
+};
 
 export const publicRequest = axios.create({
   baseURL: BASE_URL,
 });
+
 export const userRequest = axios.create({
   baseURL: BASE_URL,
-  headers: { authorization: `Bearer ${Token}` },
 });

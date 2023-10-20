@@ -27,11 +27,7 @@ export default function UserList() {
     getUsers(currentPage, 10, dispatch);
   }, [dispatch, currentPage])
 
-    useEffect(()=> {
-  {  error &&  toast.error(error)}
-  {success && toast.success('تم حذف العضو بنجاح')}
-
-  }, [success])
+ 
   function showAlert(id) {
   const result = window.confirm('هل أنت متأكد من حذف هذا العضو؟');
   if (result) {

@@ -19,11 +19,6 @@ export default function RoomsList() {
     dispatch(resetRoomState());
   }, []);
 
-  useEffect(()=> {
-    {isSuccess && toast.success('تم حذف الغرفة بنجاح')}
-    { error &&  toast.error(error)}
-
-  }, [isSuccess])
 
   useEffect(()=> {
     getRooms(currentPage, 10, dispatch);
