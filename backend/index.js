@@ -70,7 +70,7 @@ io.on("connection", async (socket) => {
   });
   // user joins the room
   socket.on("addUser", async (user) => {
-    socket.join(user._id);
+    // socket.join(user._id);
     socket.userId = user._id;
     socket.emit("connected");
     // send notification of user's joining the room
