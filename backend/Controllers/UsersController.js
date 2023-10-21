@@ -152,6 +152,7 @@ const userLogin = async (req, res) => {
         room_id: req.body.room_id,
         _id: visitorId,
         user_type: "visitor",
+        status: "Available",
         icon: req.body.icon,
       };
     }
