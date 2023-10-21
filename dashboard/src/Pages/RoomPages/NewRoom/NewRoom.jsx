@@ -63,9 +63,9 @@ const handleDropdownCountry = (value) => {
     addRoom(roomData, dispatch);
   }
   const roomTypes = [
-    {_id: '1', name_ar: 'مميزة' , name_en: 'special'},
+    {_id: '1', name_ar: 'عادي' , name_en: 'silver'},
     {_id: '2', name_ar: 'ذهبي', name_en: 'gold'},
-    {_id: '3', name_ar: 'فضي', name_en: 'silver'}
+    {_id: '3', name_ar: 'مميز', name_en: 'special'}
   ]
   return (
     <div className="newRoom">
