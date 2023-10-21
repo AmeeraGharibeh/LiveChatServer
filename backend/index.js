@@ -15,6 +15,7 @@ const LogsRouter = require("./Routes/LogRoutes");
 const Logs = require("./Models/LogModel");
 const fs = require("fs");
 const agora = require("agora-token");
+const { v4: uuidv4 } = require("uuid");
 
 ///////////////////////////////////////////////////////////
 
@@ -62,6 +63,15 @@ io.on("connection", async (socket) => {
   const device = socket.handshake.query.device;
   const location = socket.handshake.query.location;
 
+  const sessionId = uuidv4();
+
+  // Close the previous socket connection, if it exists
+  if (clients[sessionId]) {
+    clients[sessionId].disconnect(true); // Close the previous connection forcefully
+  }
+
+  // Create a new socket session for the user
+  clients[sessionId] = socket;
   // room joins to socket
   socket.on("joinRoom", (room) => {
     socket.join(room);
@@ -73,16 +83,7 @@ io.on("connection", async (socket) => {
     // socket.join(user._id);
     socket.userId = user._id;
     socket.emit("connected");
-    if (userSessions[user._id]) {
-      // Reuse the existing socket session
-      const existingSocket = userSessions[user._id];
-      existingSocket.room = user.room_id;
-      // Emit any necessary events for the reconnected user
-      existingSocket.emit("reconnected", "You are reconnected.");
-    } else {
-      // Store the socket session
-      userSessions[user._id] = socket;
-    }
+
     // send notification of user's joining the room
     socket.broadcast.to(user.room_id).emit("notification", {
       sender: user.username,
@@ -369,6 +370,7 @@ io.on("connection", async (socket) => {
   // Handle disconnection event
 
   socket.on("disconnect", () => {
+    delete clients[sessionId];
     console.log("disconnect");
   });
 });
