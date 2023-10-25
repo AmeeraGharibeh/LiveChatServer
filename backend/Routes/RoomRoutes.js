@@ -10,6 +10,7 @@ const {
   getRoom,
   updateRoom,
   deleteRoom,
+  resetRoom,
   searchRoom,
   getSpecialRooms,
 } = require("../Controllers/RoomController");
@@ -20,6 +21,7 @@ router.get("/", getAllRooms);
 router.get("/special", getSpecialRooms);
 router.get("/:id", getAllRoomsByCountry);
 router.get("/room/:id", getRoom);
+router.post("/reset/:id", resetRoom);
 router.put("/:id", verifyTokenAndAction, updateRoom);
 router.delete("/:id", verifyTokenAndAuthorization, deleteRoom);
 

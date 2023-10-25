@@ -1,5 +1,7 @@
 const Rooms = require("../Models/RoomModel");
 const User = require("../Models/UserModel");
+const Logs = require("../Models/LogModel");
+const Reports = require("../Models/ReportsModel");
 const bcrypt = require("bcryptjs");
 
 const createRoom = async function (req, res) {
@@ -162,6 +164,22 @@ const updateRoom = async (req, res) => {
   }
 };
 
+const resetRoom = async (req, res) => {
+  const roomId = req.params.id;
+
+  try {
+    await User.deleteMany({ room: roomId });
+
+    await Reports.deleteMany({ room: roomId });
+
+    await Logs.deleteMany({ room: roomId });
+
+    res.status(200).json({ msg: "تمت اعادة تهيئة الغرفة بنجاح!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "حدث خطأ اثناء محاولة إعادة تهيئة الغرفة" });
+  }
+};
 const deleteRoom = async (req, res) => {
   try {
     await Rooms.findByIdAndDelete(req.params.id);
@@ -190,6 +208,7 @@ module.exports = {
   getSpecialRooms,
   getRoom,
   deleteRoom,
+  resetRoom,
   updateRoom,
   searchRoom,
 };
