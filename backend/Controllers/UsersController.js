@@ -407,12 +407,12 @@ const getUsersByType = async (req, res) => {
   const type = req.query.type;
 
   try {
-    const totalItems = await User.countDocuments({ user_type: type });
+    const totalItems = await User.countDocuments({ name_type: type });
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
 
-    const items = await User.find({ user_type: type }).skip(skip).limit(limit);
+    const items = await User.find({ name_type: type }).skip(skip).limit(limit);
 
     const response = {
       current_page: currentPage,
