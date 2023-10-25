@@ -21,7 +21,7 @@ router.get("/", getAllRooms);
 router.get("/special", getSpecialRooms);
 router.get("/:id", getAllRoomsByCountry);
 router.get("/room/:id", getRoom);
-router.post("/reset/:id", resetRoom);
+router.post("/reset/:id", verifyTokenAndAuthorization, resetRoom);
 router.put("/:id", verifyTokenAndAction, updateRoom);
 router.delete("/:id", verifyTokenAndAuthorization, deleteRoom);
 
