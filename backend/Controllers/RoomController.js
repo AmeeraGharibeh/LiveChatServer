@@ -168,13 +168,15 @@ const resetRoom = async (req, res) => {
   const roomId = req.params.id;
 
   try {
-    await User.deleteMany({ room: roomId });
+    await User.deleteMany({ room_id: roomId });
 
-    await Reports.deleteMany({ room: roomId });
+    await Reports.deleteMany({ room_id: roomId });
 
-    await Logs.deleteMany({ room: roomId });
+    await Logs.deleteMany({ room_id: roomId });
 
-    res.status(200).json({ msg: "تمت اعادة تهيئة الغرفة بنجاح!" });
+    const room = await Rooms.findById(req.params.id);
+
+    res.status(200).json({ msg: "تمت اعادة تهيئة الغرفة بنجاح!", room: room });
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: "حدث خطأ اثناء محاولة إعادة تهيئة الغرفة" });
