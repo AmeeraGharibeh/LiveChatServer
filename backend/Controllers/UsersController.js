@@ -401,6 +401,33 @@ const getUsersByRoom = async (req, res) => {
   }
 };
 
+const getUsersByType = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const type = req.query.type;
+
+  try {
+    const totalItems = await User.countDocuments({ user_type: type });
+    const totalPages = Math.ceil(totalItems / limit);
+    const currentPage = Math.min(page, totalPages);
+    const skip = Math.max((currentPage - 1) * limit, 0);
+
+    const items = await User.find({ user_type: type }).skip(skip).limit(limit);
+
+    const response = {
+      current_page: currentPage,
+      per_page: limit,
+      last_page: totalPages,
+      total: totalItems,
+      users: items,
+    };
+
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 const userStats = async (req, res) => {
   const date = new Date();
   const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
@@ -533,6 +560,7 @@ module.exports = {
   getUser,
   getUsersByRoom,
   getAllUsers,
+  getUsersByType,
   userStats,
   blockUser,
   unblockUser,

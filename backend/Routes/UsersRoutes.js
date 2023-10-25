@@ -20,6 +20,7 @@ const {
   getUser,
   getUsersByRoom,
   getAllUsers,
+  getUsersByType,
   userStats,
   blockUser,
   unblockUser,
@@ -40,6 +41,7 @@ router.put("/picture/comment/:id", addComment);
 router.delete("/:id", verifyTokenAndAdmin, deleteUser);
 router.get("/get/:id", getUser);
 router.get("/:id/users", getUsersByRoom);
+router.get("/type/users", getUsersByType);
 router.get("/", getAllUsers);
 router.get("/stats", userStats);
 router.post("/:id/block", verifyTokenAndAction, blockUser);
