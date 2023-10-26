@@ -210,6 +210,27 @@ const updateUser = async (req, res) => {
   }
 };
 
+const updateNameUser = async (req, res) => {
+  console.log(req.body);
+  const body = req.body.body;
+  if (body.room_password) {
+    const salt = await bcrypt.genSalt(10);
+    body.room_password = await bcrypt.hash(body.room_password, salt);
+  }
+  try {
+    const updated = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: body,
+      },
+      { new: true }
+    );
+    res.status(200).json({ msg: "تم تعديل المستخدم بنجاح!", user: updated });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
+
 const deleteUser = async (req, res) => {
   console.log(req.body);
   try {
@@ -549,6 +570,7 @@ module.exports = {
   createName,
   userLogin,
   updateUser,
+  updateNameUser,
   updateUserProfile,
   addPhotoToAlbum,
   updateUserAlbum,

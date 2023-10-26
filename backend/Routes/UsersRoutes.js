@@ -12,6 +12,7 @@ const {
   updateUserProfile,
   addPhotoToAlbum,
   updateUserAlbum,
+  updateNameUser,
   getUserAlbum,
   getPicture,
   deletePicture,
@@ -31,6 +32,7 @@ router.post("/", verifyTokenAndAdmin, createUser);
 router.post("/name", verifyTokenAndAuthorization, createName);
 router.post("/login", blockedMiddleware, userLogin);
 router.put("/:id", verifyTokenAndAdmin, updateUser);
+router.put("/name/:id", verifyTokenAndAuthorization, updateNameUser);
 router.put("/update/:id", updateUserProfile);
 router.post("/album/", addPhotoToAlbum);
 router.put("/album/:id", updateUserAlbum);
