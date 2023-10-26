@@ -9,7 +9,6 @@
     "@mui/icons-material": "^5.14.15",
     "@mui/material": "^5.13.6",
     "@mui/x-data-grid": "6.9.0",
-    "@react-navigation/native": "^6.1.7",
     "@reduxjs/toolkit": "1.9.1",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "^12.1.5",
