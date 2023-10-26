@@ -31,7 +31,7 @@
     "redux-persist": "6.0.0",
     "timeago": "1.6.7",
     "timeago.js": "4.0.2",
-    "use-pagination": "^1.0.6"
+    "use-pagination": "any"
   },
   "scripts": {
     "start": "react-scripts start",
