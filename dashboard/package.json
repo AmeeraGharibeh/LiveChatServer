@@ -21,6 +21,7 @@
     "rc-tooltip": "6.0.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-paginate": "^8.2.0",
     "react-redux": "8.0.5",
     "react-router-dom": "6.13.0",
     "react-scripts": "5.0.1",
@@ -31,7 +32,7 @@
     "redux-persist": "6.0.0",
     "timeago": "1.6.7",
     "timeago.js": "4.0.2",
-    "use-pagination": "2.0.1"
+    "use-pagination": "^1.0.6"
   },
   "scripts": {
     "start": "react-scripts start",

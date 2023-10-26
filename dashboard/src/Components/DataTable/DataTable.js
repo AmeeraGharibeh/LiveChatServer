@@ -1,4 +1,3 @@
-import React from "react";
 import { useTable, usePagination } from "react-table";
 import { DeleteOutline } from "@mui/icons-material";
 import "./DataTable.css";
@@ -88,5 +87,3 @@ const DataTable = ({
     </div>
   );
 };
-
-export default DataTable;
