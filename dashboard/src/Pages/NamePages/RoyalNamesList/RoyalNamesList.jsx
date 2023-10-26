@@ -1,9 +1,9 @@
-import './RootsList.css'
-import { Link, useNavigate} from "react-router-dom";
+import './RoyalNamesList.css'
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DataTable from '../../../Components/DataTable/DataTable';
-import { getUserByType, deleteUser } from "../../../Redux/Repositories/UsersRepo";
+import { getUserByType } from "../../../Redux/Repositories/UsersRepo";
 
 export default function RootsList() {
 
@@ -15,8 +15,7 @@ export default function RootsList() {
 
   useEffect(()=> {
     
-    getUserByType( "root", currentPage, 10, dispatch);
-    console.log('current from roots page ' + currentPage)
+    getUserByType( "royal", currentPage, 10, dispatch);
   }, [dispatch, currentPage])
 
   const columns = [
@@ -34,30 +33,25 @@ export default function RootsList() {
   },
 ];
 
-
-  const handleEdit = (id) => {
-    navigate(`/edituser/root/${id}`);
+ const handleEdit = (id) => {
+    navigate(`/edituser/royal/${id}`);
   };
 
-
-    function showAlert(id) {
-  const result = window.confirm('هل أنت متأكد من حذف هذا العضو؟');
-  if (result) {
-    deleteUser(id, dispatch);
-  }
-}
+  const handleDelete = (id) => {
+    // Implement delete functionality here
+  };
 
   return (
     <div className='rootsList'>
        <div className="addButtonContainer">
-          <Link to="/newUser/root">
-          <button className="rootAddButton">اضافة روت</button>
+          <Link to="/newUser/royal">
+          <button className="rootAddButton">اضافة اسم ملكي</button>
         </Link>
       </div>
     <div>
       <DataTable columns={columns} data={users} 
       onEdit={handleEdit} 
-      onDelete={showAlert} 
+      onDelete={handleDelete} 
       totalRows= {totalRows}
       current={currentPage}
       onNext={() => {
@@ -69,3 +63,4 @@ export default function RootsList() {
       </div>
   )
 }
+

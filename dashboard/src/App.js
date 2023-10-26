@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import UserList from "./Pages/UserPages/UsersList/UserList.jsx";
 import User from "./Pages/UserPages/User/User.jsx";
 import NewUser from "./Pages/UserPages/NewUser/NewUser.jsx";
+import EditUser from "./Pages/NamePages/EditUser/EditUser.jsx";
 import RoomsList from "./Pages/RoomPages/RoomsList/RoomsList.jsx";
 import Room from "./Pages/RoomPages/Room/Room.jsx";
 import NewRoom from "./Pages/RoomPages/NewRoom/NewRoom.jsx";
@@ -17,9 +18,9 @@ import { useSelector, useDispatch } from "react-redux";
 import CountriesList from "./Pages/CountryPages/CountriesList/CountriesList.jsx";
 import NewCountry from "./Pages/CountryPages/NewCountry/NewCountry.jsx";
 import Country from "./Pages/CountryPages/Country/Country.jsx";
-import NamesList from "./Pages/NamePages/NamesList/NamesList.jsx";
+import ProtectedNamesList from "./Pages/NamePages/ProtectedNamesList/ProtectedNamesList.jsx";
+import RoyalNamesList from "./Pages/NamePages/RoyalNamesList/RoyalNamesList.jsx";
 import RootsList from "./Pages/RootPages/RootsList/RootsList.jsx";
-import NewName from "./Pages/NamePages/NewName/NewName.jsx";
 import NewRoot from "./Pages/RootPages/NewRoot/NewRoot.jsx";
 import SupportPage from "./Pages/SupportPages/SupportPage/SupportPage.jsx";
 import BlockedPage from "./Pages/BlockedPages/BlockedList/BlockedList.jsx";
@@ -68,6 +69,7 @@ function App() {
               <Route exact path="/user" element={<UserList />} />
               <Route exact path="/user/:userId" element={<User />} />
               <Route exact path="/newUser/:type" element={<NewUser />} />
+              <Route exact path="/editUser/:type/:id" element={<EditUser />} />
 
               <Route exact path="/rooms" element={<RoomsList />} />
               <Route exact path="/room/:roomId" element={<Room />} />
@@ -80,8 +82,16 @@ function App() {
               <Route exact path="/roots" element={<RootsList />} />
               <Route exact path="/newroot" element={<NewRoot />} />
 
-              <Route exact path="/names" element={<NamesList />} />
-              <Route exact path="/newname" element={<NewName />} />
+              <Route
+                exact
+                path="/royalnameslist"
+                element={<RoyalNamesList />}
+              />
+              <Route
+                exact
+                path="/protectednameslist"
+                element={<ProtectedNamesList />}
+              />
 
               <Route exact path="/support" element={<SupportPage />} />
               <Route exact path="/reports" element={<ReportPage />} />

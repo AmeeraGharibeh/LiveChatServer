@@ -1,0 +1,14 @@
+.rootsList {
+    flex: 4;
+}
+
+.rootAddButton {
+    border: none;
+    padding: 5px;
+    background-color: teal;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    margin: 10px;
+}

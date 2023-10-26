@@ -1,7 +1,6 @@
 import "./UserList.css";
 import { DataGrid } from '@mui/x-data-grid'
 import { DeleteOutline } from "@mui/icons-material";
-import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteUser, getUsers } from "../../../Redux/Repositories/UsersRepo";
@@ -32,7 +31,7 @@ export default function UserList() {
   const result = window.confirm('هل أنت متأكد من حذف هذا العضو؟');
   if (result) {
     deleteUser(id, dispatch);
-  }
+  } 
 }
   const getRoom = ((id)=> {
   const room = rooms.find(c => c._id === id);
@@ -94,19 +93,7 @@ export default function UserList() {
  <>
       <ToastContainer />
     <div className="userList">
-      <div className="addButtonContainer">
-          <Link to="/newUser/root">
-          <button className="userAddButton">اضافة روت</button>
-        </Link>
-          <Link to="/newUser/protected">
-          <button className="userAddButton">اضافة اسم محمي</button>
-        </Link>
-      
-        <Link to="/newUser/royal">
-          <button className="userAddButton">اضافة اسم ملكي</button>
-        </Link> 
-      
-      </div>
+   
       
       <DataGrid style={{padding: '0px 10px'}}
         rows={users}

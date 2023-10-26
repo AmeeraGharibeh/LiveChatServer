@@ -79,3 +79,16 @@ export const updateRooms = async (id, Rooms, dispatch) => {
       dispatch(updateRoomsFailure(err.response.data));
     });
 };
+
+export const resetRoom = async (id, dispatch) => {
+  dispatch(deleteRoomStart());
+  initializeUserRequest()
+    .then(async (Request) => {
+      const val = await Request.post(`rooms/reset/${id}`);
+      dispatch(updateRoomsSuccess(val.data));
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch(deleteRoomFailure(err));
+    });
+};

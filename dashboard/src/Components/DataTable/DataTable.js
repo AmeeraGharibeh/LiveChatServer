@@ -1,61 +1,86 @@
-import React, { useState } from 'react';
+import React from "react";
+import { useTable, usePagination } from "react-table";
+import { DeleteOutline } from "@mui/icons-material";
+import "./DataTable.css";
+import { useEffect } from "react";
 
-const DataTable = ({ data, itemsPerPage }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  // Calculate the index range for the current page
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
-
-  // Handle page change
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  // Generate pagination buttons
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const paginationButtons = [];
-  for (let i = 1; i <= totalPages; i++) {
-    paginationButtons.push(
-      <button key={i} onClick={() => handlePageChange(i)}>
-        {i}
-      </button>
+const DataTable = ({
+  columns,
+  data,
+  onDelete,
+  onEdit,
+  onNext,
+  onPrev,
+  totalRows,
+  current,
+}) => {
+  const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } =
+    useTable(
+      {
+        columns,
+        data,
+        initialState: { pageIndex: 0, pageSize: 10 },
+      },
+      usePagination
     );
-  }
-
+  useEffect(() => {
+    console.log("current from data table page " + current);
+  }, [current]);
   return (
     <div>
-      <table>
+      <table {...getTableProps()} className="data-table">
         <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Age</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentData.map((item) => (
-            <tr key={item.id}>
-              <td>{item._id}</td>
-              <td>{item.name_ar}</td>
-              <td>{item.img_url}</td>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+              ))}
+              <th>Edit</th>
+              <th>Delete</th>
             </tr>
           ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {page.map((row) => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                  );
+                })}
+                <td>
+                  <span
+                    className="userListEdit"
+                    onClick={() => onEdit(row.original._id)}
+                  >
+                    Edit
+                  </span>
+                </td>
+                <td>
+                  <DeleteOutline
+                    className="userListDelete"
+                    onClick={() => onDelete(row.original._id)}
+                  />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
-
-      <div>
+      <div className="pagination">
         <button
-          disabled={currentPage === 1}
-          onClick={() => handlePageChange(currentPage - 1)}
+          className="pagination-btn"
+          onClick={() => onPrev(current)}
+          disabled={current - 1 === 0}
         >
           Previous
         </button>
-        {paginationButtons}
         <button
-          disabled={currentPage === totalPages}
-          onClick={() => handlePageChange(currentPage + 1)}
+          className="pagination-btn"
+          onClick={() => onNext(current)}
+          disabled={current >= totalRows / 10}
         >
           Next
         </button>

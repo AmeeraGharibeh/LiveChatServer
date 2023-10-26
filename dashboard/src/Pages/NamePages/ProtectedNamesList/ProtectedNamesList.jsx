@@ -1,9 +1,9 @@
-import './RootsList.css'
-import { Link, useNavigate} from "react-router-dom";
+import "./ProtectedNamesList.css";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DataTable from '../../../Components/DataTable/DataTable';
-import { getUserByType, deleteUser } from "../../../Redux/Repositories/UsersRepo";
+import { getUserByType } from "../../../Redux/Repositories/UsersRepo";
 
 export default function RootsList() {
 
@@ -15,14 +15,14 @@ export default function RootsList() {
 
   useEffect(()=> {
     
-    getUserByType( "root", currentPage, 10, dispatch);
-    console.log('current from roots page ' + currentPage)
+    getUserByType( "protected", currentPage, 10, dispatch);
   }, [dispatch, currentPage])
 
   const columns = [
   {
     Header: 'ID',
     accessor: '_id',
+    width: '50'
   },
   {
     Header: 'Name',
@@ -35,36 +35,30 @@ export default function RootsList() {
 ];
 
 
-  const handleEdit = (id) => {
-    navigate(`/edituser/root/${id}`);
+ const handleEdit = (id) => {
+    navigate(`/edituser/protected/${id}`);
   };
 
-
-    function showAlert(id) {
-  const result = window.confirm('هل أنت متأكد من حذف هذا العضو؟');
-  if (result) {
-    deleteUser(id, dispatch);
-  }
-}
+  const handleDelete = (id) => {
+  };
 
   return (
     <div className='rootsList'>
        <div className="addButtonContainer">
-          <Link to="/newUser/root">
-          <button className="rootAddButton">اضافة روت</button>
+          <Link to="/newUser/protected">
+          <button className="rootAddButton">اضافة اسم محمي</button>
         </Link>
       </div>
     <div>
       <DataTable columns={columns} data={users} 
       onEdit={handleEdit} 
-      onDelete={showAlert} 
+      onDelete={handleDelete} 
       totalRows= {totalRows}
       current={currentPage}
       onNext={() => {
           setCurrentPage(currentPage + 1) }} 
       onPrev={() => {
           setCurrentPage(currentPage - 1)}}/>
-
     </div>
       </div>
   )

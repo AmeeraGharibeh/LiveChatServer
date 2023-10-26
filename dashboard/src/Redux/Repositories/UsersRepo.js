@@ -1,6 +1,7 @@
 import {
   getUsersStart,
   getUsersSuccess,
+  getUsersByTypeSuccess,
   getUsersFailure,
   deleteUserStart,
   deleteUserSuccess,
@@ -36,6 +37,18 @@ export const getUserByID = async (id, dispatch) => {
     dispatch(getUsersFailure(res.data));
   }
 };
+export const getUserByType = async (type, page, limit, dispatch) => {
+  dispatch(getUsersStart());
+  const res = await publicRequest.get(
+    `users/type/?type=${type}&page=${page}&limit=${limit}`
+  );
+  try {
+    console.log(res.data);
+    dispatch(getUsersByTypeSuccess(res.data));
+  } catch (err) {
+    dispatch(getUsersFailure(res.data));
+  }
+};
 export const deleteUser = async (id, dispatch) => {
   dispatch(deleteUserStart());
   initializeUserRequest()
@@ -64,9 +77,9 @@ export const addUser = async (user, dispatch) => {
 
 export const updateUser = async (id, user, dispatch) => {
   dispatch(updateUserStart());
-  initializeUserRequest
+  initializeUserRequest()
     .then(async (Request) => {
-      const val = await Request.put(`users/${id}`, user);
+      const val = await Request.put(`users/name/${id}`, user);
       dispatch(updateUserSuccess(val.data.msg));
     })
     .catch((err) => {

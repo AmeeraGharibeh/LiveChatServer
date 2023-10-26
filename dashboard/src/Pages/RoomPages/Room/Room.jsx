@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { toast, ToastContainer } from 'react-toastify';
 import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
-import { updateRooms } from "../../../Redux/Repositories/RoomsRepo";
+import { updateRooms, resetRoom } from "../../../Redux/Repositories/RoomsRepo";
 
 export default function Room() {
     const location = useLocation();
@@ -40,10 +40,23 @@ export default function Room() {
     const roomData = { ...inputs};
     updateRooms(roomId, roomData, dispatch);
   }
+    function showAlert() {
+  const result = window.confirm("سيؤدي هذا الإجراء إلى مسح جميع الأعضاء والتقارير وسجلات الخروج, هل أنت متأكد؟");
+  if (result) {
+    reset(roomId);
+  }
+}
+  const reset = (id)=> {
+    resetRoom(roomId, dispatch);
+  }
   return (
     <div className="room">
       <div className="roomTitleContainer">
         <h1>{room.room_name}</h1>
+        <button
+        className="reset-btn"
+        onClick={()=> showAlert()}
+        >إعادة تهيئة الغرفة</button>
       </div>
       <div className="roomTop">
           <div className="roomTopContainer">
