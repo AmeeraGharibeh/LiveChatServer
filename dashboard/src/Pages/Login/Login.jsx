@@ -13,16 +13,16 @@ export default function Login() {
 
     const handleLogin = (e)=> {
       e.preventDefault();
-      login(dispatch, { email: 'admin@syriachat.com', dashboard_password: '111111' });
+      login(dispatch, { email: username, dashboard_password: password });
     };
 
   return (
     <div className='Login'>
         <div className="loginWrapper">
             <span>Email:</span>
-            <input className= "input" type='text' placeholder="Enter your Email" onChange={(e)=> setUsername(e.target.value)}/>
+            <input name='username' className= "input" type='text' placeholder="Enter your Email" onChange={(e)=> setUsername(e.target.value)}/>
             <span>password:</span>
-            <input className= "input" type='password' placeholder="Enter your Password" onChange={(e)=> setPassword(e.target.value)}/>
+            <input name='password' className= "input" type='password' placeholder="Enter your Password" onChange={(e)=> setPassword(e.target.value)}/>
             <button className="login-btn" onClick={handleLogin} disabled={loading}>{ !loading ? 'Login' : 'Logging in...'}</button>
             {error ? <div className='error'>{error}</div> : <div></div>}
         </div>
