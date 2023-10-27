@@ -191,6 +191,11 @@ const updateUser = async (req, res) => {
         },
         { new: true }
       );
+
+      if (!updated) {
+        return res.status(404).json({ msg: "User not found" });
+      }
+
       const report = new Reports({
         master_name: req.body.master,
         room_id: updated.room_id,
@@ -198,12 +203,13 @@ const updateUser = async (req, res) => {
         action_name_ar: "تعديل حساب",
         action_name_en: "Update user",
       });
+
       await report.save();
       res.status(200).json({ msg: "تم تعديل المستخدم بنجاح!", user: updated });
     } else {
       res
         .status(403)
-        .send({ msg: " عذراً لا تملك الصلاحية للقيام بهذا الاجراء" });
+        .send({ msg: "عذراً لا تملك الصلاحية للقيام بهذا الإجراء" });
     }
   } catch (err) {
     res.status(500).send({ msg: err.message });
@@ -211,23 +217,33 @@ const updateUser = async (req, res) => {
 };
 
 const updateNameUser = async (req, res) => {
-  console.log(req.body);
-  const body = req.body.body;
-  if (body.room_password) {
-    const salt = await bcrypt.genSalt(10);
-    body.room_password = await bcrypt.hash(body.room_password, salt);
-  }
   try {
-    const updated = await User.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: body,
-      },
-      { new: true }
-    );
-    res.status(200).json({ msg: "تم تعديل المستخدم بنجاح!", user: updated });
+    const existingUser = await User.findById(req.params.id);
+
+    if (!existingUser) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    const body = req.body;
+    const updatedFields = {};
+
+    if (body.room_password) {
+      const salt = await bcrypt.genSalt(10);
+      body.room_password = await bcrypt.hash(body.room_password, salt);
+    }
+    for (const key in body) {
+      if (body.hasOwnProperty(key)) {
+        updatedFields[key] = body[key];
+      }
+    }
+
+    const updatedUser = Object.assign(existingUser, updatedFields);
+
+    const result = await updatedUser.save();
+
+    res.status(200).json({ msg: "User updated successfully!", user: result });
   } catch (err) {
-    res.status(500).send({ msg: err.message });
+    res.status(500).json({ msg: err.message });
   }
 };
 
