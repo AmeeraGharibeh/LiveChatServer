@@ -266,6 +266,16 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const deleteNameUser = async (req, res) => {
+  console.log(req.body);
+  try {
+    const user = await User.findById(req.params.id);
+    await User.findByIdAndDelete(user._id);
+    res.status(200).json({ msg: "تم حذف المستخدم بنجاح!" });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
 const updateUserProfile = async (req, res) => {
   try {
     const updated = await User.findByIdAndUpdate(
@@ -595,6 +605,7 @@ module.exports = {
   deletePicture,
   addComment,
   deleteUser,
+  deleteNameUser,
   getUser,
   getUsersByRoom,
   getAllUsers,
