@@ -224,7 +224,7 @@ const updateNameUser = async (req, res) => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    const body = req.body;
+    const body = req.body.body;
     const updatedFields = {};
 
     if (body.room_password) {
