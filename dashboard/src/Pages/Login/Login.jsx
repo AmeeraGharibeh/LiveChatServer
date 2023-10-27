@@ -13,7 +13,7 @@ export default function Login() {
 
     const handleLogin = (e)=> {
       e.preventDefault();
-      login(dispatch, { email: username, dashboard_password: password });
+      login(dispatch, { email: 'admin@syriachat.com', dashboard_password: '111111' });
     };
 
   return (
