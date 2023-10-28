@@ -1,18 +1,8 @@
 import { useTable, usePagination } from "react-table";
-import { DeleteOutline } from "@mui/icons-material";
 import "./DataTable.css";
 import { useEffect } from "react";
 
-const DataTable = ({
-  columns,
-  data,
-  onDelete,
-  onEdit,
-  onNext,
-  onPrev,
-  totalRows,
-  current,
-}) => {
+const DataTable = ({ columns, data, onNext, onPrev, totalRows, current }) => {
   const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } =
     useTable(
       {
@@ -34,8 +24,6 @@ const DataTable = ({
               {headerGroup.headers.map((column) => (
                 <th {...column.getHeaderProps()}>{column.render("Header")}</th>
               ))}
-              <th>Edit</th>
-              <th>Delete</th>
             </tr>
           ))}
         </thead>
@@ -49,20 +37,6 @@ const DataTable = ({
                     <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                   );
                 })}
-                <td>
-                  <span
-                    className="userListEdit"
-                    onClick={() => onEdit(row.original._id)}
-                  >
-                    Edit
-                  </span>
-                </td>
-                <td>
-                  <DeleteOutline
-                    className="userListDelete"
-                    onClick={() => onDelete(row.original._id)}
-                  />
-                </td>
               </tr>
             );
           })}

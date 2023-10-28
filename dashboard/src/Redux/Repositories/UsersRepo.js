@@ -62,6 +62,18 @@ export const deleteUser = async (id, dispatch) => {
     });
 };
 
+export const deleteNameUser = async (id, dispatch) => {
+  dispatch(deleteUserStart());
+  initializeUserRequest()
+    .then(async (Request) => {
+      await Request.delete(`users/name/${id}`);
+      dispatch(deleteUserSuccess(id));
+    })
+    .catch((err) => {
+      console.log(err.response.data.msg);
+      dispatch(deleteUserFailure(err.response.data.msg));
+    });
+};
 export const addUser = async (user, dispatch) => {
   dispatch(addUserStart());
   try {

@@ -7,6 +7,8 @@ import {useDispatch, useSelector} from 'react-redux'
 import {deleteCountry, getCountries} from '../../../Redux/Repositories/CountriesRepo'
 import { toast, ToastContainer } from 'react-toastify';
 import { resetCountryState } from "../../../Redux/CountriesRedux";
+import DataTable from '../../../Components/DataTable/DataTable';
+import { original } from "@reduxjs/toolkit";
 
 
 export default function CountriesList() {
@@ -30,52 +32,52 @@ export default function CountriesList() {
   function showAlert(id) {
   const result = window.confirm('تنبيه: حذف الدولة سيؤدي الى حذف جميع الغرف التابعة لها والمستخدمين داخل هذه الغرف..');
   if (result) {
-    // User clicked 'OK' button
     deleteCountry(id, dispatch);
   }
 }
   const columns = [
-    { field: "_id", headerName: "ID", width: 100 },
+    { accessor: "_id", Header: "ID", width: 100 },
     {
-      field: "img_url",
-      headerName: "Picture",
+      accessor: "img_url",
+      Header: "Picture",
       width: 150,
-      renderCell: (params) => {
-        return (
-          <div className="countryListItem">
-            <img className="countryListImg" src={params.row.img_url} alt="img" />
-          </div>
-        );
+      Cell: ({ cell }) => { // Destructure the cell object
+      return (
+        <div className="countryListItem">
+          <img className="countryListImg" src={cell.row.original.img_url} alt="img" />
+        </div>
+      );
       },
     },
     {
-      field: "name_ar",
-      headerName: "Country",
+      accessor: "name_ar",
+      Header: "Country",
       width: 150,
-      renderCell: (params) => {
-        return (
-          <div className="countryListItem">
-            {params.row.name_ar}
+  
+         Cell: ({ cell }) => { // Destructure the cell object
+      return (
+         <div className="countryListItem">
+            {cell.row.original.name_ar}
           </div>
-        );
+      );
       },
     },
-    { field: "rooms_count", headerName: "Rooms", width: 150 },
-    { field: "users_count", headerName: "Users", width: 150 },
+    { accessor: "rooms_count", Header: "Rooms", width: 150 },
+    { accessor: "users_count", Header: "Users", width: 150 },
  
     {
-      field: "action",
-      headerName: "Action",
+      accessor: "action",
+      Header: "Action",
       width: 150,
-      renderCell: (params) => {
+      Cell: ({cell}) => {
         return (
           <>
-            <Link to={"/country/" + params.row._id}>
+            <Link to={"/country/" + cell.row.original._id}>
               <button className="countryListEdit">Edit</button>
             </Link>
             <DeleteOutline 
               className="countryListDelete"
-              onClick={() => showAlert(params.row._id)}
+              onClick={() => showAlert(cell.row.original._id)}
            />
 
           </>
@@ -94,7 +96,18 @@ export default function CountriesList() {
         </Link> 
        </div>
        {/* <DataTable data = {countries} itemsPerPage={10} /> */}
-  <DataGrid style={{padding: '0px 10px'}}
+          <div>
+      <DataTable
+      columns={columns} 
+      data={countries} 
+      totalRows= {totalRows}
+      current={currentPage}
+      onNext={() => {
+          setCurrentPage(currentPage + 1) }} 
+      onPrev={() => {
+          setCurrentPage(currentPage - 1)}}/>
+    </div>
+  {/* <DataGrid style={{padding: '0px 10px'}}
         rows={countries}
         disableSelectionOnClic
         columns={columns}
@@ -107,7 +120,7 @@ export default function CountriesList() {
           console.log(countries)
           setCurrentPage(params + 1)
         }}
-      /> 
+      />  */}
     </div>
     </>  
   

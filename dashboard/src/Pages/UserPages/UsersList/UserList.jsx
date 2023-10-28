@@ -6,109 +6,113 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteUser, getUsers } from "../../../Redux/Repositories/UsersRepo";
 import { toast, ToastContainer } from 'react-toastify';
 import { resetUserState } from "../../../Redux/UsersRedux";
+import DataTable from '../../../Components/DataTable/DataTable'
+
+
+
 
 export default function UserList() {
   const dispatch = useDispatch();
-  const users = useSelector((state)=> state.user.users);
-  const totalRows = useSelector(state => state.user.total);
-  const success = useSelector((state)=> state.user.success);
-  const error = useSelector((state)=> state.user.error);
-  const rooms = useSelector((state)=> state.room.rooms);
+  const users = useSelector((state) => state.user.users);
+  const totalRows = useSelector((state) => state.user.total);
+  const success = useSelector((state) => state.user.success);
+  const error = useSelector((state) => state.user.error);
+  const rooms = useSelector((state) => state.room.rooms);
   const [currentPage, setCurrentPage] = useState(1);
 
-
-  useEffect(()=> {
+  useEffect(() => {
     dispatch(resetUserState());
   }, []);
 
-  useEffect(()=> {
-    console.log('data' + totalRows)
+  useEffect(() => {
     getUsers(currentPage, 10, dispatch);
-  }, [dispatch, currentPage])
+    console.log(users.length)
+  }, [dispatch, currentPage]);
 
- 
   function showAlert(id) {
-  const result = window.confirm('هل أنت متأكد من حذف هذا العضو؟');
-  if (result) {
-    deleteUser(id, dispatch);
-  } 
-}
-  const getRoom = ((id)=> {
-  const room = rooms.find(c => c._id === id);
-    return room.room_name
-  });
+    const result = window.confirm('هل أنت متأكد من حذف هذا العضو؟');
+    if (result) {
+      deleteUser(id, dispatch);
+    }
+  }
+
+  const getRoom = (id) => {
+    const room = rooms.find((c) => c._id === id);
+    return room.room_name;
+  };
 
   const columns = [
-    { field: "_id", headerName: "ID", width: 120 },
+    { accessor: '_id', Header: 'ID', width: 120 },
     {
-      field: "username",
-      headerName: "User",
+      accessor: 'username',
+      Header: 'User',
       width: 250,
-      renderCell: (params) => {
+      Cell: ({cell}) => {
         return (
           <div className="userListUser">
-            <img className="userListImg" src={params.row.pic} alt="" />
-            {params.row.username}
+            <img className="userListImg" src={cell.row.original.pic} alt="" />
+            {cell.row.original.username}
           </div>
         );
       },
     },
     {
-      field: "room_id",
-      headerName: "Room",
+      accessor: 'room_id',
+      Header: 'Room',
       width: 150,
-      renderCell: (params) => {
+      Cell: ({cell}) => {
         return (
-          <div >
-              <span>{params.row.room_id && getRoom(params.row.room_id)}</span>
+          <div>
+            <span>{cell.row.original.room_id && getRoom(cell.row.original.room_id)}</span>
           </div>
         );
       },
     },
-    { field: "user_type", headerName: "User Type", width: 120 },
-    { field: "name_type", headerName: "Name Type", width: 120 },
-
+    { accessor: 'user_type', Header: 'User Type' },
+    { accessor: 'name_type', Header: 'Name Type' },
     {
-      field: "action",
-      headerName: "Action",
-      
-      width: 150,
-      renderCell: (params) => {
+      accessor: 'action',
+      Header: 'Action',
+      width: 200,
+      Cell: ({cell}) => {
         return (
           <>
-        {  /*  <Link to={"/user/" + params.row._id}>
-              <button className="userListEdit">تعديل</button>
-        </Link>*/}
-            <DeleteOutline
-              className="userListDelete"
-              onClick={() => showAlert(params.row._id)}
-            />
+                  <DeleteOutline
+                    className="userListDelete"
+                    onClick={() => showAlert(cell.row.original._id)}
+                  />  
           </>
         );
       },
     },
   ];
 
-  return (
- <>
-      <ToastContainer />
-    <div className="userList">
-   
-      
-      <DataGrid style={{padding: '0px 10px'}}
-        rows={users}
-        disableSelectionOnClic
-        columns={columns}
-        getRowId= {(row) => row._id}
-        pageSize={8}
-        rowCount={10}
-        page = {currentPage - 1}
-        onPageChange={(params) => {
-          setCurrentPage(params + 1)
-        }}
-      />
-    </div>
+  const handleNextPage = (currentPage) => {
+    if (currentPage < totalRows / 10) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
 
- </>
+  const handlePreviousPage = (currentPage) => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+  const onEdit = ()=> {}
+
+  return (
+    <>
+      <ToastContainer />
+      <div className="userList">
+        <DataTable
+          columns={columns}
+          data={users}
+          onNext={handleNextPage}
+          onPrev={handlePreviousPage}
+          totalRows={totalRows}
+          current={currentPage}
+        />
+      </div>
+    </>
   );
 }

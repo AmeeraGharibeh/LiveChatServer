@@ -81,6 +81,10 @@ export const UsersSlice = createSlice({
         state.users.findIndex((item) => item._id === action.payload),
         1
       );
+      state.usersByType.splice(
+        state.usersByType.findIndex((item) => item._id === action.payload),
+        1
+      );
     },
     deleteUserFailure: (state, action) => {
       state.isFetching = false;

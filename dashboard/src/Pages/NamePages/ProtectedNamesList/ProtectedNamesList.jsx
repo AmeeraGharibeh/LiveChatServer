@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DataTable from '../../../Components/DataTable/DataTable';
-import { getUserByType } from "../../../Redux/Repositories/UsersRepo";
+import { deleteNameUser, getUserByType } from "../../../Redux/Repositories/UsersRepo";
+import { DeleteOutline } from "@mui/icons-material";
 
 export default function RootsList() {
 
@@ -22,16 +23,44 @@ export default function RootsList() {
   {
     Header: 'ID',
     accessor: '_id',
-    width: '50'
   },
   {
     Header: 'Name',
     accessor: 'username',
+     Cell: ({cell}) => {
+        return (
+          <div className="userListUser">
+            <img className="userListImg" src={cell.row.original.pic} alt="" />
+            {cell.row.original.username}
+          </div>
+        );
+      },
   },
   {
     Header: 'type',
     accessor: 'name_type',
   },
+   {
+      accessor: 'action',
+      Header: 'Action',
+      width: 200,
+      Cell: ({cell}) => {
+        return (
+          <>
+                <span
+                    className="userListEdit"
+                    onClick={() => handleEdit(cell.row.original._id)}
+                  >
+                    Edit
+                  </span>
+                  <DeleteOutline
+                    className="userListDelete"
+                    onClick={() => showAlert(cell.row.original._id)}
+                  />  
+          </>
+        );
+      },
+    },
 ];
 
 
@@ -39,8 +68,13 @@ export default function RootsList() {
     navigate(`/edituser/protected/${id}`);
   };
 
-  const handleDelete = (id) => {
-  };
+  function showAlert(id) {
+  const result = window.confirm('هل أنت متأكد من حذف هذا العضو؟');
+  if (result) {
+    deleteNameUser(id, dispatch);
+  } 
+}
+
 
   return (
     <div className='rootsList'>
@@ -50,9 +84,9 @@ export default function RootsList() {
         </Link>
       </div>
     <div>
-      <DataTable columns={columns} data={users} 
-      onEdit={handleEdit} 
-      onDelete={handleDelete} 
+      <DataTable 
+      columns={columns} 
+      data={users} 
       totalRows= {totalRows}
       current={currentPage}
       onNext={() => {

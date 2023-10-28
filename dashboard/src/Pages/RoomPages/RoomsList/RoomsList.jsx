@@ -7,6 +7,7 @@ import {useDispatch, useSelector} from 'react-redux'
 import { deleteRooms, getRooms} from '../../../Redux/Repositories/RoomsRepo'
 import { resetRoomState } from "../../../Redux/RoomsRedux";
 import { toast, ToastContainer } from 'react-toastify';
+import DataTable from '../../../Components/DataTable/DataTable';
 
 export default function RoomsList() {
   const dispatch = useDispatch();
@@ -38,50 +39,50 @@ export default function RoomsList() {
 }
 
   const columns = [
-    { field: "_id", headerName: "ID", width: 150 },
+    { accessor: "_id", Header: "ID", width: 150 },
 
-    { field: "room_name", headerName: "Name", width: 220 },
+    { accessor: "room_name", Header: "Name", width: 220 },
     {
-      field: "room_country",
-      headerName: "Country",
+      accessor: "room_country",
+      Header: "Country",
       width: 120,
-      renderCell: (params) => {
+      Cell: ({cell}) => {
         return (
           <div >
-              <span>{getCountry(params.row.room_country)}</span>
+              <span>{getCountry(cell.row.original.room_country)}</span>
           </div>
         );
       },
     },
      {
-      field: "room_type",
-      headerName: "type",
+      accessor: "room_type",
+      Header: "type",
       width: 120,
     },
      {
-      field: "room_owner",
-      headerName: "Owner",
+      accessor: "room_owner",
+      Header: "Owner",
       width: 120,
     },
       {
-      field: "email",
-      headerName: "Owner Email",
+      accessor: "email",
+      Header: "Owner Email",
       width: 120,
     },
 
     {
-      field: "action",
-      headerName: "Action",
+      accessor: "action",
+      Header: "Action",
       width: 150,
-      renderCell: (params) => {
+      Cell: ({cell}) => {
         return (
           <>
-        { <Link to={"/room/" + params.row._id}>
+        { <Link to={"/room/" + cell.row.original._id}>
               <button className="roomsListEdit">Edit</button>
         </Link>}
             <DeleteOutline
               className="roomsListDelete"
-              onClick={() => showAlert(params.row._id)}
+              onClick={() => showAlert(cell.row.original._id)}
             />
           </>
         );
@@ -99,7 +100,17 @@ export default function RoomsList() {
           <button className="roomAddButton">اضافة غرفة</button>
         </Link>
       </div>
-        <DataGrid style={{padding: '0px 10px'}}
+      <DataTable
+      columns={columns} 
+      data={rooms} 
+      totalRows= {rooms.length}
+      current={currentPage}
+      onNext={() => {
+          setCurrentPage(currentPage + 1) }} 
+      onPrev={() => {
+          setCurrentPage(currentPage - 1)}}/>
+  
+        {/* <DataGrid style={{padding: '0px 10px'}}
         rows={rooms}
         columns={columns}
         getRowId= {(row) => row._id}
@@ -107,7 +118,7 @@ export default function RoomsList() {
         onPageChange={(params) => {
           setCurrentPage(params + 1)
         }}
-      />
+      /> */}
     </div>
   
   </>

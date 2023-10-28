@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DataTable from '../../../Components/DataTable/DataTable';
 import { getUserByType, deleteUser } from "../../../Redux/Repositories/UsersRepo";
+import { DeleteOutline } from "@mui/icons-material";
 
 export default function RootsList() {
 
@@ -27,11 +28,40 @@ export default function RootsList() {
   {
     Header: 'Name',
     accessor: 'username',
+     Cell: ({cell}) => {
+        return (
+          <div className="userListUser">
+            <img className="userListImg" src={cell.row.original.pic} alt="" />
+            {cell.row.original.username}
+          </div>
+        );
+      },
   },
   {
     Header: 'type',
     accessor: 'name_type',
   },
+  {
+      accessor: 'action',
+      Header: 'Action',
+      width: 200,
+      Cell: ({cell}) => {
+        return (
+          <>
+                <span
+                    className="userListEdit"
+                    onClick={() => handleEdit(cell.row.original._id)}
+                  >
+                    Edit
+                  </span>
+                  <DeleteOutline
+                    className="userListDelete"
+                    onClick={() => showAlert(cell.row.original._id)}
+                  />  
+          </>
+        );
+      },
+    },
 ];
 
 
