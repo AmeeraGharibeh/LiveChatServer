@@ -42,21 +42,24 @@ const DataTable = ({ columns, data, onNext, onPrev, totalRows, current }) => {
           })}
         </tbody>
       </table>
-      <div className="pagination">
-        <button
-          className="pagination-btn"
-          onClick={() => onPrev(current)}
-          disabled={current - 1 === 0}
-        >
-          Previous
-        </button>
-        <button
-          className="pagination-btn"
-          onClick={() => onNext(current)}
-          disabled={current >= totalRows / 10}
-        >
-          Next
-        </button>
+      <div className="pagination-wrapper">
+        <span>{`page ${current} of ${Math.ceil(totalRows / 10)}`}</span>
+        <div className="pagination">
+          <button
+            className="pagination-btn"
+            onClick={() => onPrev(current)}
+            disabled={current - 1 === 0}
+          >
+            Previous
+          </button>
+          <button
+            className="pagination-btn"
+            onClick={() => onNext(current)}
+            disabled={current >= totalRows / 10}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

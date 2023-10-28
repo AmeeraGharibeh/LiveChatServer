@@ -5,6 +5,8 @@ import {useDispatch, useSelector} from 'react-redux'
 import { deleteLogs, getLogs } from '../../Redux/Repositories/LogsRepo'
 import { toast, ToastContainer } from 'react-toastify';
 import { resetLogsState } from '../../Redux/LogsRedux';
+import DataTable from '../../Components/DataTable/DataTable';
+
 export default function LogsPage() {
 
   const dispatch = useDispatch();
@@ -37,47 +39,47 @@ const getRoom = ((id)=> {
         return '-'
       })
   const columns = [
-    { field: "_id", headerName: "ID", width: 120 },
+    { accessor: "_id", Header: "ID", width: 120 },
     {
-      field: "username",
-      headerName: "Username",
+      accessor: "username",
+      Header: "Username",
       width: 150,
     },
          {
-      field: "ip",
-      headerName: "Device ID",
+      accessor: "ip",
+      Header: "Device ID",
       width: 150,
     },
-    { field: "room_id", headerName: "Room", width: 150,
-    renderCell: (params) => {
+    { accessor: "room_id", Header: "Room", width: 150,
+    Cell: ({cell}) => {
         return (
           <div >
-              <span>{getRoom(params.row.room_id)}</span>
+              <span>{getRoom(cell.row.original.room_id)}</span>
           </div>
         );
       },    
 },
       {
-      field: "time_in",
-      headerName: "Time In",
+      accessor: "time_in",
+      Header: "Time In",
       width: 170,
-         renderCell: (params) => {
+         Cell: ({cell}) => {
         return (
           <div >
-              <span style={{'color': 'green'}}>{params.row.time_in}</span>
+              <span style={{'color': 'green'}}>{cell.row.original.time_in}</span>
           </div>
         );
       }, 
     },
 
     {
-      field: "time_out",
-      headerName: "Time Out",
+      accessor: "time_out",
+      Header: "Time Out",
      width: 170,
-    renderCell: (params) => {
+    Cell: ({cell}) => {
         return (
           <div >
-              <span style={{'color': 'red'}}>{params.row.time_out}</span>
+              <span style={{'color': 'red'}}>{cell.row.original.time_out}</span>
           </div>
         );
       },     },
@@ -90,21 +92,15 @@ const getRoom = ((id)=> {
         <button className='deleteButton' 
         onClick={() => showAlert()}>حذف جميع السجلات</button>
       </div>
-        <DataGrid style={{padding: '0px 10px'}}
-        rows={logs}
-        columns={columns}
-        getRowId= {(row) => row._id}
-        //pageSizeOptions={[10]}
-        pageSize={8}
-        rowCount={totalRows}
-        pagination= {true}
-        page = {currentPage - 1}
-        
-        onPageChange={(params) => {
-          setCurrentPage(params + 1)
-        }}
-    
-      />
+      <DataTable
+       columns={columns}
+       data={logs} 
+      totalRows= {totalRows}
+      current={currentPage} 
+      onNext={() => {
+          setCurrentPage(currentPage + 1) }} 
+      onPrev={() => {
+          setCurrentPage(currentPage - 1)}}/>
     </div>
        {success && toast.success('تم الحذف بنجاح')}
        <ToastContainer />

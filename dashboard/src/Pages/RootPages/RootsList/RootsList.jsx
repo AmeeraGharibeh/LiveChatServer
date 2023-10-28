@@ -85,9 +85,7 @@ export default function RootsList() {
         </Link>
       </div>
     <div>
-      <DataTable columns={columns} data={users} 
-      onEdit={handleEdit} 
-      onDelete={showAlert} 
+      <DataTable columns={columns} data={users}  
       totalRows= {totalRows}
       current={currentPage}
       onNext={() => {

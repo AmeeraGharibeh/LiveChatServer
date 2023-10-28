@@ -8,10 +8,20 @@
     padding: 8px;
     text-align: center;
 }
-.pagination{
+.pagination-wrapper{
+    display: flex;
+    justify-content: end;
+    gap: 30px;
+    margin: 20px;
+}
+.pagination-wrapper>span{
     text-align: end;
+    font-weight: 400;
+    margin: 5px;
+
+}
+.pagination{
     margin-right: 20px;
-    margin: 10px;
 }
 .pagination-btn{
     margin: 5px;
