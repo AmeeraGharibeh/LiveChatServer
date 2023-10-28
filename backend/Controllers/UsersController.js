@@ -127,7 +127,7 @@ const userLogin = async (req, res) => {
         return res
           .status(400)
           .send({ msg: "Invalid username or name password" });
-    } else if (req.body.name_password && !req.body.room_password) {
+    } else if (req.body.name_password && req.body.room_password === "") {
       // Registered visitor
       user = await User.findOne({ username: req.body.username });
       if (!user) {
