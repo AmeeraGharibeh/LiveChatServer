@@ -7,6 +7,15 @@ const Blocked = require("../Models/BlockedModel");
 const { time } = require("../Config/Helpers/time_helper");
 const ImageModel = require("../Models/ImageModel");
 
+const hashPassword = async (password) => {
+  const saltRounds = 10;
+  return bcrypt.hash(password, saltRounds);
+};
+
+const verifyPassword = async (password, hashedPassword) => {
+  return bcrypt.compare(password, hashedPassword);
+};
+
 const createUser = async (req, res) => {
   console.log(req.body);
   const body = req.body.body;
@@ -166,6 +175,132 @@ const userLogin = async (req, res) => {
     const { room_password, name_password, ...others } = visitor
       ? user
       : user._doc;
+    return res.status(200).send({
+      user: { ...others, icon: req.body.icon },
+      accessToken: accessToken,
+    });
+  } catch (err) {
+    return res.status(500).send({ msg: err.message });
+  }
+};
+
+const memberLogin = async (req, res) => {
+  let user;
+  try {
+    if (req.body.room_password) {
+      user = await User.findOne({
+        username: req.body.username,
+        room_id: req.body.room_id,
+      });
+      if (!user) {
+        return res.status(404).send({ msg: "User not found!" });
+      }
+
+      const validRoomPassword = verifyPassword(
+        req.body.room_password,
+        user.room_password
+      );
+
+      if (!validRoomPassword)
+        return res
+          .status(400)
+          .send({ msg: "Invalid username or name password" });
+    }
+    const accessToken = jwt.sign(
+      {
+        id: user._id,
+      },
+      process.env.JWTSECRET,
+      { expiresIn: "1h" }
+    );
+    const { room_password, name_password, ...others } = user._doc;
+    return res.status(200).send({
+      user: { ...others, icon: req.body.icon },
+      accessToken: accessToken,
+    });
+  } catch (err) {
+    return res.status(500).send({ msg: err.message });
+  }
+};
+
+const visitorLogin = async (req, res) => {
+  try {
+    const visitorId = uuidv4();
+    const user = {
+      username: req.body.username,
+      room_id: req.body.room_id,
+      _id: visitorId,
+      user_type: "visitor",
+      state: "Available",
+      icon: req.body.icon,
+    };
+
+    const accessToken = jwt.sign(
+      {
+        id: user._id,
+      },
+      process.env.JWTSECRET,
+      { expiresIn: "1h" }
+    );
+    const { room_password, name_password, ...others } = user;
+
+    return res.status(200).send({
+      user: { ...others, icon: req.body.icon },
+      accessToken: accessToken,
+    });
+  } catch (err) {
+    return res.status(500).send({ msg: err.message });
+  }
+};
+
+const NameLogin = async (req, res) => {
+  try {
+    let user;
+
+    user = await User.findOne({
+      username: req.body.username,
+      room_id: req.body.room_id,
+    });
+    if (user) {
+      const validRoomPassword = verifyPassword(
+        req.body.room_password,
+        user.room_password
+      );
+      if (!validRoomPassword) {
+        return res.status(400).send({ msg: "Invalid room password" });
+      }
+      const validNamePassword = verifyPassword(
+        req.body.name_password,
+        user.name_password
+      );
+      if (!validNamePassword) {
+        return res.status(400).send({ msg: "Invalid name password" });
+      }
+    } else {
+      user = await User.findOne({ username: req.body.username });
+      if (!user) {
+        return res.status(404).send({ msg: "User not found!" });
+      }
+
+      const validNamePassword = verifyPassword(
+        req.body.name_password,
+        user.name_password
+      );
+
+      if (!validNamePassword) {
+        return res.status(400).send({ msg: "Invalid name password" });
+      }
+    }
+    const accessToken = jwt.sign(
+      {
+        id: user._id,
+      },
+      process.env.JWTSECRET,
+      { expiresIn: "1h" }
+    );
+
+    const { room_password, name_password, ...others } = user._doc;
+
     return res.status(200).send({
       user: { ...others, icon: req.body.icon },
       accessToken: accessToken,
@@ -594,7 +729,9 @@ const unblockUser = async (req, res) => {
 module.exports = {
   createUser,
   createName,
-  userLogin,
+  memberLogin,
+  visitorLogin,
+  NameLogin,
   updateUser,
   updateNameUser,
   updateUserProfile,

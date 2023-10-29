@@ -7,7 +7,9 @@ const {
 const {
   createUser,
   createName,
-  userLogin,
+  memberLogin,
+  visitorLogin,
+  NameLogin,
   updateUser,
   updateUserProfile,
   addPhotoToAlbum,
@@ -31,7 +33,9 @@ const { blockedMiddleware } = require("./BlockCheck");
 
 router.post("/", verifyTokenAndAdmin, createUser);
 router.post("/name", verifyTokenAndAuthorization, createName);
-router.post("/login", blockedMiddleware, userLogin);
+router.post("/login/member", blockedMiddleware, memberLogin);
+router.post("/login/visitor", blockedMiddleware, visitorLogin);
+router.post("/login/name", blockedMiddleware, NameLogin);
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.put("/name/:id", verifyTokenAndAuthorization, updateNameUser);
 router.put("/update/:id", updateUserProfile);
