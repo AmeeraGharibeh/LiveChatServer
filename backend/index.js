@@ -344,6 +344,7 @@ io.on("connection", async (socket) => {
     console.log("start stream data is " + data);
     const userId = data["userId"];
     const channelName = data["channelName"];
+    const streamer = data["streamer_name"];
 
     const agoraConfig = {
       appId: appId,
@@ -364,6 +365,7 @@ io.on("connection", async (socket) => {
     io.to(channelName).emit("streamToken", {
       streamToken: token,
       streamerId: userId,
+      streamer_name: streamer,
     });
   });
 
