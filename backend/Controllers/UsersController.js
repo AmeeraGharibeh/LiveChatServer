@@ -58,10 +58,9 @@ const createUser = async (req, res) => {
   const body = req.body.body;
   try {
     const items = await User.find({
-      room_id: body.room_id,
       username: body.username,
     });
-    if (items.length > 0) {
+    if (items.length > 0 && items[0].room_id === req.body.room_id) {
       // User already exists in the room, check the name_type
       if (items[0].name_type === "-") {
         res.status(400).json({
