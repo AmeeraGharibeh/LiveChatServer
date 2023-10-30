@@ -257,40 +257,102 @@ const NameLogin = async (req, res) => {
   try {
     let user;
 
+    // Step 1: Check if the user follows the room
     user = await User.findOne({
       username: req.body.username,
       room_id: req.body.room_id,
     });
+
     if (user) {
+      // Step 2: Verify the room password
       const validRoomPassword = verifyPassword(
         req.body.room_password,
         user.room_password
       );
+
       if (!validRoomPassword) {
+        // If the room password is incorrect, return an error
         return res.status(400).send({ msg: "Invalid room password" });
       }
+
+      // Step 3: Verify the name password
       const validNamePassword = verifyPassword(
         req.body.name_password,
         user.name_password
       );
+
       if (!validNamePassword) {
-        return res.status(400).send({ msg: "Invalid name password" });
+        // If the name password is incorrect, login as a visitor
+        user = await User.findOne({ username: "visitor" });
+
+        if (!user) {
+          return res.status(404).send({ msg: "Visitor not found!" });
+        }
+
+        // Generate an access token for the visitor
+        const accessToken = jwt.sign(
+          {
+            id: user._id,
+          },
+          process.env.JWTSECRET,
+          { expiresIn: "1h" }
+        );
+
+        const { room_password, name_password, ...others } = user._doc;
+
+        return res.status(200).send({
+          user: { ...others, icon: req.body.icon },
+          accessToken: accessToken,
+        });
       }
     } else {
+      // If the user is not following the room, check if the user exists by username
       user = await User.findOne({ username: req.body.username });
+
       if (!user) {
         return res.status(404).send({ msg: "User not found!" });
       }
 
+      // Verify the name password for the user
       const validNamePassword = verifyPassword(
         req.body.name_password,
         user.name_password
       );
 
       if (!validNamePassword) {
-        return res.status(400).send({ msg: "Invalid name password" });
+        // If the name password is incorrect, login as a visitor
+        user = await User.findOne({ username: "visitor" });
+
+        if (!user) {
+          return res.status(404).send({ msg: "Visitor not found!" });
+        }
+        const visitorId = uuidv4();
+        const user = {
+          username: req.body.username,
+          room_id: req.body.room_id,
+          _id: visitorId,
+          user_type: "visitor",
+          state: "Available",
+          icon: req.body.icon,
+        };
+
+        const accessToken = jwt.sign(
+          {
+            id: user._id,
+          },
+          process.env.JWTSECRET,
+          { expiresIn: "1h" }
+        );
+        const { room_password, name_password, ...others } = user;
+
+        return res.status(200).send({
+          user: { ...others, icon: req.body.icon },
+          accessToken: accessToken,
+        });
       }
     }
+
+    // Step 4: If both room and name passwords are correct, return the member user
     const accessToken = jwt.sign(
       {
         id: user._id,
@@ -309,6 +371,64 @@ const NameLogin = async (req, res) => {
     return res.status(500).send({ msg: err.message });
   }
 };
+
+// const NameLogin = async (req, res) => {
+//   try {
+//     let user;
+
+//     user = await User.findOne({
+//       username: req.body.username,
+//       room_id: req.body.room_id,
+//     });
+//     if (user) {
+//       const validRoomPassword = verifyPassword(
+//         req.body.room_password,
+//         user.room_password
+//       );
+//       if (!validRoomPassword) {
+//         return res.status(400).send({ msg: "Invalid room password" });
+//       }
+//       const validNamePassword = verifyPassword(
+//         req.body.name_password,
+//         user.name_password
+//       );
+//       if (!validNamePassword) {
+//         return res.status(400).send({ msg: "Invalid name password" });
+//       }
+
+//     } else {
+//       user = await User.findOne({ username: req.body.username });
+//       if (!user) {
+//         return res.status(404).send({ msg: "User not found!" });
+//       }
+
+//       const validNamePassword = verifyPassword(
+//         req.body.name_password,
+//         user.name_password
+//       );
+
+//       if (!validNamePassword) {
+//         return res.status(400).send({ msg: "Invalid name password" });
+//       }
+//     }
+//     const accessToken = jwt.sign(
+//       {
+//         id: user._id,
+//       },
+//       process.env.JWTSECRET,
+//       { expiresIn: "1h" }
+//     );
+
+//     const { room_password, name_password, ...others } = user._doc;
+
+//     return res.status(200).send({
+//       user: { ...others, icon: req.body.icon },
+//       accessToken: accessToken,
+//     });
+//   } catch (err) {
+//     return res.status(500).send({ msg: err.message });
+//   }
+// };
 
 const updateUser = async (req, res) => {
   console.log(req.body);
