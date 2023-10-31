@@ -371,7 +371,7 @@ io.on("connection", async (socket) => {
 
   const speakersQueue = []; // Initialize an empty queue to hold users waiting to speak
   let currentSpeaker = null; // Track the current speaker
-  const speakingTime = 60 * 1000; // Speaking time in milliseconds (e.g., 60 seconds)
+  const speakingTime = 90 * 1000; // Speaking time in milliseconds (e.g., 60 seconds)
 
   socket.on("startAudioStream", (data) => {
     console.log("start stream data is " + data);
