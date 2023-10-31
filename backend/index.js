@@ -390,10 +390,6 @@ io.on("connection", async (socket) => {
         streamer_name: streamer,
         speakingTime: speakingTime,
       });
-      // Set a timeout to automatically finish speaking after the assigned time
-      setTimeout(() => {
-        socket.emit("stopAudioStream"); // Automatically finish speaking after the assigned time
-      }, speakingTime);
     } else {
       // There is a current speaker, so add the user to the queue
       speakersQueue.push({
@@ -406,6 +402,10 @@ io.on("connection", async (socket) => {
 
   // Function to generate a temporary token
   function generateToken(channelName, userId) {
+    const agoraConfig = {
+      appId: appId,
+      appCertificate: appCertificate,
+    };
     const token = agora.RtcTokenBuilder.buildTokenWithUid(
       agoraConfig.appId,
       agoraConfig.appCertificate,
@@ -432,10 +432,6 @@ io.on("connection", async (socket) => {
         streamer_name: nextSpeaker.streamer_name,
         speakingTime: speakingTime,
       });
-      // Set a timeout to automatically finish speaking after the assigned time
-      setTimeout(() => {
-        socket.emit("stopAudioStream"); // Automatically finish speaking after the assigned time
-      }, speakingTime);
     } else {
       currentSpeaker = null; // No one in the queue, no current speaker
     }
