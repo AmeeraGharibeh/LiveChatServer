@@ -317,7 +317,10 @@ io.on("connection", async (socket) => {
         console.log("user.id " + user.id);
         if (user.id === socket.id) {
           console.log(data["field"] + " " + data["value"]);
-          user[data["field"]] = data["value"];
+          // Check if the field exists in the user object
+          if (user.hasOwnProperty(data["field"])) {
+            user[data["field"]] = data["value"];
+          }
         }
       });
 
