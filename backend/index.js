@@ -314,6 +314,7 @@ io.on("connection", async (socket) => {
     if (onlineUsers[data.room_id] && socket.id) {
       console.log("condition true");
       onlineUsers[data.room_id].forEach((user) => {
+        console.log("user.id " + user.id);
         if (user.id === socket.id) {
           console.log(data["field"] + " " + data["value"]);
           user[data["field"]] = data["value"];
