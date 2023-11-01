@@ -136,7 +136,6 @@ io.on("connection", async (socket) => {
     io.to(user.room_id).emit("onlineUsers", [
       ...new Set(onlineUsers[user.room_id]),
     ]);
-    console.log(onlineUsers[user.room_id]);
 
     io.to(user.room_id).emit("notification", {
       sender: user.username,
@@ -310,12 +309,12 @@ io.on("connection", async (socket) => {
 
     io.to(user_socket).emit("logout", { msg: "تم طردك من الغرفة" });
   });
-  socket.on("userStatus", (data) => {
+  socket.on("updateUsersList", (data) => {
     // Update the user's status in the onlineUsers list
     if (onlineUsers[data.room_id] && socket.id) {
       onlineUsers[data.room_id].forEach((user) => {
         if (user.id === socket.id) {
-          user.user.state = data.status;
+          user[data.filed] = data.vlaue;
         }
       });
 
@@ -326,21 +325,6 @@ io.on("connection", async (socket) => {
     }
   });
 
-  socket.on("micStatus", (data) => {
-    // Update the user's status in the onlineUsers list
-    if (onlineUsers[data.room_id] && socket.id) {
-      onlineUsers[data.room_id].forEach((user) => {
-        if (user.id === socket.id) {
-          user.user.mic_status = data.mic_status;
-        }
-      });
-
-      // Emit updated online users list to all users in the room
-      io.to(data.room_id).emit("onlineUsers", [
-        ...new Set(onlineUsers[data.room_id]),
-      ]);
-    }
-  });
   // Handle audio streaming
 
   socket.on("startAudioStream", (data) => {
@@ -359,11 +343,19 @@ io.on("connection", async (socket) => {
         streamer_name: streamer,
         speakingTime: 500,
       });
+      io.to(channelName).emit("updateRequest", {
+        field: "mic_status",
+        value: "on_mic",
+      });
     } else {
       speakersQueue.push({
         userId: userId,
         channelName: channelName,
         streamer_name: streamer,
+      });
+      io.to(channelName).emit("updateRequest", {
+        field: "mic_status",
+        value: "mic_wait",
       });
     }
   });
@@ -386,10 +378,10 @@ io.on("connection", async (socket) => {
     }
   });
 
-  // // Emit the speakersQueue to the client side
-  // socket.on("getSpeakersQueue", () => {
-  //   io.emit("speakersQueue", speakersQueue);
-  // });
+  // Emit the speakersQueue to the client side
+  socket.on("getSpeakersQueue", () => {
+    io.emit("speakersQueue", speakersQueue);
+  });
 
   // Handle disconnection event
 
