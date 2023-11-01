@@ -312,8 +312,10 @@ io.on("connection", async (socket) => {
   socket.on("updateUsersList", (data) => {
     // Update the user's status in the onlineUsers list
     if (onlineUsers[data.room_id] && socket.id) {
+      console.log("condition true");
       onlineUsers[data.room_id].forEach((user) => {
         if (user.id === socket.id) {
+          console.log(data["field"] + " " + data["value"]);
           user[data["field"]] = data["value"];
         }
       });
