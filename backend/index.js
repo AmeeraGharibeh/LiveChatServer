@@ -317,9 +317,7 @@ io.on("connection", async (socket) => {
         console.log("user.id " + user.id);
         if (user.id === socket.id) {
           console.log(data["field"] + " " + data["value"]);
-          if (user.hasOwnProperty(data["field"])) {
-            user[data.field] = data["value"];
-          }
+          user.user[data.field] = data["value"];
         }
       });
 
@@ -358,7 +356,7 @@ io.on("connection", async (socket) => {
         console.log("condition true");
         onlineUsers[channelName].forEach((user) => {
           if (user.id === socket.id) {
-            user.mic_status = "mic_wait";
+            user.user.mic_status = "mic_wait";
           }
         });
 
