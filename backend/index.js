@@ -317,7 +317,7 @@ io.on("connection", async (socket) => {
         console.log("user.id " + user.id);
         if (user.id === socket.id) {
           console.log(data["field"] + " " + data["value"]);
-          user.data["field"] = data["value"];
+          user[data.field] = data["value"];
         }
       });
 
