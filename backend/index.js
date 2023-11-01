@@ -345,20 +345,25 @@ io.on("connection", async (socket) => {
         streamer_name: streamer,
         speakingTime: 500,
       });
-      io.to(channelName).emit("updateRequest", {
-        field: "mic_status",
-        value: "on_mic",
-      });
     } else {
       speakersQueue.push({
         userId: userId,
         channelName: channelName,
         streamer_name: streamer,
       });
-      io.to(channelName).emit("updateRequest", {
-        field: "mic_status",
-        value: "mic_wait",
-      });
+      if (onlineUsers[channelName] && socket.id) {
+        console.log("condition true");
+        onlineUsers[channelName].forEach((user) => {
+          if (user.id === socket.id) {
+            user.mic_status = "mic_wait";
+          }
+        });
+
+        // Emit updated online users list to all users in the room
+        io.to(data.room_id).emit("onlineUsers", [
+          ...new Set(onlineUsers[data.room_id]),
+        ]);
+      }
     }
   });
 
