@@ -314,7 +314,7 @@ io.on("connection", async (socket) => {
     if (onlineUsers[data.room_id] && socket.id) {
       onlineUsers[data.room_id].forEach((user) => {
         if (user.id === socket.id) {
-          user[data.filed] = data.vlaue;
+          user[data["field"]] = data["value"];
         }
       });
 
