@@ -363,7 +363,7 @@ io.on("connection", async (socket) => {
 
   socket.on("stopAudioStream", (data) => {
     // Check if there are users waiting in the queue
-    updateOnlineUsersList(data.channelName, socket.id, "mic_status", "none");
+    updateOnlineUsersList(data.channelName, data.socket, "mic_status", "none");
     if (speakersQueue.length > 0) {
       const nextSpeaker = speakersQueue.shift();
       currentSpeaker = nextSpeaker.userId;
@@ -375,6 +375,7 @@ io.on("connection", async (socket) => {
         streamer_name: nextSpeaker.streamer_name,
         speakingTime: speakingTime,
       });
+      console.log("another token");
       updateOnlineUsersList(
         nextSpeaker.channelName,
         nextSpeaker.socketId,
