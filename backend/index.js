@@ -310,22 +310,24 @@ io.on("connection", async (socket) => {
     io.to(user_socket).emit("logout", { msg: "تم طردك من الغرفة" });
   });
   socket.on("updateUsersList", (data) => {
-    // Update the user's status in the onlineUsers list
-    if (onlineUsers[data.room_id] && socket.id) {
-      console.log("condition true");
-      onlineUsers[data.room_id].forEach((user) => {
-        console.log("user.id " + user.id);
-        if (user.id === socket.id) {
-          console.log(data["field"] + " " + data["value"]);
-          user.user[data.field] = data["value"];
-        }
-      });
+    updateOnlineUsersList(data.room_id, socket.id, data.field, data.value);
 
-      // Emit updated online users list to all users in the room
-      io.to(data.room_id).emit("onlineUsers", [
-        ...new Set(onlineUsers[data.room_id]),
-      ]);
-    }
+    // Update the user's status in the onlineUsers list
+    // if (onlineUsers[data.room_id] && socket.id) {
+    //   console.log("condition true");
+    //   onlineUsers[data.room_id].forEach((user) => {
+    //     console.log("user.id " + user.id);
+    //     if (user.id === socket.id) {
+    //       console.log(data["field"] + " " + data["value"]);
+    //       user.user[data.field] = data["value"];
+    //     }
+    //   });
+
+    //   // Emit updated online users list to all users in the room
+    //   io.to(data.room_id).emit("onlineUsers", [
+    //     ...new Set(onlineUsers[data.room_id]),
+    //   ]);
+    // }
   });
 
   // Handle audio streaming
@@ -346,6 +348,7 @@ io.on("connection", async (socket) => {
         streamer_name: streamer,
         speakingTime: 500,
       });
+      updateOnlineUsersList(channelName, socket.id, "mic_status", "on_mic");
     } else {
       speakersQueue.push({
         userId: userId,
@@ -353,24 +356,18 @@ io.on("connection", async (socket) => {
         streamer_name: streamer,
       });
       console.log("speakers " + speakersQueue);
-      if (onlineUsers[channelName] && socket.id) {
-        console.log("condition true");
-        onlineUsers[channelName].forEach((user) => {
-          if (user.id === socket.id) {
-            user.user.mic_status = "mic_wait";
-          }
-        });
-
-        // Emit updated online users list to all users in the room
-        io.to(data.room_id).emit("onlineUsers", [
-          ...new Set(onlineUsers[data.room_id]),
-        ]);
-      }
+      updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
     }
   });
 
-  socket.on("stopAudioStream", () => {
+  socket.on("stopAudioStream", (data) => {
     // Check if there are users waiting in the queue
+    updateOnlineUsersList(
+      data.channelName,
+      data.socketId,
+      "mic_status",
+      "none"
+    );
     if (speakersQueue.length > 0) {
       const nextSpeaker = speakersQueue.shift();
       currentSpeaker = nextSpeaker.userId;
@@ -400,6 +397,19 @@ io.on("connection", async (socket) => {
   });
 });
 
+function updateOnlineUsersList(roomId, socketId, field, val) {
+  if (onlineUsers[roomId] && socketId) {
+    console.log("condition true");
+    onlineUsers[roomId].forEach((user) => {
+      console.log("user.id " + user.id);
+      if (user.id === socketId) {
+        console.log(field + " " + val);
+        user.user[field] = val;
+      }
+    });
+    io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
+  }
+}
 ///////////////////////////////////////////////////
 app.use(cors());
 app.use(express.json());
