@@ -346,17 +346,17 @@ io.on("connection", async (socket) => {
         streamToken: token,
         streamerId: userId,
         streamer_name: streamer,
-        speakingTime: 500,
+        speakingTime: 250,
       });
       updateOnlineUsersList(channelName, socket.id, "mic_status", "on_mic");
     } else {
+      updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
       speakersQueue.push({
         userId: userId,
         channelName: channelName,
         streamer_name: streamer,
       });
       console.log("speakers " + speakersQueue);
-      updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
     }
   });
 
