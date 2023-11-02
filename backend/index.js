@@ -352,6 +352,7 @@ io.on("connection", async (socket) => {
         channelName: channelName,
         streamer_name: streamer,
       });
+      console.log("speakers " + speakersQueue);
       if (onlineUsers[channelName] && socket.id) {
         console.log("condition true");
         onlineUsers[channelName].forEach((user) => {
