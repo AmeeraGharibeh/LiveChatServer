@@ -346,13 +346,14 @@ io.on("connection", async (socket) => {
         streamToken: token,
         streamerId: userId,
         streamer_name: streamer,
-        speakingTime: 250,
+        speakingTime: 50,
       });
       updateOnlineUsersList(channelName, socket.id, "mic_status", "on_mic");
     } else {
       updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
       speakersQueue.push({
         userId: userId,
+        socketId: socket.id,
         channelName: channelName,
         streamer_name: streamer,
       });
@@ -374,6 +375,12 @@ io.on("connection", async (socket) => {
         streamer_name: nextSpeaker.streamer_name,
         speakingTime: speakingTime,
       });
+      updateOnlineUsersList(
+        nextSpeaker.channelName,
+        nextSpeaker.socketId,
+        "mic_status",
+        "on_mic"
+      );
     } else {
       currentSpeaker = null; // No one in the queue, no current speaker
     }
