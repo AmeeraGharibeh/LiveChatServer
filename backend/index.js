@@ -58,7 +58,7 @@ const clients = {};
 let log;
 const speakersQueue = []; // Initialize an empty queue to hold users waiting to speak
 let currentSpeaker = null; // Track the current speaker
-const speakingTime = 90 * 1000; // Speaking time in milliseconds (e.g., 60 seconds)
+const ignoredUsers = new Map();
 
 io.on("connection", async (socket) => {
   console.log("A user connected");
@@ -164,17 +164,6 @@ io.on("connection", async (socket) => {
     }
   });
 
-  // Handle chat events
-  socket.on("message", (data) => {
-    console.log(
-      "Received message:",
-      data["message"] + "from: " + data["sender"]
-    );
-
-    // Broadcast the message to all connected clients in room
-    io.to(data.room_id).emit("message", data);
-  });
-
   // send notification when master edits the room
   socket.on("updateRoom", (master) => {
     io.to(master.room_id).emit("notification", {
@@ -196,6 +185,18 @@ io.on("connection", async (socket) => {
       type: "notification",
     });
   });
+
+  // Handle chat events
+  socket.on("message", (data) => {
+    console.log(
+      "Received message:",
+      data["message"] + "from: " + data["sender"]
+    );
+
+    // Broadcast the message to all connected clients in room
+    io.to(data.room_id).emit("message", data);
+  });
+
   // Handle send images
   socket.on("sendImage", (data) => {
     const img = data.img;
@@ -309,25 +310,24 @@ io.on("connection", async (socket) => {
 
     io.to(user_socket).emit("logout", { msg: "تم طردك من الغرفة" });
   });
+
+  // Handle ignore user
+  socket.on("ignore_user", ({ data }) => {
+    if (ignoredUsers.has(socket.id)) {
+      const ignoredList = ignoredUsers.get(socket.id);
+      if (ignoredList.includes(data.ignoredUserId)) {
+        ignoredList.splice(ignoredList.indexOf(data.ignoredUserId), 1);
+      } else {
+        ignoredList.push(data.ignoredUserId);
+      }
+    } else {
+      ignoredUsers.set(socket.id, [data.ignoredUserId]);
+    }
+  });
+
+  // Handle Updata online users list
   socket.on("updateUsersList", (data) => {
     updateOnlineUsersList(data.room_id, socket.id, data.field, data.value);
-
-    // Update the user's status in the onlineUsers list
-    // if (onlineUsers[data.room_id] && socket.id) {
-    //   console.log("condition true");
-    //   onlineUsers[data.room_id].forEach((user) => {
-    //     console.log("user.id " + user.id);
-    //     if (user.id === socket.id) {
-    //       console.log(data["field"] + " " + data["value"]);
-    //       user.user[data.field] = data["value"];
-    //     }
-    //   });
-
-    //   // Emit updated online users list to all users in the room
-    //   io.to(data.room_id).emit("onlineUsers", [
-    //     ...new Set(onlineUsers[data.room_id]),
-    //   ]);
-    // }
   });
 
   // Handle audio streaming
@@ -342,7 +342,7 @@ io.on("connection", async (socket) => {
 
     if (currentSpeaker === null) {
       currentSpeaker = userId;
-      const token = generateToken(channelName, userId);
+      const token = generateToken(channelName, currentSpeaker);
       console.log("token is " + token);
       io.to(channelName).emit("streamToken", {
         streamToken: token,
@@ -376,9 +376,9 @@ io.on("connection", async (socket) => {
       const token = generateToken(nextSpeaker.channelName, nextSpeaker.userId);
       io.to(nextSpeaker.channelName).emit("streamToken", {
         streamToken: token,
-        streamerId: nextSpeaker.userId,
+        streamerId: currentSpeaker,
         streamer_name: nextSpeaker.streamer_name,
-        speakingTime: speakingTime,
+        speakingTime: 50,
       });
       console.log("another token");
       updateOnlineUsersList(
@@ -390,11 +390,6 @@ io.on("connection", async (socket) => {
     } else {
       currentSpeaker = null; // No one in the queue, no current speaker
     }
-  });
-
-  // Emit the speakersQueue to the client side
-  socket.on("getSpeakersQueue", () => {
-    io.emit("speakersQueue", speakersQueue);
   });
 
   // Handle disconnection event
