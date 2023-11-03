@@ -338,6 +338,8 @@ io.on("connection", async (socket) => {
     const channelName = data["channelName"];
     const streamer = data["streamer_name"];
 
+    let speakersCount = 1; // Initialize the count to 1
+
     if (currentSpeaker === null) {
       currentSpeaker = userId;
       const token = generateToken(channelName, userId);
@@ -356,8 +358,11 @@ io.on("connection", async (socket) => {
         socketId: socket.id,
         channelName: channelName,
         streamer_name: streamer,
+        count: speakersCount,
       });
       console.log("speakers " + speakersQueue);
+      io.to(channelName).emit("speakersQueue", speakersQueue);
+      speakersCount++;
     }
   });
 
