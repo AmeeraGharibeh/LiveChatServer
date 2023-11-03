@@ -33,17 +33,8 @@ const io = socketIo(server, {
 });
 dotenv.config();
 
-const appId = "717af643b1f44b85aa1a98fee5cdd6a1";
-const appCertificate = "401739e3af104160baf5ee08a6f4e567";
-
 ///////////////////////////////////////////////////////////
-/*app.use(cors(
-  {
-  origin: ['https://vercel.com/ameeragharibeh/live-chat-server/'],
-    methods: ['POST', 'GET'],
-    creditntials: true
-  }
-  ));*/
+
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => console.log("DB Connection Successfull!"))
@@ -57,7 +48,7 @@ const onlineUsers = {};
 const clients = {};
 let log;
 const speakersQueue = []; // Initialize an empty queue to hold users waiting to speak
-let currentSpeaker = null; // Track the current speaker
+const currentSpeaker = {};
 const ignoredUsers = new Map();
 
 io.on("connection", async (socket) => {
@@ -340,18 +331,37 @@ io.on("connection", async (socket) => {
 
     let speakersCount = 1; // Initialize the count to 1
 
-    if (currentSpeaker === null) {
-      currentSpeaker = userId;
-      const token = generateToken(channelName, userId);
-      io.to(channelName).emit("streamToken", {
-        streamToken: token,
-        streamerId: userId,
+    if (currentSpeaker == {}) {
+      currentSpeaker = {
+        userId: userId,
+        socketId: socket.id,
+        channelName: channelName,
         streamer_name: streamer,
+        count: speakersCount,
+      };
+      const token = generateToken(
+        currentSpeaker.channelName,
+        currentSpeaker.userId
+      );
+      io.to(currentSpeaker.channelName).emit("streamToken", {
+        streamToken: token,
+        streamerId: currentSpeaker.userId,
+        streamer_name: currentSpeaker.streamer_name,
         speakingTime: 50,
       });
-      updateOnlineUsersList(channelName, socket.id, "mic_status", "on_mic");
+      updateOnlineUsersList(
+        currentSpeaker.channelName,
+        socket.id,
+        "mic_status",
+        "on_mic"
+      );
     } else {
-      updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
+      updateOnlineUsersList(
+        currentSpeaker.channelName,
+        socket.id,
+        "mic_status",
+        "mic_wait"
+      );
       speakersQueue.push({
         userId: userId,
         socketId: socket.id,
@@ -370,24 +380,27 @@ io.on("connection", async (socket) => {
     updateOnlineUsersList(data.channelName, data.socket, "mic_status", "none");
     if (speakersQueue.length > 0) {
       const nextSpeaker = speakersQueue.shift();
-      currentSpeaker = nextSpeaker.userId;
+      currentSpeaker = nextSpeaker;
       // Generate and send the token for the next speaker
-      const token = generateToken(nextSpeaker.channelName, nextSpeaker.userId);
-      io.to(nextSpeaker.channelName).emit("streamToken", {
+      const token = generateToken(
+        currentSpeaker.channelName,
+        currentSpeaker.userId
+      );
+      io.to(currentSpeaker.channelName).emit("streamToken", {
         streamToken: token,
-        streamerId: nextSpeaker.userId,
-        streamer_name: nextSpeaker.streamer_name,
+        streamerId: currentSpeaker.userId,
+        streamer_name: currentSpeaker.streamer_name,
         speakingTime: 50,
       });
       console.log("another token");
       updateOnlineUsersList(
-        nextSpeaker.channelName,
-        nextSpeaker.socketId,
+        currentSpeaker.channelName,
+        currentSpeaker.socketId,
         "mic_status",
         "on_mic"
       );
     } else {
-      currentSpeaker = null; // No one in the queue, no current speaker
+      currentSpeaker = {}; // No one in the queue, no current speaker
     }
   });
 
