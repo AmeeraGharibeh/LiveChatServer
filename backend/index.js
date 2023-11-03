@@ -342,18 +342,7 @@ io.on("connection", async (socket) => {
 
     if (currentSpeaker === null) {
       currentSpeaker = userId;
-      const agoraConfig = {
-        appId: appId,
-        appCertificate: appCertificate,
-      };
-      const token = agora.RtcTokenBuilder.buildTokenWithUid(
-        agoraConfig.appId,
-        agoraConfig.appCertificate,
-        channelName,
-        userId,
-        agora.RtcRole.PUBLISHER,
-        3600
-      );
+      generateToken(channelName, userId);
       console.log("token is " + token);
       io.to(channelName).emit("streamToken", {
         streamToken: token,
