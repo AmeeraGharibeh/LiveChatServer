@@ -335,7 +335,7 @@ io.on("connection", async (socket) => {
       io.to(channelName).emit("streamToken", {
         streamToken: token,
         streamerId: userId,
-        streamer_name: streamer_name,
+        streamer_name: streamer,
         speakingTime: 50,
       });
       updateOnlineUsersList(channelName, socket.id, "mic_status", "on_mic");
