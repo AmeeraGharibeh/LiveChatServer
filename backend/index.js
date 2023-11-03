@@ -343,7 +343,6 @@ io.on("connection", async (socket) => {
     if (currentSpeaker === null) {
       currentSpeaker = userId;
       const token = generateToken(channelName, userId);
-      console.log("token is " + token);
       io.to(channelName).emit("streamToken", {
         streamToken: token,
         streamerId: userId,
