@@ -342,7 +342,7 @@ io.on("connection", async (socket) => {
 
     if (currentSpeaker === null) {
       currentSpeaker = userId;
-      const token = generateToken(channelName, socket.id);
+      const token = generateToken(channelName, userId);
       console.log("token is " + token);
       io.to(channelName).emit("streamToken", {
         streamToken: token,
@@ -373,10 +373,7 @@ io.on("connection", async (socket) => {
       const nextSpeaker = speakersQueue.shift();
       currentSpeaker = nextSpeaker.userId;
       // Generate and send the token for the next speaker
-      const token = generateToken(
-        nextSpeaker.channelName,
-        nextSpeaker.socketId
-      );
+      const token = generateToken(nextSpeaker.channelName, nextSpeaker.userId);
       io.to(nextSpeaker.channelName).emit("streamToken", {
         streamToken: token,
         streamerId: currentSpeaker,
