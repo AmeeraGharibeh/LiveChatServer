@@ -34,7 +34,13 @@ const io = socketIo(server, {
 dotenv.config();
 
 ///////////////////////////////////////////////////////////
-
+/*app.use(cors(
+  {
+  origin: ['https://vercel.com/ameeragharibeh/live-chat-server/'],
+    methods: ['POST', 'GET'],
+    creditntials: true
+  }
+  ));*/
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => console.log("DB Connection Successfull!"))
@@ -48,6 +54,7 @@ const onlineUsers = {};
 const clients = {};
 let log;
 const speakersQueue = []; // Initialize an empty queue to hold users waiting to speak
+let currentSpeaker = null; // Track the current speaker
 const ignoredUsers = new Map();
 
 io.on("connection", async (socket) => {
@@ -330,7 +337,8 @@ io.on("connection", async (socket) => {
 
     let speakersCount = 1; // Initialize the count to 1
 
-    if (speakersQueue.length == 0) {
+    if (currentSpeaker === null) {
+      currentSpeaker = userId;
       const token = generateToken(channelName, userId);
       io.to(channelName).emit("streamToken", {
         streamToken: token,
@@ -359,9 +367,10 @@ io.on("connection", async (socket) => {
     updateOnlineUsersList(data.channelName, data.socket, "mic_status", "none");
     if (speakersQueue.length > 0) {
       const nextSpeaker = speakersQueue.shift();
+      currentSpeaker = nextSpeaker.userId;
       // Generate and send the token for the next speaker
       const token = generateToken(nextSpeaker.channelName, nextSpeaker.userId);
-      io.to(channelName).emit("streamToken", {
+      io.to(nextSpeaker.channelName).emit("streamToken", {
         streamToken: token,
         streamerId: nextSpeaker.userId,
         streamer_name: nextSpeaker.streamer_name,
@@ -375,7 +384,7 @@ io.on("connection", async (socket) => {
         "on_mic"
       );
     } else {
-      speakersQueue = []; // No one in the queue, no current speaker
+      currentSpeaker = null; // No one in the queue, no current speaker
     }
   });
 
