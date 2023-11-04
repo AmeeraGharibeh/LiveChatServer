@@ -334,39 +334,32 @@ io.on("connection", async (socket) => {
     const userId = data["userId"];
     const channelName = data["channelName"];
     const streamer = data["streamer_name"];
-    const token = generateToken(channelName, userId);
-    io.to(channelName).emit("streamToken", {
-      streamToken: token,
-      streamerId: userId,
-      streamer_name: streamer,
-      speakingTime: 50,
-    });
-    updateOnlineUsersList(channelName, socket.id, "mic_status", "on_mic");
-    // let speakersCount = 1; // Initialize the count to 1
 
-    // if (currentSpeaker === null) {
-    //   currentSpeaker = userId;
-    //   const token = generateToken(channelName, userId);
-    //   io.to(channelName).emit("streamToken", {
-    //     streamToken: token,
-    //     streamerId: userId,
-    //     streamer_name: streamer,
-    //     speakingTime: 50,
-    //   });
-    //   updateOnlineUsersList(channelName, socket.id, "mic_status", "on_mic");
-    // } else {
-    //   updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
-    //   speakersQueue.push({
-    //     userId: userId,
-    //     socketId: socket.id,
-    //     channelName: channelName,
-    //     streamer_name: streamer,
-    //     count: speakersCount,
-    //   });
-    //   console.log("speakers " + speakersQueue);
-    //   io.to(channelName).emit("speakersQueue", speakersQueue);
-    //   speakersCount++;
-    // }
+    let speakersCount = 1; // Initialize the count to 1
+
+    if (currentSpeaker === null) {
+      currentSpeaker = userId;
+      const token = generateToken(channelName, userId);
+      io.to(channelName).emit("streamToken", {
+        streamToken: token,
+        streamerId: userId,
+        streamer_name: streamer,
+        speakingTime: 50,
+      });
+      updateOnlineUsersList(channelName, socket.id, "mic_status", "on_mic");
+    } else {
+      updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
+      speakersQueue.push({
+        userId: userId,
+        socketId: socket.id,
+        channelName: channelName,
+        streamer_name: streamer,
+        count: speakersCount,
+      });
+      console.log("speakers " + speakersQueue);
+      io.to(channelName).emit("speakersQueue", speakersQueue);
+      speakersCount++;
+    }
   });
 
   socket.on("stopAudioStream", (data) => {
