@@ -336,9 +336,11 @@ io.on("connection", async (socket) => {
     const streamer = data["streamer_name"];
 
     let speakersCount = 1; // Initialize the count to 1
-
+    console.log("current before " + currentSpeaker);
     if (currentSpeaker === null) {
       currentSpeaker = userId;
+      console.log("current after " + currentSpeaker);
+
       const token = generateToken(channelName, userId);
       io.to(channelName).emit("streamToken", {
         streamToken: token,
@@ -365,9 +367,13 @@ io.on("connection", async (socket) => {
   socket.on("stopAudioStream", (data) => {
     // Check if there are users waiting in the queue
     updateOnlineUsersList(data.channelName, data.socket, "mic_status", "none");
+    console.log("current before stop " + currentSpeaker);
+
     if (speakersQueue.length > 0) {
       const nextSpeaker = speakersQueue.shift();
       currentSpeaker = nextSpeaker.userId;
+      console.log("current after stop " + currentSpeaker);
+
       // Generate and send the token for the next speaker
       const token = generateToken(nextSpeaker.channelName, nextSpeaker.userId);
       io.to(nextSpeaker.channelName).emit("streamToken", {
@@ -398,11 +404,8 @@ io.on("connection", async (socket) => {
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
   if (onlineUsers[roomId] && socketId) {
-    console.log("condition true");
     onlineUsers[roomId].forEach((user) => {
-      console.log("user.id " + user.id);
       if (user.id === socketId) {
-        console.log(field + " " + val);
         user.user[field] = val;
       }
     });
