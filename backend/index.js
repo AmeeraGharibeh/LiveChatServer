@@ -342,6 +342,7 @@ io.on("connection", async (socket) => {
       streamer_name: streamer,
       count: speakersCount,
     });
+    speakersCount++;
     if (speakersQueue.length === 1) {
       startStreaming(speakersQueue[0]);
     } else {
