@@ -329,7 +329,7 @@ io.on("connection", async (socket) => {
   // Handle audio streaming
 
   socket.on("streamRequested", (data) => {
-    let speakersCount = 1;
+    let speakersCount = 0;
     const userId = data["userId"];
     //const socketId = data["socketId"];
     const channelName = data["channelName"];
@@ -340,7 +340,7 @@ io.on("connection", async (socket) => {
       socketId: socket.id,
       channelName: channelName,
       streamer_name: streamer,
-      count: speakersCount,
+      count: speakersCount + 1,
     });
     speakersCount++;
     if (speakersQueue.length === 1) {
@@ -348,7 +348,6 @@ io.on("connection", async (socket) => {
     } else {
       updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
       io.to(channelName).emit("speakersQueue", speakersQueue);
-      speakersCount++;
     }
   });
 
