@@ -14,14 +14,15 @@ const BlockedRouter = require("./Routes/BlockedRoutes");
 const LogsRouter = require("./Routes/LogRoutes");
 const Logs = require("./Models/LogModel");
 const fs = require("fs");
+const agora = require("agora-token");
 const { v4: uuidv4 } = require("uuid");
+
+///////////////////////////////////////////////////////////
+
 const http = require("http");
 const socketIo = require("socket.io");
 const { time } = require("./Config/Helpers/time_helper");
 const { generateToken } = require("./Config/Helpers/generate_agora_token");
-
-///////////////////////////////////////////////////////////
-
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
@@ -328,42 +329,67 @@ io.on("connection", async (socket) => {
 
   // Handle audio streaming
 
-  socket.on("streamRequested", (data) => {
-    let speakersCount = 1;
+  socket.on("startAudioStream", (data) => {
     const userId = data["userId"];
-    //const socketId = data["socketId"];
     const channelName = data["channelName"];
     const streamer = data["streamer_name"];
 
-    speakersQueue.push({
-      userId: userId,
-      socketId: socket.id,
-      channelName: channelName,
-      streamer_name: streamer,
-      count: speakersCount,
-    });
-    if (speakersQueue.length > 0) {
-      startStreaming(speakersQueue[0]);
+    let speakersCount = 1;
+    console.log("current before " + userId);
+    if (currentSpeaker === null) {
+      currentSpeaker = userId;
+      console.log("current after " + currentSpeaker);
+
+      const token = generateToken(channelName, currentSpeaker);
+      io.to(channelName).emit("streamToken", {
+        streamToken: token,
+        streamerId: userId,
+        streamer_name: streamer,
+        speakingTime: 50,
+      });
+      updateOnlineUsersList(channelName, socket.id, "mic_status", "on_mic");
     } else {
       updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
+      speakersQueue.push({
+        userId: userId,
+        socketId: socket.id,
+        channelName: channelName,
+        streamer_name: streamer,
+        count: speakersCount,
+      });
+      console.log("speakers " + speakersQueue);
       io.to(channelName).emit("speakersQueue", speakersQueue);
       speakersCount++;
     }
   });
 
   socket.on("stopAudioStream", (data) => {
-    speakersQueue.shift();
-    updateOnlineUsersList(
-      data.channelName,
-      data.socketId,
-      "mic_status",
-      "none"
-    );
+    // Check if there are users waiting in the queue
+    updateOnlineUsersList(data.channelName, data.socket, "mic_status", "none");
+    console.log("current before stop " + currentSpeaker);
 
     if (speakersQueue.length > 0) {
-      startStreaming(speakersQueue[0]);
+      const nextSpeaker = speakersQueue.shift();
+      currentSpeaker = nextSpeaker.userId;
+      console.log("current after stop " + currentSpeaker);
+
+      // Generate and send the token for the next speaker
+      const token = generateToken(nextSpeaker.channelName, nextSpeaker.userId);
+      io.to(nextSpeaker.channelName).emit("streamToken", {
+        streamToken: token,
+        streamerId: nextSpeaker.userId,
+        streamer_name: nextSpeaker.streamer_name,
+        speakingTime: 50,
+      });
+      console.log("another token");
+      updateOnlineUsersList(
+        nextSpeaker.channelName,
+        nextSpeaker.socketId,
+        "mic_status",
+        "on_mic"
+      );
     } else {
-      socket.emit("endStreaming");
+      currentSpeaker = null; // No one in the queue, no current speaker
     }
   });
 
@@ -374,22 +400,6 @@ io.on("connection", async (socket) => {
     console.log("disconnect");
   });
 });
-
-function startStreaming(data) {
-  const userId = data["userId"];
-  const channelName = data["channelName"];
-  const streamer = data["streamer_name"];
-  const socketId = data["socketId"];
-
-  const token = generateToken(channelName);
-  io.to(channelName).emit("startAudioStream", {
-    streamToken: token,
-    streamerId: userId,
-    streamer_name: streamer,
-    speakingTime: 50,
-  });
-  updateOnlineUsersList(channelName, socketId, "mic_status", "on_mic");
-}
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
   if (onlineUsers[roomId] && socketId) {
