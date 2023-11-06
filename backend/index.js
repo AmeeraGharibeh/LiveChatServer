@@ -330,7 +330,6 @@ io.on("connection", async (socket) => {
   // Handle audio streaming
 
   socket.on("startAudioStream", (data) => {
-    console.log("start stream data is " + data);
     const userId = data["userId"];
     const channelName = data["channelName"];
     const streamer = data["streamer_name"];

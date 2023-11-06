@@ -12,7 +12,6 @@ function generateToken(channelName, userId) {
     agoraConfig.appId,
     agoraConfig.appCertificate,
     channelName,
-    userId,
     agora.RtcRole.PUBLISHER,
     3600
   );
