@@ -329,7 +329,6 @@ io.on("connection", async (socket) => {
   // Handle audio streaming
 
   socket.on("streamRequested", (data) => {
-    let speakersCount = 0;
     const userId = data["userId"];
     //const socketId = data["socketId"];
     const channelName = data["channelName"];
@@ -340,9 +339,8 @@ io.on("connection", async (socket) => {
       socketId: socket.id,
       channelName: channelName,
       streamer_name: streamer,
-      count: speakersCount + 1,
+      count: speakersQueue.length + 1,
     });
-    speakersCount++;
     if (speakersQueue.length === 1) {
       startStreaming(speakersQueue[0]);
     } else {
