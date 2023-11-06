@@ -342,7 +342,7 @@ io.on("connection", async (socket) => {
       streamer_name: streamer,
       count: speakersCount,
     });
-    if (speakersQueue.length > 0) {
+    if (speakersQueue.length === 1) {
       startStreaming(speakersQueue[0]);
     } else {
       updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
