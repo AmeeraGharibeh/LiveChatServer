@@ -340,7 +340,7 @@ io.on("connection", async (socket) => {
       currentSpeaker = userId;
       console.log("current after " + currentSpeaker);
 
-      const token = generateToken(channelName, userId);
+      const token = generateToken(channelName, currentSpeaker);
       io.to(channelName).emit("streamToken", {
         streamToken: token,
         streamerId: userId,
