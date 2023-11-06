@@ -1,7 +1,7 @@
 const agora = require("agora-token");
 
 const appId = "104e87620771434cbfba90ac0ab35b3c";
-const appCertificate = "487dfed547d14c94a0b6edefa842a724";
+const appCertificate = "401739e3af104160baf5ee08a6f4e567";
 
 function generateToken(channelName, userId) {
   const agoraConfig = {
@@ -12,6 +12,7 @@ function generateToken(channelName, userId) {
     agoraConfig.appId,
     agoraConfig.appCertificate,
     channelName,
+    userId,
     agora.RtcRole.PUBLISHER,
     3600
   );
