@@ -334,8 +334,8 @@ io.on("connection", async (socket) => {
     const channelName = data["channelName"];
     const streamer = data["streamer_name"];
 
-    let speakersCount = 1; // Initialize the count to 1
-    console.log("current before " + currentSpeaker);
+    let speakersCount = 1;
+    console.log("current before " + userId);
     if (currentSpeaker === null) {
       currentSpeaker = userId;
       console.log("current after " + currentSpeaker);

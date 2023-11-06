@@ -8,7 +8,7 @@ function generateToken(channelName, userId) {
     appId: appId,
     appCertificate: appCertificate,
   };
-  const token = agora.RtcTokenBuilder.buildTokenWithUserAccount(
+  const token = agora.RtcTokenBuilder.buildTokenWithUid(
     agoraConfig.appId,
     agoraConfig.appCertificate,
     channelName,
