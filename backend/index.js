@@ -388,8 +388,8 @@ function startStreaming(data) {
     speakingTime: 50,
   });
   updateOnlineUsersList(channelName, socketId, "mic_status", "on_mic");
-  if (onlineUsers[roomId]) {
-    onlineUsers[roomId].forEach((user) => {
+  if (onlineUsers[channelName]) {
+    onlineUsers[channelName].forEach((user) => {
       if (user.id !== socketId) {
         user.user["audio_status"] = "unmute";
       }
