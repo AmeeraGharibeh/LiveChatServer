@@ -362,7 +362,9 @@ io.on("connection", async (socket) => {
       startStreaming(speakersQueue[0]);
     } else {
       socket.emit("endStreaming");
-      updateOnlineUsersList(data.channelName, socket, "audio_status", "none");
+      onlineUsers[data.channelName].forEach((user) => {
+        user.user["audio_status"] = "none";
+      });
     }
   });
 
