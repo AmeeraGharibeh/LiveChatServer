@@ -362,7 +362,7 @@ io.on("connection", async (socket) => {
       startStreaming(speakersQueue[0]);
     } else {
       socket.emit("endStreaming");
-      updateOnlineUsersList(channelName, socket, "audio_status", "none");
+      updateOnlineUsersList(data.channelName, socket, "audio_status", "none");
     }
   });
 
