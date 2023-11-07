@@ -394,7 +394,9 @@ function startStreaming(data) {
         user.user["audio_status"] = "unmute";
       }
     });
-    io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
+    io.to(channelName).emit("onlineUsers", [
+      ...new Set(onlineUsers[channelName]),
+    ]);
   }
 }
 
