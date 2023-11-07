@@ -362,6 +362,7 @@ io.on("connection", async (socket) => {
       startStreaming(speakersQueue[0]);
     } else {
       socket.emit("endStreaming");
+      updateOnlineUsersList(channelName, socket, "audio_status", "none");
     }
   });
 
@@ -387,6 +388,14 @@ function startStreaming(data) {
     speakingTime: 50,
   });
   updateOnlineUsersList(channelName, socketId, "mic_status", "on_mic");
+  if (onlineUsers[roomId]) {
+    onlineUsers[roomId].forEach((user) => {
+      if (user.id !== socketId) {
+        user.user["audio_status"] = "unmute";
+      }
+    });
+    io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
+  }
 }
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
