@@ -183,7 +183,7 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    const isIgnored = ignoredUsers.has(data.senderId);
+    const isIgnored = ignoredUsers.has(data.senderSocket);
 
     if (!isIgnored) {
       // Send the message to all members in the room
@@ -198,7 +198,7 @@ io.on("connection", async (socket) => {
       // Filter out the ignoring user from the recipients list
       const roomMembers = io(data.room_id).sockets.sockets;
       const filteredRecipients = roomMembers.filter(
-        (socket) => socket.id !== data.senderId
+        (socket) => socket.id !== data.senderSocket
       );
 
       // Send the message to the filtered recipients
