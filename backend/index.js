@@ -52,9 +52,8 @@ mongoose
 const onlineUsers = {};
 const clients = {};
 let log;
-const speakersQueue = []; // Initialize an empty queue to hold users waiting to speak
-let currentSpeaker = null; // Track the current speaker
-const ignoredUsers = new Map();
+const speakersQueue = [];
+const ignoredUsers = new Set();
 
 io.on("connection", async (socket) => {
   console.log("A user connected");
@@ -188,9 +187,9 @@ io.on("connection", async (socket) => {
       "Received message:",
       data["message"] + "from: " + data["sender"]
     );
-
-    // Broadcast the message to all connected clients in room
-    io.to(data.room_id).emit("message", data);
+    if (!ignoredUsers.has(data["senderId"])) {
+      io.to(data.room_id).emit("message", data);
+    }
   });
 
   // Handle send images
@@ -308,16 +307,28 @@ io.on("connection", async (socket) => {
   });
 
   // Handle ignore user
-  socket.on("ignore_user", ({ data }) => {
-    if (ignoredUsers.has(socket.id)) {
-      const ignoredList = ignoredUsers.get(socket.id);
-      if (ignoredList.includes(data.ignoredUserId)) {
-        ignoredList.splice(ignoredList.indexOf(data.ignoredUserId), 1);
-      } else {
-        ignoredList.push(data.ignoredUserId);
-      }
+
+  socket.on("ignoreUser", (data) => {
+    if (ignoredUsers.has(data["ignoredId"])) {
+      ignoredUsers.delete(data["ignoredId"]);
+      console.log(`User ${data["ignoredId"]} is no longer ignored.`);
+      updateOnlineUsersAfterIgnore(
+        data["roomId"],
+        data["ignoredId"],
+        socket.id,
+        "is_ignored",
+        "false"
+      );
     } else {
-      ignoredUsers.set(socket.id, [data.ignoredUserId]);
+      ignoredUsers.add(data["ignoredId"]);
+      console.log(`User ${data["ignoredId"]} is now ignored.`);
+      updateOnlineUsersAfterIgnore(
+        data["roomId"],
+        data["ignoredId"],
+        socket.id,
+        "is_ignored",
+        "true"
+      );
     }
   });
 
@@ -345,18 +356,13 @@ io.on("connection", async (socket) => {
       startStreaming(speakersQueue[0]);
     } else {
       updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
-      io.to(channelName).emit("speakersQueue", speakersQueue);
     }
+    io.to(channelName).emit("speakersQueue", speakersQueue);
   });
 
   socket.on("stopAudioStream", (data) => {
     speakersQueue.shift();
-    updateOnlineUsersList(
-      data.channelName,
-      data.socketId,
-      "mic_status",
-      "none"
-    );
+    updateOnlineUsersList(data.channelName, socket, "mic_status", "none");
 
     if (speakersQueue.length > 0) {
       startStreaming(speakersQueue[0]);
@@ -410,6 +416,17 @@ function updateOnlineUsersList(roomId, socketId, field, val) {
       }
     });
     io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
+  }
+}
+
+function updateOnlineUsersAfterIgnore(roomId, ignoredId, socketId, field, val) {
+  if (onlineUsers[roomId]) {
+    onlineUsers[roomId].forEach((user) => {
+      if (user.id === ignoredId) {
+        user.user[field] = val;
+      }
+    });
+    io.to(socketId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
   }
 }
 ///////////////////////////////////////////////////
