@@ -187,7 +187,9 @@ io.on("connection", async (socket) => {
       "Received message:",
       data["message"] + "from: " + data["sender"]
     );
-    if (!ignoredUsers.has(data["senderId"])) {
+    if (ignoredUsers.has(data["senderId"])) {
+      io.broadcast(data.room_id).emit("message", data);
+    } else {
       io.to(data.room_id).emit("message", data);
     }
   });
