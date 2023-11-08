@@ -183,7 +183,7 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    const isIgnored = ignoredUsers.has(data.senderSocket);
+    const isIgnored = ignoredUsers.has(data.senderId);
 
     if (!isIgnored) {
       // Send the message to all members in the room
@@ -193,22 +193,6 @@ io.on("connection", async (socket) => {
       console.log(
         "Received message:",
         data["message"] + "from: " + data["sender"]
-      );
-    } else {
-      // Filter out the ignoring user from the recipients list
-      const roomMembers = io(data.room_id).sockets.sockets;
-      const filteredRecipients = roomMembers.filter(
-        (socket) => socket.id !== data.senderSocket
-      );
-
-      // Send the message to the filtered recipients
-      for (const recipient of filteredRecipients) {
-        recipient.emit("message", data);
-      }
-
-      // Log the message handling for the ignored user
-      console.log(
-        `Ignoring message from user ${data.senderId} and sending it to other members in room ${data.room_id}`
       );
     }
   });
@@ -394,7 +378,15 @@ io.on("connection", async (socket) => {
       });
     }
   });
+  // Handle video streaming
 
+  socket.on("videoStreamRequested", (data) => {
+    startVideoStreaming(data);
+  });
+
+  socket.on("stopVideoStream", (data) => {
+    socket.emit("endVideoStreaming");
+  });
   // Handle disconnection event
 
   socket.on("disconnect", () => {
@@ -427,6 +419,21 @@ function startStreaming(data) {
       ...new Set(onlineUsers[channelName]),
     ]);
   }
+}
+
+function startVideoStreaming(data) {
+  const userId = data["userId"];
+  const channelName = data["channelName"];
+  const streamer = data["streamer_name"];
+  const socketId = data["socketId"];
+
+  const token = generateToken(channelName);
+  io.to(channelName).emit("startVideoStream", {
+    streamToken: token,
+    streamerId: userId,
+    streamer_name: streamer,
+  });
+  updateOnlineUsersList(channelName, socketId, "cam_status", "on_cam");
 }
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
