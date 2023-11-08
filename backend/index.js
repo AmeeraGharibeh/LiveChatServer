@@ -422,7 +422,7 @@ function updateOnlineUsersList(roomId, socketId, field, val) {
 function updateOnlineUsersAfterIgnore(roomId, ignoredId, socketId, field, val) {
   if (onlineUsers[roomId]) {
     onlineUsers[roomId].forEach((user) => {
-      if (user.id === ignoredId) {
+      if (user.user["_id"] === ignoredId) {
         user.user[field] = val;
       }
     });
