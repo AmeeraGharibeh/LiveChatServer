@@ -183,14 +183,33 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    console.log(
-      "Received message:",
-      data["message"] + "from: " + data["sender"]
-    );
-    if (!ignoredUsers.has(data["senderId"])) {
+    const isIgnored = ignoredUsers.has(data.senderId);
+
+    if (!isIgnored) {
+      // Send the message to all members in the room
       io.to(data.room_id).emit("message", data);
+
+      // Log the message receipt
+      console.log(
+        "Received message:",
+        data["message"] + "from: " + data["sender"]
+      );
     } else {
-      socket.broadcast.to(data.room_id).emit("message", data);
+      // Filter out the ignoring user from the recipients list
+      const roomMembers = io(data.room_id).sockets.sockets;
+      const filteredRecipients = roomMembers.filter(
+        (socket) => socket.id !== data.senderId
+      );
+
+      // Send the message to the filtered recipients
+      for (const recipient of filteredRecipients) {
+        recipient.emit("message", data);
+      }
+
+      // Log the message handling for the ignored user
+      console.log(
+        `Ignoring message from user ${data.senderId} and sending it to other members in room ${data.room_id}`
+      );
     }
   });
 
@@ -424,7 +443,7 @@ function updateOnlineUsersList(roomId, socketId, field, val) {
 function updateOnlineUsersAfterIgnore(roomId, ignoredId, socketId, field, val) {
   if (onlineUsers[roomId]) {
     onlineUsers[roomId].forEach((user) => {
-      if (user.user["_id"] === ignoredId) {
+      if (user.id === ignoredId) {
         user.user[field] = val;
       }
     });
