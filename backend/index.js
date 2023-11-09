@@ -183,18 +183,19 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    const isIgnored = ignoredUsers.has(data.senderId);
+    io.to(data.room_id).emit("message", data, { except: ignoredUsers });
 
-    if (!isIgnored) {
-      // Send the message to all members in the room
-      io.to(data.room_id).emit("message", data);
+    // const isIgnored = ignoredUsers.has(data.senderId);
 
-      // Log the message receipt
-      console.log(
-        "Received message:",
-        data["message"] + "from: " + data["sender"]
-      );
-    }
+    // if (!isIgnored) {
+    //   // Send the message to all members in the room
+
+    //   // Log the message receipt
+    //   console.log(
+    //     "Received message:",
+    //     data["message"] + "from: " + data["sender"]
+    //   );
+    // }
   });
 
   // Handle send images
