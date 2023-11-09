@@ -183,7 +183,7 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    io.to(data.room_id).emit("message", data, { except: ignoredUsers });
+    io.to(data.room_id).emit("message", data);
 
     // const isIgnored = ignoredUsers.has(data.senderId);
 
@@ -325,6 +325,7 @@ io.on("connection", async (socket) => {
         "is_ignored",
         "false"
       );
+      socket.emit("ignoredUsers", ignoredUsers);
     } else {
       ignoredUsers.add(data["ignoredId"]);
       console.log(`User ${data["ignoredId"]} is now ignored.`);
