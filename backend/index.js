@@ -325,7 +325,6 @@ io.on("connection", async (socket) => {
         "is_ignored",
         "false"
       );
-      socket.emit("ignoredUsers", ignoredUsers);
     } else {
       ignoredUsers.add(data["ignoredId"]);
       console.log(`User ${data["ignoredId"]} is now ignored.`);
@@ -337,6 +336,7 @@ io.on("connection", async (socket) => {
         "true"
       );
     }
+    socket.emit("ignoredUsers", ignoredUsers);
   });
 
   // Handle Updata online users list
