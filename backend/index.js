@@ -381,7 +381,7 @@ io.on("connection", async (socket) => {
   // Handle video streaming
 
   socket.on("videoStreamRequested", (data) => {
-    startVideoStreaming(data);
+    startVideoStreaming(data, socket);
   });
 
   socket.on("stopVideoStream", (data) => {
@@ -421,19 +421,16 @@ function startStreaming(data) {
   }
 }
 
-function startVideoStreaming(data) {
+function startVideoStreaming(data, socket) {
   const userId = data["userId"];
   const channelName = data["channelName"];
-  const streamer = data["streamer_name"];
-  const socketId = data["socketId"];
 
   const token = generateToken(channelName);
   io.to(channelName).emit("startVideoStream", {
     streamToken: token,
     streamerId: userId,
-    streamer_name: streamer,
   });
-  updateOnlineUsersList(channelName, socketId, "cam_status", "on_cam");
+  updateOnlineUsersList(channelName, socket.id, "cam_status", "on_cam");
 }
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
