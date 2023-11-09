@@ -396,10 +396,13 @@ io.on("connection", async (socket) => {
 
   socket.on("camViewAccept", (data) => {
     const viewerSocket = data.socketId;
+    console.log("accepted");
     io.to(viewerSocket).emit("camViewAccepted", {});
   });
   socket.on("camViewReject", (data) => {
     const viewerSocket = data.socketId;
+    console.log("rejected");
+
     io.to(viewerSocket).emit("camViewRejected", {});
   });
   // Handle disconnection event
