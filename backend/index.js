@@ -336,7 +336,7 @@ io.on("connection", async (socket) => {
         "true"
       );
     }
-    socket.emit("ignoredUsers", ignoredUsers);
+    socket.emit("ignoredUsers", [...new Set(ignoredUsers)]);
   });
 
   // Handle Updata online users list
