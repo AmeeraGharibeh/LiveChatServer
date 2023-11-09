@@ -387,6 +387,21 @@ io.on("connection", async (socket) => {
   socket.on("stopVideoStream", (data) => {
     socket.emit("endVideoStreaming");
   });
+
+  socket.on("camViewRequest", (data) => {
+    const requesterId = data["userId"];
+    const requesterName = data["username"];
+    socket.emit("camViewRequest", { requesterId, requesterName });
+  });
+
+  socket.on("camViewAccept", (data) => {
+    const viewerSocket = data.socketId;
+    io.to(viewerSocket).emit("camViewAccepted", {});
+  });
+  socket.on("camViewReject", (data) => {
+    const viewerSocket = data.socketId;
+    io.to(viewerSocket).emit("camViewRejected", {});
+  });
   // Handle disconnection event
 
   socket.on("disconnect", () => {
