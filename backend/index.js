@@ -20,6 +20,7 @@ const socketIo = require("socket.io");
 const { time } = require("./Config/Helpers/time_helper");
 const { generateToken } = require("./Config/Helpers/generate_agora_token");
 const UserModel = require("./Models/UserModel");
+const BlockedModel = require("./Models/BlockedModel");
 
 ///////////////////////////////////////////////////////////
 
@@ -354,9 +355,9 @@ io.on("connection", async (socket) => {
   // Handle stop user
   socket.on("stopUser", async (data) => {
     const userId = data["userId"];
-    const user = await UserModel.findById(userId);
+    const user = await BlockedModel.find({ user_id: userId });
     if (user) {
-      UserModel.set(userId, { ...user, stop_duration: data["stop_duration"] });
+      BlockedModel.set(user._id, { ...user, period: data["stop_duration"] });
       io.to(user.room_id).emit("notification", {
         sender: data["master"],
         senderId: data["master_id"],
@@ -369,11 +370,11 @@ io.on("connection", async (socket) => {
 
   socket.on("unStopUser", async (data) => {
     const userId = data["userId"];
-    const user = await UserModel.findById(userId);
+    const user = await BlockedModel.find({ user_id: userId });
 
     if (user) {
       // Assuming UserModel has a method to unset the stop_duration
-      UserModel.set(userId, { ...user, stop_duration: "-" });
+      await BlockedModel.findByIdAndDelete(user._id);
 
       io.to(user.room_id).emit("notification", {
         sender: data["master"],
