@@ -128,6 +128,10 @@ const UserSchema = mongoose.Schema(
       type: String,
       default: "none",
     },
+    stop_duration: {
+      type: String,
+      default: "-",
+    },
 
     icon: {
       type: String,

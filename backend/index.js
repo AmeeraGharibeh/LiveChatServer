@@ -19,6 +19,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const { time } = require("./Config/Helpers/time_helper");
 const { generateToken } = require("./Config/Helpers/generate_agora_token");
+const UserModel = require("./Models/UserModel");
 
 ///////////////////////////////////////////////////////////
 
@@ -281,6 +282,12 @@ io.on("connection", async (socket) => {
     io.to(socket.id).emit("messageRead", { threadId: threadId });
   });
 
+  // handle delete text
+
+  socket.on("deleteAllMessages", (data) => {
+    const roomId = data["roomId"];
+    io.to(roomId).emit("deleteMessages");
+  });
   // Handle user kick
   socket.on("kickUser", async (data) => {
     const room_id = data.room_id;
@@ -344,6 +351,41 @@ io.on("connection", async (socket) => {
     updateOnlineUsersList(data.room_id, socket.id, data.field, data.value);
   });
 
+  // Handle stop user
+  socket.on("stopUser", async (data) => {
+    const userId = data["userId"];
+    const user = await UserModel.findById(userId);
+    if (user) {
+      UserModel.set(userId, { ...user, stop_duration: data["stop_duration"] });
+      io.to(user.room_id).emit("notification", {
+        sender: data["master"],
+        senderId: data["master_id"],
+        message: data["master"] + " قام بإيقاف العضو: " + data["username"],
+        color: 0xfffce9f1,
+        type: "notification",
+      });
+    }
+  });
+
+  socket.on("unStopUser", async (data) => {
+    const userId = data["userId"];
+    const user = await UserModel.findById(userId);
+
+    if (user) {
+      // Assuming UserModel has a method to unset the stop_duration
+      UserModel.set(userId, { ...user, stop_duration: "-" });
+
+      io.to(user.room_id).emit("notification", {
+        sender: data["master"],
+        senderId: data["master_id"],
+        message:
+          data["master"] + " قام بإلغاء إيقاف العضو: " + data["username"],
+        color: 0xfffce9f1,
+        type: "notification",
+      });
+    }
+  });
+
   // Handle audio streaming
 
   socket.on("streamRequested", (data) => {
@@ -376,7 +418,7 @@ io.on("connection", async (socket) => {
     } else {
       socket.emit("endStreaming");
       onlineUsers[data.channelName].forEach((user) => {
-        user.user["audio_status"] = "none";
+        user.user["audio_status"] = "none f";
       });
     }
   });
@@ -430,6 +472,7 @@ function startStreaming(data) {
     streamToken: token,
     streamerId: userId,
     streamer_name: streamer,
+    streamer_socket: socketId,
     speakingTime: 50,
   });
   updateOnlineUsersList(channelName, socketId, "mic_status", "on_mic");
