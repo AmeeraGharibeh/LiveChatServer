@@ -354,37 +354,48 @@ io.on("connection", async (socket) => {
 
   // Handle stop user
   socket.on("stopUser", async (data) => {
-    const userId = data["userId"];
-    const blockedData = {
-      username: data.username,
-      master: data.master,
-      period: data.period,
-      device: data.device,
-      user_id: userId,
-      room_id: data.room_id,
-      location: data.location,
-      is_device_blocked: data.is_device_blocked,
-      date: time(),
-    };
-    const existingBlocked = await BlockedModel.findOne({ user_id: userId });
+    try {
+      const userId = data["userId"];
+      const blockedData = {
+        username: data.username,
+        master: data.master,
+        period: data.period,
+        device: data.device,
+        user_id: userId,
+        room_id: data.room_id,
+        location: data.location,
+        is_device_blocked: data.is_device_blocked,
+        date: time(),
+      };
+      const existingBlocked = await BlockedModel.findOne({ user_id: userId });
 
-    if (existingBlocked) {
-      blocked = await BlockedModel.findByIdAndUpdate(
-        existingBlocked._id,
-        blockedData,
-        { new: true, upsert: true }
-      );
-    } else {
-      blocked = new BlockedModel(blockedData);
-      await blocked.save();
+      let blocked;
+
+      if (existingBlocked) {
+        blocked = await BlockedModel.findByIdAndUpdate(
+          existingBlocked._id,
+          blockedData,
+          { new: true, upsert: true }
+        );
+      } else {
+        blocked = new BlockedModel(blockedData);
+        await blocked.save();
+      }
+
+      io.to(data.room_id).emit("notification", {
+        sender: data["master"],
+        senderId: data["master_id"],
+        message: data["master"] + " قام بإيقاف العضو: " + data["username"],
+        color: 0xfffce9f1,
+        type: "notification",
+      });
+    } catch (error) {
+      console.error("Error in stopUser event:", error.message);
+      // Handle the error as needed, e.g., emit an error event or log it
+      socket.emit("stopUserError", {
+        message: "An error occurred while stopping the user.",
+      });
     }
-    io.to(user.room_id).emit("notification", {
-      sender: data["master"],
-      senderId: data["master_id"],
-      message: data["master"] + " قام بإيقاف العضو: " + data["username"],
-      color: 0xfffce9f1,
-      type: "notification",
-    });
   });
 
   socket.on("unStopUser", async (data) => {
