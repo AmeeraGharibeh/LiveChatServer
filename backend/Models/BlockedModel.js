@@ -37,7 +37,7 @@ const BlockedSchema = mongoose.Schema(
       type: String,
       default: "forever",
     },
-    date: {
+    end_date: {
       type: String,
     },
   },

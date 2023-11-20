@@ -365,7 +365,7 @@ io.on("connection", async (socket) => {
         room_id: data.room_id,
         location: data.location,
         is_device_blocked: data.is_device_blocked,
-        date: time(),
+        end_date: data.block_until,
       };
       const existingBlocked = await BlockedModel.findOne({ user_id: userId });
 
