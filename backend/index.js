@@ -355,28 +355,46 @@ io.on("connection", async (socket) => {
   // Handle stop user
   socket.on("stopUser", async (data) => {
     const userId = data["userId"];
-    const user = await BlockedModel.find({ user_id: userId });
-    if (user) {
-      BlockedModel.set(user._id, { ...user, period: data["stop_duration"] });
-      io.to(user.room_id).emit("notification", {
-        sender: data["master"],
-        senderId: data["master_id"],
-        message: data["master"] + " قام بإيقاف العضو: " + data["username"],
-        color: 0xfffce9f1,
-        type: "notification",
-      });
+    const blockedData = {
+      username: data.username,
+      master: data.master,
+      period: data.period,
+      device: data.device,
+      user_id: userId,
+      room_id: data.room_id,
+      location: data.location,
+      is_device_blocked: data.is_device_blocked,
+      date: time(),
+    };
+    const existingBlocked = await BlockedModel.findOne({ user_id: userId });
+
+    if (existingBlocked) {
+      blocked = await BlockedModel.findByIdAndUpdate(
+        existingBlocked._id,
+        blockedData,
+        { new: true, upsert: true }
+      );
+    } else {
+      blocked = new BlockedModel(blockedData);
+      await blocked.save();
     }
+    io.to(user.room_id).emit("notification", {
+      sender: data["master"],
+      senderId: data["master_id"],
+      message: data["master"] + " قام بإيقاف العضو: " + data["username"],
+      color: 0xfffce9f1,
+      type: "notification",
+    });
   });
 
   socket.on("unStopUser", async (data) => {
     const userId = data["userId"];
-    const user = await BlockedModel.find({ user_id: userId });
+    const existingBlocked = await BlockedModel.findOne({ user_id: userId });
 
-    if (user) {
-      // Assuming UserModel has a method to unset the stop_duration
-      await BlockedModel.findByIdAndDelete(user._id);
+    if (existingBlocked) {
+      await BlockedModel.findByIdAndDelete(existingBlocked._id);
 
-      io.to(user.room_id).emit("notification", {
+      io.to(existingBlocked.room_id).emit("notification", {
         sender: data["master"],
         senderId: data["master_id"],
         message:
@@ -384,6 +402,8 @@ io.on("connection", async (socket) => {
         color: 0xfffce9f1,
         type: "notification",
       });
+    } else {
+      console.log("User is not blocked");
     }
   });
 
