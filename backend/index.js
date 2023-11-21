@@ -98,11 +98,16 @@ io.on("connection", async (socket) => {
       console.log("finded" + isStopped);
 
       stoppedUsers.add(user["device"]);
-      socket.emit("stoppedUsers", [...new Set(stoppedUsers)]);
+      updateOnlineUsersList(
+        user.room_id,
+        socket.id,
+        "stop_type",
+        isStopped.stop_type
+      );
     } else {
       if (stoppedUsers.has(user["device"])) {
         stoppedUsers.delete(user["device"]);
-        socket.emit("stoppedUsers", [...new Set(stoppedUsers)]);
+        updateOnlineUsersList(user.room_id, socket.id, "stop_type", "none");
       }
     }
     // update online users list and sent it to the room
@@ -545,7 +550,7 @@ function startVideoStreaming(data, socket) {
 }
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
-  if (onlineUsers[roomId] && socketId) {
+  if (onlineUsers[roomId]) {
     onlineUsers[roomId].forEach((user) => {
       if (user.id === socketId) {
         user.user[field] = val;
