@@ -81,8 +81,6 @@ io.on("connection", async (socket) => {
   });
   // user joins the room
   socket.on("addUser", async (user) => {
-    const isStopped = await checkStoppedUsers(user["device"]);
-
     socket.userId = user._id;
     socket.emit("connected");
 
@@ -94,22 +92,7 @@ io.on("connection", async (socket) => {
       color: 0xffc7f9cc,
       type: "notification",
     });
-    if (isStopped) {
-      console.log("finded" + isStopped);
 
-      stoppedUsers.add(user["device"]);
-      updateOnlineUsersList(
-        user.room_id,
-        socket.id,
-        "stop_type",
-        isStopped.stop_type
-      );
-    } else {
-      if (stoppedUsers.has(user["device"])) {
-        stoppedUsers.delete(user["device"]);
-        updateOnlineUsersList(user.room_id, socket.id, "stop_type", "none");
-      }
-    }
     // update online users list and sent it to the room
     if (!onlineUsers[user.room_id]) {
       onlineUsers[user.room_id] = [];
@@ -133,6 +116,23 @@ io.on("connection", async (socket) => {
       icon: user.icon,
     });
     log = await newLog.save();
+    const isStopped = await checkStoppedUsers(user["device"]);
+    if (isStopped) {
+      console.log("finded" + isStopped);
+
+      stoppedUsers.add(user["device"]);
+      updateOnlineUsersList(
+        user.room_id,
+        socket.id,
+        "stop_type",
+        isStopped.stop_type
+      );
+    } else {
+      if (stoppedUsers.has(user["device"])) {
+        stoppedUsers.delete(user["device"]);
+        updateOnlineUsersList(user.room_id, socket.id, "stop_type", "none");
+      }
+    }
   });
 
   socket.on("leaveRoom", async (user) => {
@@ -550,7 +550,7 @@ function startVideoStreaming(data, socket) {
 }
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
-  if (onlineUsers[roomId]) {
+  if (onlineUsers[roomId] && socketId) {
     onlineUsers[roomId].forEach((user) => {
       if (user.id === socketId) {
         user.user[field] = val;
