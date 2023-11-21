@@ -20,8 +20,8 @@ const checkStoppedUsers = async (device) => {
           return;
         }
       }
-      return stoppedUser;
     }
+    return stoppedUser;
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
