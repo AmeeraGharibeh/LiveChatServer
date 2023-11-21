@@ -82,22 +82,7 @@ io.on("connection", async (socket) => {
   // user joins the room
   socket.on("addUser", async (user) => {
     const isStopped = await checkStoppedUsers(user["device"]);
-    if (isStopped) {
-      console.log("finded" + isStopped);
 
-      stoppedUsers.add(user["device"]);
-      updateOnlineUsersList(
-        user.room_id,
-        socket.id,
-        "stop_type",
-        isStopped.stop_type
-      );
-    } else {
-      if (stoppedUsers.has(user["device"])) {
-        stoppedUsers.delete(user["device"]);
-        updateOnlineUsersList(user.room_id, socket.id, "stop_type", "none");
-      }
-    }
     socket.userId = user._id;
     socket.emit("connected");
 
@@ -109,7 +94,17 @@ io.on("connection", async (socket) => {
       color: 0xffc7f9cc,
       type: "notification",
     });
+    if (isStopped) {
+      console.log("finded" + isStopped);
 
+      stoppedUsers.add(user["device"]);
+      socket.emit("stoppedUsers", [...new Set(stoppedUsers)]);
+    } else {
+      if (stoppedUsers.has(user["device"])) {
+        stoppedUsers.delete(user["device"]);
+        socket.emit("stoppedUsers", [...new Set(stoppedUsers)]);
+      }
+    }
     // update online users list and sent it to the room
     if (!onlineUsers[user.room_id]) {
       onlineUsers[user.room_id] = [];
