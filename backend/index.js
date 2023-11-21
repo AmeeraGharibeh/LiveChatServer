@@ -556,6 +556,7 @@ function updateOnlineUsersList(roomId, socketId, field, val) {
         user.user[field] = val;
       }
     });
+    console.log("value changed in" + field + " with " + val);
     io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
   }
 }
