@@ -20,6 +20,7 @@ const socketIo = require("socket.io");
 const { time } = require("./Config/Helpers/time_helper");
 const { generateToken } = require("./Config/Helpers/generate_agora_token");
 const Stopped = require("./Models/StopModel");
+const { checkStoppedUsers } = require("./Routes/StopCheck");
 
 ///////////////////////////////////////////////////////////
 
@@ -55,6 +56,7 @@ const clients = {};
 let log;
 const speakersQueue = [];
 const ignoredUsers = new Set();
+const stoppedUsers = new Set();
 
 io.on("connection", async (socket) => {
   console.log("A user connected");
@@ -79,7 +81,21 @@ io.on("connection", async (socket) => {
   });
   // user joins the room
   socket.on("addUser", async (user) => {
-    // socket.join(user._id);
+    const isStopped = checkStoppedUsers(data["device"]);
+    if (isStopped) {
+      stoppedUsers.add(data["device"]);
+      updateOnlineUsersList(
+        data.room_id,
+        data.socket,
+        "stop_type",
+        isStopped.stop_type
+      );
+    } else {
+      if (stoppedUsers.has(data["device"])) {
+        stoppedUsers.delete(data["device"]);
+        updateOnlineUsersList(data.room_id, data.socket, "stop_type", "none");
+      }
+    }
     socket.userId = user._id;
     socket.emit("connected");
 
@@ -185,18 +201,6 @@ io.on("connection", async (socket) => {
   // Handle chat events
   socket.on("message", (data) => {
     io.to(data.room_id).emit("message", data);
-
-    // const isIgnored = ignoredUsers.has(data.senderId);
-
-    // if (!isIgnored) {
-    //   // Send the message to all members in the room
-
-    //   // Log the message receipt
-    //   console.log(
-    //     "Received message:",
-    //     data["message"] + "from: " + data["sender"]
-    //   );
-    // }
   });
 
   // Handle send images
@@ -354,13 +358,12 @@ io.on("connection", async (socket) => {
   // Handle stop user
   socket.on("stopUser", async (data) => {
     try {
-      const userId = data["userId"];
+      const deviceId = data["device"];
       const stoppedData = {
         username: data.username,
         master: data.master,
         period: data.period,
         device: data.device,
-        user_id: userId,
         room_id: data.room_id,
         end_date: data.stop_until,
         is_mic_stopped: data.is_mic_stopped,
@@ -369,7 +372,7 @@ io.on("connection", async (socket) => {
         is_private_stopped: data.is_private_stopped,
         is_mic_stopped: data.is_all_stopped,
       };
-      const existingStopped = await Stopped.findOne({ user_id: userId });
+      const existingStopped = await Stopped.findOne({ device: deviceId });
 
       let stopped;
 
@@ -385,10 +388,12 @@ io.on("connection", async (socket) => {
       }
       updateOnlineUsersList(
         data.room_id,
-        socket.id,
+        data.socket,
         "stop_type",
         data.stop_type
       );
+      stoppedUsers.add(data["device"]);
+
       io.to(data.room_id).emit("notification", {
         sender: data["master"],
         senderId: data["master_id"],
@@ -406,12 +411,15 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("unStopUser", async (data) => {
-    const userId = data["userId"];
-    const existingStopped = await Stopped.findOne({ user_id: userId });
+    const deviceId = data["device"];
+    const existingStopped = await Stopped.findOne({ device: deviceId });
 
     if (existingStopped) {
       await Stopped.findByIdAndDelete(existingStopped._id);
-
+      if (stoppedUsers.has(data["device"])) {
+        stoppedUsers.delete(data["device"]);
+      }
+      updateOnlineUsersList(data.room_id, data.socket, "stop_type", "none");
       io.to(existingStopped.room_id).emit("notification", {
         sender: data["master"],
         senderId: data["master_id"],
