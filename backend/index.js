@@ -83,17 +83,17 @@ io.on("connection", async (socket) => {
   socket.on("addUser", async (user) => {
     const isStopped = checkStoppedUsers(user["device"]);
     if (isStopped) {
-      stoppedUsers.add(data["device"]);
+      stoppedUsers.add(user["device"]);
       updateOnlineUsersList(
-        data.room_id,
-        data.socket,
+        user.room_id,
+        socket.id,
         "stop_type",
         isStopped.stop_type
       );
     } else {
-      if (stoppedUsers.has(data["device"])) {
-        stoppedUsers.delete(data["device"]);
-        updateOnlineUsersList(data.room_id, data.socket, "stop_type", "none");
+      if (stoppedUsers.has(user["device"])) {
+        stoppedUsers.delete(user["device"]);
+        updateOnlineUsersList(user.room_id, socket.id, "stop_type", "none");
       }
     }
     socket.userId = user._id;
