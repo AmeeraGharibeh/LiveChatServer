@@ -6,25 +6,28 @@ const checkStoppedUsers = async (device) => {
     const stoppedUser = await StopModel.findOne({ device: device });
 
     if (stoppedUser) {
-      console.log();
       if (stoppedUser.period === "forever") {
-        return;
+        return stoppedUser; // Return stoppedUser if the period is "forever"
       } else {
         const currentDate = new Date();
         const blockEndDate = new Date(stoppedUser.end_date);
 
         if (currentDate > blockEndDate) {
+          // Remove the user from the stop list if the block end date has passed
           await StopModel.findByIdAndRemove(stoppedUser._id);
           console.log(`User unblocked: ${stoppedUser.username}`);
         } else {
-          return;
+          return stoppedUser; // Return stoppedUser if the user is still blocked
         }
       }
     }
+
+    // If stoppedUser is not found or conditions are not met, it returns undefined
     return stoppedUser;
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ msg: "Internal server error" });
+    // Consider handling the error and returning an appropriate response
+    throw new Error("Internal server error");
   }
 };
 
