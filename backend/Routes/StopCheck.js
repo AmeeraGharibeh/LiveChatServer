@@ -2,6 +2,7 @@ const StopModel = require("../Models/StopModel");
 
 const checkStoppedUsers = async (device) => {
   try {
+    console.log("device is" + device);
     const stoppedUser = await StopModel.findOne({ device: device });
 
     if (stoppedUser) {
@@ -19,6 +20,7 @@ const checkStoppedUsers = async (device) => {
         }
       }
     }
+    console.log("finded" + stoppedUser);
     return stoppedUser;
   } catch (error) {
     console.error(error);
