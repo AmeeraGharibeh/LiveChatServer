@@ -380,7 +380,7 @@ io.on("connection", async (socket) => {
           { new: true, upsert: true }
         );
       } else {
-        stopped = new Stopped(blockedData);
+        stopped = new Stopped(stoppedData);
         await stopped.save();
       }
 
