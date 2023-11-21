@@ -81,8 +81,10 @@ io.on("connection", async (socket) => {
   });
   // user joins the room
   socket.on("addUser", async (user) => {
-    const isStopped = checkStoppedUsers(user["device"]);
+    const isStopped = await checkStoppedUsers(user["device"]);
     if (isStopped) {
+      console.log("finded" + isStopped);
+
       stoppedUsers.add(user["device"]);
       updateOnlineUsersList(
         user.room_id,

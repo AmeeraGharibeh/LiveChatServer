@@ -4,7 +4,6 @@ const checkStoppedUsers = async (device) => {
   try {
     console.log("device is" + device);
     const stoppedUser = await StopModel.findOne({ device: device });
-    console.log("finded" + stoppedUser);
 
     if (stoppedUser) {
       console.log();
