@@ -4,8 +4,10 @@ const checkStoppedUsers = async (device) => {
   try {
     console.log("device is" + device);
     const stoppedUser = await StopModel.findOne({ device: device });
+    console.log("finded" + stoppedUser);
 
     if (stoppedUser) {
+      console.log();
       if (stoppedUser.period === "forever") {
         return;
       } else {
@@ -19,9 +21,8 @@ const checkStoppedUsers = async (device) => {
           return;
         }
       }
+      return stoppedUser;
     }
-    console.log("finded" + stoppedUser);
-    return stoppedUser;
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
