@@ -383,7 +383,12 @@ io.on("connection", async (socket) => {
         stopped = new Stopped(stoppedData);
         await stopped.save();
       }
-
+      updateOnlineUsersList(
+        data.room_id,
+        socket.id,
+        "stop_type",
+        data.stop_type
+      );
       io.to(data.room_id).emit("notification", {
         sender: data["master"],
         senderId: data["master_id"],
