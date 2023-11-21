@@ -7,16 +7,22 @@ const blockedMiddleware = async (req, res, next) => {
     });
 
     if (blockedUser) {
-      const currentDate = new Date();
-      const blockEndDate = new Date(blockedUser.end_date);
-
-      if (currentDate > blockEndDate) {
-        await BlockedModel.findByIdAndRemove(blockedUser._id);
-        console.log(`User unblocked: ${blockedUser.username}`);
-      } else {
+      if (blockedUser.period === "forever") {
         return res
           .status(403)
           .json({ msg: `محظور من الدخول \n ${blockedUser.period}` });
+      } else {
+        const currentDate = new Date();
+        const blockEndDate = new Date(blockedUser.end_date);
+
+        if (currentDate > blockEndDate) {
+          await BlockedModel.findByIdAndRemove(blockedUser._id);
+          console.log(`User unblocked: ${blockedUser.username}`);
+        } else {
+          return res
+            .status(403)
+            .json({ msg: `محظور من الدخول \n ${blockedUser.period}` });
+        }
       }
     }
 

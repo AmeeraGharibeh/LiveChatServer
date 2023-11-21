@@ -19,8 +19,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const { time } = require("./Config/Helpers/time_helper");
 const { generateToken } = require("./Config/Helpers/generate_agora_token");
-const UserModel = require("./Models/UserModel");
-const BlockedModel = require("./Models/BlockedModel");
+const Stopped = require("./Models/StopModel");
 
 ///////////////////////////////////////////////////////////
 
@@ -356,30 +355,33 @@ io.on("connection", async (socket) => {
   socket.on("stopUser", async (data) => {
     try {
       const userId = data["userId"];
-      const blockedData = {
+      const stoppedData = {
         username: data.username,
         master: data.master,
         period: data.period,
         device: data.device,
         user_id: userId,
         room_id: data.room_id,
-        location: data.location,
-        is_device_blocked: data.is_device_blocked,
-        end_date: data.block_until,
+        end_date: data.stop_until,
+        is_mic_stopped: data.is_mic_stopped,
+        is_cam_stopped: data.is_cam_stopped,
+        is_msg_stopped: data.is_msg_stopped,
+        is_private_stopped: data.is_private_stopped,
+        is_mic_stopped: data.is_all_stopped,
       };
-      const existingBlocked = await BlockedModel.findOne({ user_id: userId });
+      const existingStopped = await Stopped.findOne({ user_id: userId });
 
-      let blocked;
+      let stopped;
 
-      if (existingBlocked) {
-        blocked = await BlockedModel.findByIdAndUpdate(
-          existingBlocked._id,
-          blockedData,
+      if (existingStopped) {
+        stopped = await Stopped.findByIdAndUpdate(
+          existingStopped._id,
+          stoppedData,
           { new: true, upsert: true }
         );
       } else {
-        blocked = new BlockedModel(blockedData);
-        await blocked.save();
+        stopped = new Stopped(blockedData);
+        await stopped.save();
       }
 
       io.to(data.room_id).emit("notification", {
@@ -400,12 +402,12 @@ io.on("connection", async (socket) => {
 
   socket.on("unStopUser", async (data) => {
     const userId = data["userId"];
-    const existingBlocked = await BlockedModel.findOne({ user_id: userId });
+    const existingStopped = await Stopped.findOne({ user_id: userId });
 
-    if (existingBlocked) {
-      await BlockedModel.findByIdAndDelete(existingBlocked._id);
+    if (existingStopped) {
+      await Stopped.findByIdAndDelete(existingStopped._id);
 
-      io.to(existingBlocked.room_id).emit("notification", {
+      io.to(existingStopped.room_id).emit("notification", {
         sender: data["master"],
         senderId: data["master_id"],
         message:
