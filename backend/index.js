@@ -205,7 +205,12 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    if (stoppedUsers[data["device"]].stop_type === "is_msg_stopped") {
+    if (
+      stoppedUsers.some(
+        (obj) =>
+          obj.device === data["device"] && obj.stop_type === "is_msg_stopped"
+      )
+    ) {
       io.to(socket.id).emit("notification", {
         sender: "system",
         senderId: "system",
@@ -258,8 +263,11 @@ io.on("connection", async (socket) => {
     const message = data.message;
     const friendName = data.friendName;
     if (
-      stoppedUsers[data["device"]] &&
-      stoppedUsers[data["device"]].stop_type === "is_private_stopped"
+      stoppedUsers.some(
+        (obj) =>
+          obj.device === data["device"] &&
+          obj.stop_type === "is_private_stopped"
+      )
     ) {
       io.to(socket.id).emit("notification", {
         sender: "system",
@@ -467,8 +475,10 @@ io.on("connection", async (socket) => {
     const streamer = data["streamer_name"];
 
     if (
-      stoppedUsers[data["device"]] &&
-      stoppedUsers[data["device"]].stop_type === "is_mic_stopped"
+      stoppedUsers.some(
+        (obj) =>
+          obj.device === data["device"] && obj.stop_type === "is_mic_stopped"
+      )
     ) {
       io.to(socket.id).emit("notification", {
         sender: "system",
@@ -511,8 +521,10 @@ io.on("connection", async (socket) => {
 
   socket.on("videoStreamRequested", (data) => {
     if (
-      stoppedUsers[data["device"]] &&
-      stoppedUsers[data["device"]].stop_type === "is_cam_stopped"
+      stoppedUsers.some(
+        (obj) =>
+          obj.device === data["device"] && obj.stop_type === "is_cam_stopped"
+      )
     ) {
       io.to(socket.id).emit("notification", {
         sender: "system",
