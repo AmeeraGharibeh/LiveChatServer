@@ -8,18 +8,11 @@ const StopSchema = mongoose.Schema(
     },
     room_id: {
       type: String,
+      required: true,
     },
-    is_mic_stopped: {
-      type: Boolean,
-    },
-    is_cam_stopped: {
-      type: Boolean,
-    },
-    is_msg_stopped: {
-      type: Boolean,
-    },
-    is_private_stopped: {
-      type: Boolean,
+    stop_type: {
+      type: String,
+      required: true,
     },
     master: {
       type: String,

@@ -368,11 +368,7 @@ io.on("connection", async (socket) => {
         device: data.device,
         room_id: data.room_id,
         end_date: data.stop_until,
-        is_mic_stopped: data.is_mic_stopped,
-        is_cam_stopped: data.is_cam_stopped,
-        is_msg_stopped: data.is_msg_stopped,
-        is_private_stopped: data.is_private_stopped,
-        is_mic_stopped: data.is_all_stopped,
+        stop_type: data.stop_type,
       };
       const existingStopped = await Stopped.findOne({ device: deviceId });
 
