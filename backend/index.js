@@ -119,8 +119,11 @@ io.on("connection", async (socket) => {
     const isStopped = await checkStoppedUsers(user["device"]);
     if (isStopped) {
       console.log("finded" + isStopped);
-
-      stoppedUsers.add(user["device"]);
+      stoppedUsers.push({
+        device: isStopped.device,
+        stop_type: isStopped.stop_type,
+        period: isStopped.period,
+      });
       updateOnlineUsersList(
         user.room_id,
         socket.id,
@@ -202,7 +205,20 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    io.to(data.room_id).emit("message", data);
+    if (
+      stoppedUsers.has(data["device"]) &&
+      stoppedUsers.get(data["device"]).stop_type === "is_msg_stopped"
+    ) {
+      io.to(socket.id).emit("notification", {
+        sender: "system",
+        senderId: "system",
+        message: "تم ايقافك عن ارسال الرسائل",
+        color: 0xfffce9f1,
+        type: "notification",
+      });
+    } else {
+      io.to(data.room_id).emit("message", data);
+    }
   });
 
   // Handle send images
@@ -244,32 +260,43 @@ io.on("connection", async (socket) => {
     const senderId = data.senderId;
     const message = data.message;
     const friendName = data.friendName;
-
-    // Generate a unique threadId based on the combination of senderId and friendId
-    const threadId = [senderId, friendId].sort().join("_");
-
-    console.log("thread is " + threadId);
-    // Send the private message to the recipient socket
-    if (!activeConversations[threadId]) {
-      activeConversations[threadId] = [friendId, socket.id];
-    } else if (!activeConversations[threadId].includes(friendId)) {
-      activeConversations[threadId].push(friendId);
-    }
-
-    activeConversations[threadId].forEach((socketId) => {
-      io.to(socketId).emit("privateMessage", {
-        threadId: threadId,
-        between: [
-          { sender: username, id: senderId },
-          { sender: friendName, id: friendId },
-        ],
-        message: message,
-        senderId: senderId,
-        sender: username,
+    if (
+      stoppedUsers.has(data["device"]) &&
+      stoppedUsers.get(data["device"]).stop_type === "is_private_stopped"
+    ) {
+      io.to(socket.id).emit("notification", {
+        sender: "system",
+        senderId: "system",
+        message: "تم ايقافك عن ارسال الرسائل الخاصة",
+        color: 0xfffce9f1,
+        type: "notification",
       });
-    });
+    } else {
+      // Generate a unique threadId based on the combination of senderId and friendId
+      const threadId = [senderId, friendId].sort().join("_");
+      console.log("thread is " + threadId);
+      // Send the private message to the recipient socket
+      if (!activeConversations[threadId]) {
+        activeConversations[threadId] = [friendId, socket.id];
+      } else if (!activeConversations[threadId].includes(friendId)) {
+        activeConversations[threadId].push(friendId);
+      }
 
-    console.log(`${message} sent from ${username} to ${friendId}`);
+      activeConversations[threadId].forEach((socketId) => {
+        io.to(socketId).emit("privateMessage", {
+          threadId: threadId,
+          between: [
+            { sender: username, id: senderId },
+            { sender: friendName, id: friendId },
+          ],
+          message: message,
+          senderId: senderId,
+          sender: username,
+        });
+      });
+
+      console.log(`${message} sent from ${username} to ${friendId}`);
+    }
   });
 
   // Handle reading the message
@@ -390,7 +417,11 @@ io.on("connection", async (socket) => {
         "stop_type",
         data.stop_type
       );
-      stoppedUsers.add(data["device"]);
+      stoppedUsers.push({
+        device: data.device,
+        stop_type: data.stop_type,
+        period: data.period,
+      });
 
       io.to(data.room_id).emit("notification", {
         sender: data["master"],
@@ -435,23 +466,35 @@ io.on("connection", async (socket) => {
 
   socket.on("streamRequested", (data) => {
     const userId = data["userId"];
-    //const socketId = data["socketId"];
     const channelName = data["channelName"];
     const streamer = data["streamer_name"];
 
-    speakersQueue.push({
-      userId: userId,
-      socketId: socket.id,
-      channelName: channelName,
-      streamer_name: streamer,
-      count: speakersQueue.length + 1,
-    });
-    if (speakersQueue.length === 1) {
-      startStreaming(speakersQueue[0]);
+    if (
+      stoppedUsers.has(data["device"]) &&
+      stoppedUsers.get(data["device"]).stop_type === "is_mic_stopped"
+    ) {
+      io.to(socket.id).emit("notification", {
+        sender: "system",
+        senderId: "system",
+        message: "تم ايقافك عن المايك",
+        color: 0xfffce9f1,
+        type: "notification",
+      });
     } else {
-      updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
+      speakersQueue.push({
+        userId: userId,
+        socketId: socket.id,
+        channelName: channelName,
+        streamer_name: streamer,
+        count: speakersQueue.length + 1,
+      });
+      if (speakersQueue.length === 1) {
+        startStreaming(speakersQueue[0]);
+      } else {
+        updateOnlineUsersList(channelName, socket.id, "mic_status", "mic_wait");
+      }
+      io.to(channelName).emit("speakersQueue", speakersQueue);
     }
-    io.to(channelName).emit("speakersQueue", speakersQueue);
   });
 
   socket.on("stopAudioStream", (data) => {
@@ -470,7 +513,20 @@ io.on("connection", async (socket) => {
   // Handle video streaming
 
   socket.on("videoStreamRequested", (data) => {
-    startVideoStreaming(data, socket);
+    if (
+      stoppedUsers.has(data["device"]) &&
+      stoppedUsers.get(data["device"]).stop_type === "is_cam_stopped"
+    ) {
+      io.to(socket.id).emit("notification", {
+        sender: "system",
+        senderId: "system",
+        message: "تم ايقافك عن الكاميرا",
+        color: 0xfffce9f1,
+        type: "notification",
+      });
+    } else {
+      startVideoStreaming(data, socket);
+    }
   });
 
   socket.on("stopVideoStream", (data) => {
