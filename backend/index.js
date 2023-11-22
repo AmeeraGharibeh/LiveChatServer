@@ -205,10 +205,7 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    if (
-      stoppedUsers[data["device"]] &&
-      stoppedUsers[data["device"]].stop_type === "is_msg_stopped"
-    ) {
+    if (stoppedUsers[data["device"]].stop_type === "is_msg_stopped") {
       io.to(socket.id).emit("notification", {
         sender: "system",
         senderId: "system",
