@@ -56,7 +56,7 @@ const clients = {};
 let log;
 const speakersQueue = [];
 const ignoredUsers = new Set();
-const stoppedUsers = new Set();
+const stoppedUsers = [];
 
 io.on("connection", async (socket) => {
   console.log("A user connected");
