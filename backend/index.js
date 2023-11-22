@@ -213,7 +213,7 @@ io.on("connection", async (socket) => {
           obj.stop_type === "stop_all"
       )
     ) {
-      io.to(socket.id).emit("notification", {
+      io.to(data["senderSocket"]).emit("notification", {
         sender: "system",
         senderId: "system",
         message: "تم ايقافك عن ارسال الرسائل",
@@ -272,7 +272,7 @@ io.on("connection", async (socket) => {
           obj.stop_type === "stop_all"
       )
     ) {
-      io.to(socket.id).emit("notification", {
+      io.to(data["senderSocket"]).emit("notification", {
         sender: "system",
         senderId: "system",
         message: "تم ايقافك عن ارسال الرسائل الخاصة",
@@ -485,7 +485,7 @@ io.on("connection", async (socket) => {
           obj.stop_type === "stop_all"
       )
     ) {
-      io.to(socket.id).emit("notification", {
+      io.to(data["senderSocket"]).emit("notification", {
         sender: "system",
         senderId: "system",
         message: "تم ايقافك عن المايك",
@@ -533,7 +533,7 @@ io.on("connection", async (socket) => {
           obj.stop_type === "stop_all"
       )
     ) {
-      io.to(socket.id).emit("notification", {
+      io.to(data["senderSocket"]).emit("notification", {
         sender: "system",
         senderId: "system",
         message: "تم ايقافك عن الكاميرا",
