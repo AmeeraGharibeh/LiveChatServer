@@ -208,7 +208,9 @@ io.on("connection", async (socket) => {
     if (
       stoppedUsers.some(
         (obj) =>
-          obj.device === data["device"] && obj.stop_type === "is_msg_stopped"
+          (obj.device === data["device"] &&
+            obj.stop_type === "is_msg_stopped") ||
+          obj.stop_type === "stop_all"
       )
     ) {
       io.to(socket.id).emit("notification", {
@@ -265,8 +267,9 @@ io.on("connection", async (socket) => {
     if (
       stoppedUsers.some(
         (obj) =>
-          obj.device === data["device"] &&
-          obj.stop_type === "is_private_stopped"
+          (obj.device === data["device"] &&
+            obj.stop_type === "is_private_stopped") ||
+          obj.stop_type === "stop_all"
       )
     ) {
       io.to(socket.id).emit("notification", {
@@ -477,7 +480,9 @@ io.on("connection", async (socket) => {
     if (
       stoppedUsers.some(
         (obj) =>
-          obj.device === data["device"] && obj.stop_type === "is_mic_stopped"
+          (obj.device === data["device"] &&
+            obj.stop_type === "is_mic_stopped") ||
+          obj.stop_type === "stop_all"
       )
     ) {
       io.to(socket.id).emit("notification", {
@@ -523,7 +528,9 @@ io.on("connection", async (socket) => {
     if (
       stoppedUsers.some(
         (obj) =>
-          obj.device === data["device"] && obj.stop_type === "is_cam_stopped"
+          (obj.device === data["device"] &&
+            obj.stop_type === "is_cam_stopped") ||
+          obj.stop_type === "stop_all"
       )
     ) {
       io.to(socket.id).emit("notification", {
