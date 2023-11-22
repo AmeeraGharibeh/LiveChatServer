@@ -131,7 +131,7 @@ io.on("connection", async (socket) => {
         isStopped.stop_type
       );
     } else {
-      if (stoppedUsers.has(user["device"])) {
+      if (stoppedUsers[user["device"]]) {
         stoppedUsers.delete(user["device"]);
         updateOnlineUsersList(user.room_id, socket.id, "stop_type", "none");
       }
@@ -206,8 +206,8 @@ io.on("connection", async (socket) => {
   // Handle chat events
   socket.on("message", (data) => {
     if (
-      stoppedUsers.has(data["device"]) &&
-      stoppedUsers.get(data["device"]).stop_type === "is_msg_stopped"
+      stoppedUsers[data["device"]] &&
+      stoppedUsers[data["device"]].stop_type === "is_msg_stopped"
     ) {
       io.to(socket.id).emit("notification", {
         sender: "system",
@@ -261,8 +261,8 @@ io.on("connection", async (socket) => {
     const message = data.message;
     const friendName = data.friendName;
     if (
-      stoppedUsers.has(data["device"]) &&
-      stoppedUsers.get(data["device"]).stop_type === "is_private_stopped"
+      stoppedUsers[data["device"]] &&
+      stoppedUsers[data["device"]].stop_type === "is_private_stopped"
     ) {
       io.to(socket.id).emit("notification", {
         sender: "system",
@@ -445,7 +445,7 @@ io.on("connection", async (socket) => {
 
     if (existingStopped) {
       await Stopped.findByIdAndDelete(existingStopped._id);
-      if (stoppedUsers.has(data["device"])) {
+      if (stoppedUsers[data["device"]]) {
         stoppedUsers.delete(data["device"]);
       }
       updateOnlineUsersList(data.room_id, data.socket, "stop_type", "none");
@@ -470,8 +470,8 @@ io.on("connection", async (socket) => {
     const streamer = data["streamer_name"];
 
     if (
-      stoppedUsers.has(data["device"]) &&
-      stoppedUsers.get(data["device"]).stop_type === "is_mic_stopped"
+      stoppedUsers[data["device"]] &&
+      stoppedUsers[data["device"]].stop_type === "is_mic_stopped"
     ) {
       io.to(socket.id).emit("notification", {
         sender: "system",
@@ -514,8 +514,8 @@ io.on("connection", async (socket) => {
 
   socket.on("videoStreamRequested", (data) => {
     if (
-      stoppedUsers.has(data["device"]) &&
-      stoppedUsers.get(data["device"]).stop_type === "is_cam_stopped"
+      stoppedUsers[data["device"]] &&
+      stoppedUsers[data["device"]].stop_type === "is_cam_stopped"
     ) {
       io.to(socket.id).emit("notification", {
         sender: "system",
