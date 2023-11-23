@@ -83,7 +83,27 @@ io.on("connection", async (socket) => {
   socket.on("addUser", async (user) => {
     socket.userId = user._id;
     socket.emit("connected");
-
+    const isStopped = await checkStoppedUsers(user["device"]);
+    if (isStopped) {
+      console.log("finded" + isStopped);
+      stoppedUsers.push({
+        device: isStopped.device,
+        stop_type: isStopped.stop_type,
+        period: isStopped.period,
+      });
+      updateOnlineUsersList(
+        user.room_id,
+        socket.id,
+        "stop_type",
+        isStopped.stop_type
+      );
+    } else {
+      if (stoppedUsers[user["device"]]) {
+        stoppedUsers.delete(user["device"]);
+        updateOnlineUsersList(user.room_id, socket.id, "stop_type", "none");
+      }
+      console.log(stoppedUsers);
+    }
     // send notification of user's joining the room
     socket.broadcast.to(user.room_id).emit("notification", {
       sender: user.username,
@@ -116,27 +136,6 @@ io.on("connection", async (socket) => {
       icon: user.icon,
     });
     log = await newLog.save();
-    const isStopped = await checkStoppedUsers(user["device"]);
-    if (isStopped) {
-      console.log("finded" + isStopped);
-      stoppedUsers.push({
-        device: isStopped.device,
-        stop_type: isStopped.stop_type,
-        period: isStopped.period,
-      });
-      updateOnlineUsersList(
-        user.room_id,
-        socket.id,
-        "stop_type",
-        isStopped.stop_type
-      );
-    } else {
-      if (stoppedUsers[user["device"]]) {
-        stoppedUsers.delete(user["device"]);
-        updateOnlineUsersList(user.room_id, socket.id, "stop_type", "none");
-      }
-      console.log(stoppedUsers);
-    }
   });
 
   socket.on("leaveRoom", async (user) => {
