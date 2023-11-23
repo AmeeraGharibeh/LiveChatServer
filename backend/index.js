@@ -135,6 +135,7 @@ io.on("connection", async (socket) => {
         stoppedUsers.delete(user["device"]);
         updateOnlineUsersList(user.room_id, socket.id, "stop_type", "none");
       }
+      console.log(stoppedUsers);
     }
   });
 
@@ -205,8 +206,10 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
+    console.log(stoppedUsers);
+
     if (
-      stoppedUsers.some(
+      stoppedUsers.includes(
         (obj) =>
           (obj.device === data["device"] &&
             obj.stop_type === "is_msg_stopped") ||
