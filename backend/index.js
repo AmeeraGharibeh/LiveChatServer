@@ -206,6 +206,7 @@ io.on("connection", async (socket) => {
   // Handle chat events
   socket.on("message", (data) => {
     console.log(stoppedUsers);
+    console.log("device is" + data["device"]);
 
     if (
       stoppedUsers.find(
