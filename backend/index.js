@@ -205,19 +205,19 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    const stoppedUser = stoppedUsers.some((obj) => {
+    const stoppedUser = stoppedUsers.find((obj) => {
       console.log("obj.device:", obj.device);
       console.log("data['device']:", data["device"]);
 
-      return (
-        (obj.device == data["device"] && obj.stop_type == "is_msg_stopped") ||
-        obj.stop_type == "stop_all"
-      );
+      return obj.device == data["device"];
     });
 
     console.log("stoppedUser:", stoppedUser);
 
-    if (!stoppedUser) {
+    if (
+      (stoppedUser && stoppedUser.stop_type == "is_msg_stopped") ||
+      obj.stop_type == "stop_all"
+    ) {
       io.to(data["senderSocket"]).emit("notification", {
         sender: "system",
         senderId: "system",
