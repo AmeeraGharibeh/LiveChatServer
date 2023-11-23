@@ -205,11 +205,11 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    const stoppedUser = stoppedUsers.find((obj) => {
+    const stoppedUser = stoppedUsers.some((obj) => {
       console.log("obj.device:", obj.device);
       console.log("data['device']:", data["device"]);
 
-      return obj.device == data["device"];
+      return obj.device === data["device"];
     });
 
     console.log("stoppedUser:", stoppedUser);
