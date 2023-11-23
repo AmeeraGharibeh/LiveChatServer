@@ -216,7 +216,7 @@ io.on("connection", async (socket) => {
 
     if (
       (stoppedUser && stoppedUser.stop_type == "is_msg_stopped") ||
-      obj.stop_type == "stop_all"
+      stoppedUser.stop_type == "stop_all"
     ) {
       io.to(data["senderSocket"]).emit("notification", {
         sender: "system",
