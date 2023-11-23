@@ -208,14 +208,13 @@ io.on("connection", async (socket) => {
     console.log(stoppedUsers);
     console.log("device is" + data["device"]);
 
-    if (
-      stoppedUsers.find(
-        (obj) =>
-          (obj.device === data["device"] &&
-            obj.stop_type === "is_msg_stopped") ||
-          obj.stop_type === "stop_all"
-      )
-    ) {
+    const stoppedUser = stoppedUsers.find(
+      (obj) =>
+        (obj.device === data["device"] && obj.stop_type === "is_msg_stopped") ||
+        obj.stop_type === "stop_all"
+    );
+
+    if (stoppedUser) {
       io.to(data["senderSocket"]).emit("notification", {
         sender: "system",
         senderId: "system",
