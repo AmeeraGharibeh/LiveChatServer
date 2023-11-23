@@ -118,6 +118,12 @@ io.on("connection", async (socket) => {
         ...new Set(onlineUsers[user.room_id]),
       ]);
     }
+    updateOnlineUsersList(
+      user.room_id,
+      socket.id,
+      "stop_type",
+      isStopped.stop_type
+    );
     // update room's log on db
     const newLog = new Logs({
       room_id: user.room_id,
@@ -130,12 +136,6 @@ io.on("connection", async (socket) => {
       icon: user.icon,
     });
     log = await newLog.save();
-    updateOnlineUsersList(
-      user.room_id,
-      socket.id,
-      "stop_type",
-      isStopped.stop_type
-    );
   });
 
   socket.on("leaveRoom", async (user) => {
@@ -205,8 +205,6 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    console.log(stoppedUsers);
-
     const stoppedUser = stoppedUsers.find((obj) => {
       console.log("obj.device:", obj.device);
       console.log("data['device']:", data["device"]);
@@ -216,6 +214,8 @@ io.on("connection", async (socket) => {
         obj.stop_type === "stop_all"
       );
     });
+
+    console.log("stoppedUser:", stoppedUser);
 
     if (stoppedUser) {
       io.to(data["senderSocket"]).emit("notification", {
