@@ -209,7 +209,7 @@ io.on("connection", async (socket) => {
     console.log(stoppedUsers);
 
     if (
-      stoppedUsers.includes(
+      stoppedUsers.find(
         (obj) =>
           (obj.device === data["device"] &&
             obj.stop_type === "is_msg_stopped") ||
