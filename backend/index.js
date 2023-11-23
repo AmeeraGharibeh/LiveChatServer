@@ -91,12 +91,6 @@ io.on("connection", async (socket) => {
         stop_type: isStopped.stop_type,
         period: isStopped.period,
       });
-      updateOnlineUsersList(
-        user.room_id,
-        socket.id,
-        "stop_type",
-        isStopped.stop_type
-      );
     } else {
       if (stoppedUsers[user["device"]]) {
         stoppedUsers.delete(user["device"]);
@@ -136,6 +130,12 @@ io.on("connection", async (socket) => {
       icon: user.icon,
     });
     log = await newLog.save();
+    updateOnlineUsersList(
+      user.room_id,
+      socket.id,
+      "stop_type",
+      isStopped.stop_type
+    );
   });
 
   socket.on("leaveRoom", async (user) => {
@@ -206,13 +206,16 @@ io.on("connection", async (socket) => {
   // Handle chat events
   socket.on("message", (data) => {
     console.log(stoppedUsers);
-    console.log("device is" + data["device"]);
 
-    const stoppedUser = stoppedUsers.find(
-      (obj) =>
+    const stoppedUser = stoppedUsers.find((obj) => {
+      console.log("obj.device:", obj.device);
+      console.log("data['device']:", data["device"]);
+
+      return (
         (obj.device === data["device"] && obj.stop_type === "is_msg_stopped") ||
         obj.stop_type === "stop_all"
-    );
+      );
+    });
 
     if (stoppedUser) {
       io.to(data["senderSocket"]).emit("notification", {
