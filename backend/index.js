@@ -270,46 +270,28 @@ io.on("connection", async (socket) => {
     const senderId = data.senderId;
     const message = data.message;
     const friendName = data.friendName;
-    if (
-      stoppedUsers.some(
-        (obj) =>
-          (obj.device === data["device"] &&
-            obj.stop_type === "is_private_stopped") ||
-          obj.stop_type === "stop_all"
-      )
-    ) {
-      io.to(data["senderSocket"]).emit("notification", {
-        sender: "system",
-        senderId: "system",
-        message: "تم ايقافك عن ارسال الرسائل الخاصة",
-        color: 0xfffce9f1,
-        type: "notification",
-      });
-    } else {
-      // Generate a unique threadId based on the combination of senderId and friendId
-      const threadId = [senderId, friendId].sort().join("_");
-      console.log("thread is " + threadId);
-      // Send the private message to the recipient socket
-      if (!activeConversations[threadId]) {
-        activeConversations[threadId] = [friendId, socket.id];
-      } else if (!activeConversations[threadId].includes(friendId)) {
-        activeConversations[threadId].push(friendId);
-      }
 
-      activeConversations[threadId].forEach((socketId) => {
-        io.to(socketId).emit("privateMessage", {
-          threadId: threadId,
-          between: [
-            { sender: username, id: senderId },
-            { sender: friendName, id: friendId },
-          ],
-          message: message,
-          senderId: senderId,
-          sender: username,
+    const stoppedUser = stoppedUsers.find(
+      (obj) => obj.device === data["device"]
+    );
+
+    if (stoppedUser) {
+      if (
+        stoppedUser.stop_type == "is_private_stopped" ||
+        stoppedUser.stop_type == "stop_all"
+      ) {
+        io.to(data["senderSocket"]).emit("notification", {
+          sender: "system",
+          senderId: "system",
+          message: "تم ايقافك عن ارسال الرسائل الخاصة",
+          color: 0xfffce9f1,
+          type: "notification",
         });
-      });
-
-      console.log(`${message} sent from ${username} to ${friendId}`);
+      } else {
+        sendPrivateMessage(senderId, friendId);
+      }
+    } else {
+      sendPrivateMessage(senderId, friendId);
     }
   });
 
@@ -330,11 +312,11 @@ io.on("connection", async (socket) => {
   });
 
   // handle delete text
-
   socket.on("deleteAllMessages", (data) => {
     const roomId = data["roomId"];
     io.to(roomId).emit("deleteMessages");
   });
+
   // Handle user kick
   socket.on("kickUser", async (data) => {
     const room_id = data.room_id;
@@ -343,7 +325,6 @@ io.on("connection", async (socket) => {
     const master_id = data.master_id;
     const username = data.username;
 
-    // Remove the user from onlineUsers
     if (onlineUsers[room_id]) {
       onlineUsers[room_id] = onlineUsers[room_id].filter(
         (user) => user.id !== user_socket
@@ -351,10 +332,8 @@ io.on("connection", async (socket) => {
       console.log("user removed");
     }
 
-    // Emit the updated online users list to all users in the room
     io.to(room_id).emit("onlineUsers", [...new Set(onlineUsers[room_id])]);
 
-    // Emit a notification to the room
     io.to(room_id).emit("notification", {
       sender: master,
       senderId: master_id,
@@ -446,7 +425,6 @@ io.on("connection", async (socket) => {
       });
     } catch (error) {
       console.error("Error in stopUser event:", error.message);
-      // Handle the error as needed, e.g., emit an error event or log it
       socket.emit("stopUserError", {
         message: "An error occurred while stopping the user.",
       });
@@ -483,21 +461,42 @@ io.on("connection", async (socket) => {
     const channelName = data["channelName"];
     const streamer = data["streamer_name"];
 
-    if (
-      stoppedUsers.some(
-        (obj) =>
-          (obj.device === data["device"] &&
-            obj.stop_type === "is_mic_stopped") ||
-          obj.stop_type === "stop_all"
-      )
-    ) {
-      io.to(data["senderSocket"]).emit("notification", {
-        sender: "system",
-        senderId: "system",
-        message: "تم ايقافك عن المايك",
-        color: 0xfffce9f1,
-        type: "notification",
-      });
+    const stoppedUser = stoppedUsers.find(
+      (obj) => obj.device === data["device"]
+    );
+
+    if (stoppedUser) {
+      if (
+        stoppedUser.stop_type == "is_msg_stopped" ||
+        stoppedUser.stop_type == "stop_all"
+      ) {
+        io.to(data["senderSocket"]).emit("notification", {
+          sender: "system",
+          senderId: "system",
+          message: "تم ايقافك عن المايك",
+          color: 0xfffce9f1,
+          type: "notification",
+        });
+      } else {
+        speakersQueue.push({
+          userId: userId,
+          socketId: socket.id,
+          channelName: channelName,
+          streamer_name: streamer,
+          count: speakersQueue.length + 1,
+        });
+        if (speakersQueue.length === 1) {
+          startStreaming(speakersQueue[0]);
+        } else {
+          updateOnlineUsersList(
+            channelName,
+            socket.id,
+            "mic_status",
+            "mic_wait"
+          );
+        }
+        io.to(channelName).emit("speakersQueue", speakersQueue);
+      }
     } else {
       speakersQueue.push({
         userId: userId,
@@ -531,21 +530,25 @@ io.on("connection", async (socket) => {
   // Handle video streaming
 
   socket.on("videoStreamRequested", (data) => {
-    if (
-      stoppedUsers.some(
-        (obj) =>
-          (obj.device === data["device"] &&
-            obj.stop_type === "is_cam_stopped") ||
-          obj.stop_type === "stop_all"
-      )
-    ) {
-      io.to(data["senderSocket"]).emit("notification", {
-        sender: "system",
-        senderId: "system",
-        message: "تم ايقافك عن الكاميرا",
-        color: 0xfffce9f1,
-        type: "notification",
-      });
+    const stoppedUser = stoppedUsers.find(
+      (obj) => obj.device === data["device"]
+    );
+
+    if (stoppedUser) {
+      if (
+        stoppedUser.stop_type == "is_msg_stopped" ||
+        stoppedUser.stop_type == "stop_all"
+      ) {
+        io.to(data["senderSocket"]).emit("notification", {
+          sender: "system",
+          senderId: "system",
+          message: "تم ايقافك عن الكاميرا",
+          color: 0xfffce9f1,
+          type: "notification",
+        });
+      } else {
+        startVideoStreaming(data, socket);
+      }
     } else {
       startVideoStreaming(data, socket);
     }
@@ -611,6 +614,31 @@ function startStreaming(data) {
   }
 }
 
+function sendPrivateMessage(senderId, friendId) {
+  const threadId = [senderId, friendId].sort().join("_");
+  console.log("thread is " + threadId);
+  // Send the private message to the recipient socket
+  if (!activeConversations[threadId]) {
+    activeConversations[threadId] = [friendId, socket.id];
+  } else if (!activeConversations[threadId].includes(friendId)) {
+    activeConversations[threadId].push(friendId);
+  }
+
+  activeConversations[threadId].forEach((socketId) => {
+    io.to(socketId).emit("privateMessage", {
+      threadId: threadId,
+      between: [
+        { sender: username, id: senderId },
+        { sender: friendName, id: friendId },
+      ],
+      message: message,
+      senderId: senderId,
+      sender: username,
+    });
+  });
+
+  console.log(`${message} sent from ${username} to ${friendId}`);
+}
 function startVideoStreaming(data, socket) {
   const userId = data["userId"];
   const channelName = data["channelName"];
