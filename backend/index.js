@@ -205,26 +205,25 @@ io.on("connection", async (socket) => {
 
   // Handle chat events
   socket.on("message", (data) => {
-    const stoppedUser = stoppedUsers.some((obj) => {
-      console.log("obj.device:", obj.device);
-      console.log("data['device']:", data["device"]);
+    const stoppedUser = stoppedUsers.find(
+      (obj) => obj.device === data["device"]
+    );
 
-      return obj.device === data["device"];
-    });
-
-    console.log("stoppedUser:", stoppedUser);
-
-    if (
-      (stoppedUser && stoppedUser.stop_type == "is_msg_stopped") ||
-      stoppedUser.stop_type == "stop_all"
-    ) {
-      io.to(data["senderSocket"]).emit("notification", {
-        sender: "system",
-        senderId: "system",
-        message: "تم ايقافك عن ارسال الرسائل",
-        color: 0xfffce9f1,
-        type: "notification",
-      });
+    if (stoppedUser) {
+      if (
+        stoppedUser.stop_type == "is_msg_stopped" ||
+        stoppedUser.stop_type == "stop_all"
+      ) {
+        io.to(data["senderSocket"]).emit("notification", {
+          sender: "system",
+          senderId: "system",
+          message: "تم ايقافك عن ارسال الرسائل",
+          color: 0xfffce9f1,
+          type: "notification",
+        });
+      } else {
+        io.to(data.room_id).emit("message", data);
+      }
     } else {
       io.to(data.room_id).emit("message", data);
     }
