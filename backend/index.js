@@ -156,6 +156,15 @@ io.on("connection", async (socket) => {
       ...new Set(onlineUsers[user.room_id]),
     ]);
 
+    socket.on("requestUpdateUsersList", (data) => {
+      updateOnlineUsersList(
+        data.room_id,
+        data.socketId,
+        data.field,
+        data.value
+      );
+    });
+
     io.to(user.room_id).emit("notification", {
       sender: user.username,
       senderId: user._id,
@@ -266,10 +275,7 @@ io.on("connection", async (socket) => {
 
   socket.on("sendPrivateMessage", (data) => {
     const friendId = data.friendId;
-    const username = data.sender;
     const senderId = data.senderId;
-    const message = data.message;
-    const friendName = data.friendName;
 
     const stoppedUser = stoppedUsers.find(
       (obj) => obj.device === data["device"]
@@ -527,6 +533,127 @@ io.on("connection", async (socket) => {
       });
     }
   });
+
+  // Add this event to handle admin stopping a user's audio stream
+  socket.on("adminStopAudioStream", (data) => {
+    // Ensure that the admin has the necessary permissions to stop a stream
+    const userIdToStop = data["userId"]; // The user ID whose stream the admin wants to stop
+    const channelName = data["channelName"];
+
+    // Check if the user to stop is in the speakersQueue
+    const userIndex = speakersQueue.findIndex(
+      (user) => user.userId === userIdToStop
+    );
+
+    if (userIndex !== -1) {
+      // Remove the user from the speakersQueue
+      speakersQueue.splice(userIndex, 1);
+
+      // Update online users list and notify clients about the stream being stopped
+      updateOnlineUsersList(channelName, socket.id, "mic_status", "none");
+      io.to(channelName).emit("speakersQueue", speakersQueue);
+
+      // Check if there are more users in the queue and start streaming for the next user
+      if (speakersQueue.length > 0) {
+        startStreaming(speakersQueue[0]);
+      } else {
+        // No users in the queue, end the streaming
+        socket.emit("endStreaming");
+        onlineUsers[channelName].forEach((user) => {
+          user.user["audio_status"] = "none f";
+        });
+      }
+    } else {
+      // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
+      console.log("User not found in the speakersQueue");
+    }
+  });
+  // Add this event to handle admin granting the microphone role to a specific user
+  socket.on("adminGrantMicRole", (data) => {
+    // Ensure that the admin has the necessary permissions to grant the mic role
+
+    // Add this event to handle admin granting the mic role to a specific user and revoking it from others
+    socket.on("adminGrantMicToUser", (data) => {
+      // Ensure that the admin has the necessary permissions to grant the mic role
+
+      const userIdToGrantMic = data["userId"]; // The user ID to whom the admin wants to grant the mic role
+      const channelName = data["channelName"];
+
+      // Find the user in the speakersQueue and move them to the front
+      const userIndex = speakersQueue.findIndex(
+        (user) => user.userId === userIdToGrantMic
+      );
+
+      if (userIndex !== -1) {
+        // Move the user to the front of the speakersQueue
+        const userToGrantMic = speakersQueue.splice(userIndex, 1)[0];
+        speakersQueue.unshift(userToGrantMic);
+
+        // Update online users list and notify clients about the updated speakersQueue
+        updateOnlineUsersList(channelName, socket.id, "mic_status", "mic");
+        io.to(channelName).emit("speakersQueue", speakersQueue);
+
+        // Start streaming for the user with the mic role
+        startStreaming(speakersQueue[0]);
+
+        // Notify all other users that their mic status is revoked
+        speakersQueue.slice(1).forEach((otherUser) => {
+          io.to(otherUser.socketId).emit("notification", {
+            sender: "system",
+            senderId: "system",
+            message: "تم سحب المايك منك",
+            color: 0xfffce9f1,
+            type: "notification",
+          });
+          updateOnlineUsersList(
+            channelName,
+            otherUser.socketId,
+            "mic_status",
+            "none"
+          );
+        });
+      } else {
+        // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
+        console.log("User not found in the speakersQueue");
+      }
+    });
+
+    const userIdToGrantMic = data["userId"]; // The user ID to whom the admin wants to grant the mic role
+    const channelName = data["channelName"];
+
+    // Check if the user to grant the mic role is in the speakersQueue
+    const userIndex = speakersQueue.findIndex(
+      (user) => user.userId === userIdToGrantMic
+    );
+
+    if (userIndex !== -1) {
+      // Move the user to the front of the speakersQueue
+      const userToGrantMic = speakersQueue.splice(userIndex, 1)[0];
+      speakersQueue.unshift(userToGrantMic);
+
+      // Update online users list and notify clients about the updated speakersQueue
+      updateOnlineUsersList(channelName, socket.id, "mic_status", "mic");
+      io.to(channelName).emit("speakersQueue", speakersQueue);
+
+      // Start streaming for the user with the mic role
+      startStreaming(speakersQueue[0]);
+    } else {
+      // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
+      console.log("User not found in the speakersQueue");
+    }
+  });
+
+  // Handle Warning
+  socket.on("sendWarning", (data) => {
+    io.to(data.socketId).emit("notification", {
+      sender: data.admin,
+      senderId: data.adminId,
+      message: `قام المشرف : ${data.admin} بإرسال تحذير لك`,
+      color: 0xfffce9f1,
+      type: "notification",
+    });
+  });
+
   // Handle video streaming
 
   socket.on("videoStreamRequested", (data) => {
