@@ -1,80 +1,81 @@
-const mongoose = require('mongoose');
-
+const mongoose = require("mongoose");
 
 const RoomSchema = mongoose.Schema({
-   room_name: {
+  room_name: {
     type: String,
-    required: true
+    required: true,
   },
-   room_owner: {
+  room_owner: {
     type: String,
-    required: true
+    required: true,
   },
   room_type: {
     type: String,
-    required: true
+    required: true,
   },
-    room_code: {
+  room_code: {
     type: String,
-    required: true
+    required: true,
   },
-   email: {
+  email: {
     type: String,
-    required: true
-  },
-
-   room_country: {
-    type: String,
-    required: true
+    required: true,
   },
 
-   description: {
+  room_country: {
     type: String,
-    default: '-'
+    required: true,
   },
- 
-   welcome_msg: {
+
+  description: {
     type: String,
-    default: '-'
+    default: "-",
+  },
+  room_img: {
+    type: String,
+    default: "-",
+  },
+
+  welcome_msg: {
+    type: String,
+    default: "-",
   },
   room_duration: {
     type: Number,
-    default: 0
+    default: 0,
   },
 
-   room_capacity: {
+  room_capacity: {
     type: Number,
-    default: 0
+    default: 0,
   },
 
-   start_date: {
+  start_date: {
     type: String,
   },
 
-   end_date: {
+  end_date: {
     type: String,
   },
- 
-   account_limits: {
-    type: {}
-},
 
- room_open: {
+  account_limits: {
+    type: {},
+  },
+
+  room_open: {
     type: String,
-    default: 'open'
-},
-close_msg: {
-  type: String,
-},
-room_color: {
-  type: Number,
-  default: 0xff9bb1ba
-}
-
+    default: "open",
+  },
+  close_msg: {
+    type: String,
+  },
+  room_color: {
+    type: Number,
+    default: 0xff9bb1ba,
+  },
 });
 
-module.exports = mongoose.model('Room', RoomSchema);
-
+module.exports = mongoose.model("Room", RoomSchema);
 
 /*const AccountLimitsSchema = mongoose.Schema({
     admin : {
