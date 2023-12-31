@@ -38,7 +38,7 @@ const isTokenExpired = (token) => {
     if (!decodedToken || !decodedToken.exp) {
       return true;
     }
-    const currentTime = Date.now() / 1000; // Convert to seconds
+    const currentTime = Date.now() / 1000;
     return decodedToken.exp < currentTime;
   } catch (error) {
     return true;

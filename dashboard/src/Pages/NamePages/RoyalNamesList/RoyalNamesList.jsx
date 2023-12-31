@@ -16,7 +16,7 @@ export default function RootsList() {
 
   useEffect(()=> {
     
-    getUserByType( "royal", currentPage, 10, dispatch);
+    getUserByType( "royal" , currentPage, 10, dispatch);
   }, [dispatch, currentPage])
 
   const columns = [
@@ -36,9 +36,16 @@ export default function RootsList() {
         );
       },
   },
-  {
-    Header: 'type',
+ {
+    Header: 'Type',
     accessor: 'name_type',
+     Cell: ({cell}) => {
+        return (
+          <div className="userListUser capitalize-first">
+            {cell.row.original.name_type[0].toUpperCase() + cell.row.original.name_type.slice(1).toLowerCase()}
+          </div>
+        );
+      },
   },
    {
       accessor: 'action',
@@ -77,10 +84,18 @@ export default function RootsList() {
   return (
     <div className='rootsList'>
        <div className="addButtonContainer">
-          <Link to="/newUser/royal">
+        
+         <Link to="/newUser/vip">
+          <button className="rootAddButton">VIP اضافة اسم ملكي</button>
+        </Link>
+         <Link to="/newUser/royal">
           <button className="rootAddButton">اضافة اسم ملكي</button>
         </Link>
+      
       </div>
+       <Link to="/namebackground">
+          <button className="background-button">خلفيات الاسم الملكي</button>
+        </Link>
     <div>
       <DataTable columns={columns} data={users} 
       totalRows= {totalRows}

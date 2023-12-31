@@ -16,6 +16,8 @@ export default function NewRoom() {
   const [type, setType] = useState(null);
   const {isSuccess, error, isFetching} = useSelector((state) => state.room);
   const countries = useSelector((state)=> state.country.countries);
+  const [file, setFile] = useState(null);
+
   const dispatch = useDispatch();
 
   useEffect(()=>{
@@ -47,6 +49,21 @@ const handleDropdownCountry = (value) => {
       return {...prev, [e.target.name]: e.target.value}
     })
   }
+   const uploadImage = async (file) => {
+  try {
+    const response = await uploadFile(file);
+
+    if (response && response.msg && response.files && response.files.length > 0) {
+      toast.success(response.msg);
+      console.log(response);
+      setFile(response.files[0].url);
+    } else {
+      toast.error("Invalid response data");
+    }
+  } catch (err) {
+    toast.error(err.message);
+  }
+};
  
   const handleClick = (e)=> {
     e.preventDefault();
@@ -59,6 +76,7 @@ const handleDropdownCountry = (value) => {
       room_country: country._id,
       room_type: type.name_en,
       permissions, 
+      room_img: file,
       account_limits:  limitsInput};
     addRoom(roomData, dispatch);
   }
@@ -112,6 +130,13 @@ const handleDropdownCountry = (value) => {
           <label>مدة الغرفة</label>
           <input name="room_duration" type="text" onChange={handleChange} />
         </div>
+            <div className="addCountryItem">
+          <label>صورة الغرفة</label>
+          { file != null 
+          ? <img className="countryImg" src={file} alt=""/>
+          : <input type="file" id="file"  onChange={(e) => uploadImage(e.target.files[0], 1)} />
+      }
+        </div>  
        <div className="addRoomItem">
           <label>حد الحسابات</label>
           <div className="limits">

@@ -56,18 +56,7 @@ export default function UserList() {
         );
       },
     },
-    {
-      accessor: 'room_id',
-      Header: 'Room',
-      width: 150,
-      Cell: ({cell}) => {
-        return (
-          <div>
-            <span>{cell.row.original.room_id && getRoom(cell.row.original.room_id)}</span>
-          </div>
-        );
-      },
-    },
+   
     { accessor: 'user_type', Header: 'User Type' },
     { accessor: 'name_type', Header: 'Name Type' },
     {

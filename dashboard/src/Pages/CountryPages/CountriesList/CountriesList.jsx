@@ -37,18 +37,7 @@ export default function CountriesList() {
 }
   const columns = [
     { accessor: "_id", Header: "ID", width: 100 },
-    {
-      accessor: "img_url",
-      Header: "Picture",
-      width: 150,
-      Cell: ({ cell }) => { // Destructure the cell object
-      return (
-        <div className="countryListItem">
-          <img className="countryListImg" src={cell.row.original.img_url} alt="img" />
-        </div>
-      );
-      },
-    },
+  
     {
       accessor: "name_ar",
       Header: "Country",
@@ -57,6 +46,7 @@ export default function CountriesList() {
          Cell: ({ cell }) => { // Destructure the cell object
       return (
          <div className="countryListItem">
+            <img className="countryListImg" src={cell.row.original.img_url} alt="img" />
             {cell.row.original.name_ar}
           </div>
       );
