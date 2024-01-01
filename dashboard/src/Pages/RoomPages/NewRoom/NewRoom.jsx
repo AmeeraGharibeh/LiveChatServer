@@ -7,6 +7,7 @@ import { addRoom } from "../../../Redux/Repositories/RoomsRepo";
 import { useSelector } from "react-redux";
 import DropdownMenu from "../../../Components/DropdownMenu";
 import { resetRoomState } from "../../../Redux/RoomsRedux";
+import { uploadFile } from "../../../Redux/Repositories/FileRepo";
 
 
 export default function NewRoom() {
