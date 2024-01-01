@@ -41,7 +41,19 @@ export default function RoomsList() {
   const columns = [
     { accessor: "_id", Header: "ID", width: 150 },
 
-    { accessor: "room_name", Header: "Name", width: 220 },
+    {
+      accessor: 'room_name',
+      Header: 'Name',
+      width: 250,
+      Cell: ({cell}) => {
+        return (
+          <div className="userListUser">
+            <img className="userListImg" src={cell.row.original.room_img} alt="" />
+            {cell.row.original.room_name}
+          </div>
+        );
+      },
+    },
     {
       accessor: "room_country",
       Header: "Country",
@@ -91,7 +103,7 @@ export default function RoomsList() {
   ];
 
   return (  
-       
+        
   <>
        <ToastContainer />
     <div className="roomsList">
