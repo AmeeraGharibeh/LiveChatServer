@@ -131,7 +131,7 @@ const handleDropdownCountry = (value) => {
           <label>مدة الغرفة</label>
           <input name="room_duration" type="text" onChange={handleChange} />
         </div>
-            <div className="addCountryItem">
+         <div className="addRoomItem">
           <label>صورة الغرفة</label>
           { file != null 
           ? <img className="countryImg" src={file} alt=""/>
