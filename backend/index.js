@@ -81,6 +81,7 @@ io.on("connection", async (socket) => {
   });
   // user joins the room
   socket.on("addUser", async (user) => {
+    console.log("room id is " + user.room_id);
     socket.userId = user._id;
     socket.emit("connected");
 
