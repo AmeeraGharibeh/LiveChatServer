@@ -3,7 +3,7 @@ import { DataGrid } from '@mui/x-data-grid'
 import { DeleteOutline } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteUser, getUsers } from "../../../Redux/Repositories/UsersRepo";
+import { deleteNameUser, deleteUser, getUsers } from "../../../Redux/Repositories/UsersRepo";
 import { toast, ToastContainer } from 'react-toastify';
 import { resetUserState } from "../../../Redux/UsersRedux";
 import DataTable from '../../../Components/DataTable/DataTable'
@@ -29,10 +29,10 @@ export default function UserList() {
     console.log(users.length)
   }, [dispatch, currentPage]);
 
-  function showAlert(id) {
+  function showAlert(id, type) {
     const result = window.confirm('هل أنت متأكد من حذف هذا العضو؟');
     if (result) {
-      deleteUser(id, dispatch);
+     type !== '-' ? deleteUser(id, dispatch) : deleteNameUser(id, dispatch);
     }
   }
 
@@ -68,7 +68,7 @@ export default function UserList() {
           <>
                   <DeleteOutline
                     className="userListDelete"
-                    onClick={() => showAlert(cell.row.original._id)}
+                    onClick={() => showAlert(cell.row.original._id, cell.row.original.name_type)}
                   />  
           </>
         );
@@ -87,7 +87,6 @@ export default function UserList() {
       setCurrentPage(currentPage - 1);
     }
   };
-  const onEdit = ()=> {}
 
   return (
     <>
