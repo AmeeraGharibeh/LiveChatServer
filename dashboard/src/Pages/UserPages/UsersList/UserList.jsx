@@ -32,7 +32,7 @@ export default function UserList() {
   function showAlert(id, type) {
     const result = window.confirm('هل أنت متأكد من حذف هذا العضو؟');
     if (result) {
-     type !== '-' ? deleteUser(id, dispatch) : deleteNameUser(id, dispatch);
+     type === '-' ? deleteUser(id, dispatch) : deleteNameUser(id, dispatch);
     }
   }
 
