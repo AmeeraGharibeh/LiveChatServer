@@ -150,32 +150,30 @@ const memberLogin = async (req, res) => {
       });
       if (!user) {
         return res.status(404).send({ msg: "User not found!" });
+      } else {
+        const validRoomPassword = verifyPassword(
+          req.body.room_password,
+          user.room_password
+        );
+        if (!validRoomPassword) {
+          return res
+            .status(400)
+            .send({ msg: "Invalid username or room password" });
+        } else {
+          const accessToken = jwt.sign(
+            {
+              id: user._id,
+            },
+            process.env.JWTSECRET,
+            { expiresIn: "1h" }
+          );
+          const { room_password, name_password, ...others } = user._doc;
+          return res.status(200).send({
+            user: { ...others, icon: req.body.icon },
+            accessToken: accessToken,
+          });
+        }
       }
-
-      const validRoomPassword = verifyPassword(
-        req.body.room_password,
-        user.room_password
-      );
-
-      if (!validRoomPassword) {
-        return res
-          .status(400)
-          .send({ msg: "Invalid username or room password" });
-      }
-
-      const accessToken = jwt.sign(
-        {
-          id: user._id,
-        },
-        process.env.JWTSECRET,
-        { expiresIn: "1h" }
-      );
-
-      const { room_password, name_password, ...others } = user._doc;
-      return res.status(200).send({
-        user: { ...others, icon: req.body.icon },
-        accessToken: accessToken,
-      });
     } else {
       return res.status(400).send({ msg: "Room password is required" });
     }
