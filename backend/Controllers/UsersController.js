@@ -141,42 +141,44 @@ const createName = async (req, res) => {
 };
 
 const memberLogin = async (req, res) => {
+  console.log("member login fired");
   let user;
   try {
-    if (req.body.room_password) {
-      user = await User.findOne({
-        username: req.body.username,
-        room_id: req.body.room_id,
-      });
-      if (!user) {
-        return res.status(404).send({ msg: "User not found!" });
-      } else {
-        const validRoomPassword = verifyPassword(
-          req.body.room_password,
-          user.room_password
-        );
-        if (!validRoomPassword) {
-          return res
-            .status(400)
-            .send({ msg: "Invalid username or room password" });
-        } else {
-          const accessToken = jwt.sign(
-            {
-              id: user._id,
-            },
-            process.env.JWTSECRET,
-            { expiresIn: "1h" }
-          );
-          const { room_password, name_password, ...others } = user._doc;
-          return res.status(200).send({
-            user: { ...others, icon: req.body.icon },
-            accessToken: accessToken,
-          });
-        }
-      }
-    } else {
+    // Require room password to be present
+    if (!req.body.room_password) {
       return res.status(400).send({ msg: "Room password is required" });
     }
+
+    user = await User.findOne({
+      username: req.body.username,
+      room_id: req.body.room_id,
+    });
+
+    if (!user) {
+      return res.status(404).send({ msg: "User not found!" });
+    }
+
+    // Verify room password before proceeding
+    const validRoomPassword = verifyPassword(
+      req.body.room_password,
+      user.room_password
+    );
+
+    if (!validRoomPassword) {
+      return res.status(400).send({ msg: "Invalid room password" });
+    }
+
+    // Generate access token only after successful password verification
+    const accessToken = jwt.sign({ id: user._id }, process.env.JWTSECRET, {
+      expiresIn: "1h",
+    });
+
+    const { room_password, name_password, ...others } = user._doc;
+
+    return res.status(200).send({
+      user: { ...others, icon: req.body.icon },
+      accessToken: accessToken,
+    });
   } catch (err) {
     return res.status(500).send({ msg: err.message });
   }
