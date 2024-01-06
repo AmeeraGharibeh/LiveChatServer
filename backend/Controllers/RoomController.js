@@ -17,10 +17,11 @@ const createRoom = async function (req, res) {
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(password, salt);
         const newUser = new User({
-          username: "master",
+          username: "MASTER",
           room_password: hashedPass,
           room_id: val._id.toHexString(),
           user_type: "master",
+          is_owner: true,
           permissions,
         });
         await newUser.save();

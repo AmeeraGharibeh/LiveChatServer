@@ -157,23 +157,28 @@ const memberLogin = async (req, res) => {
         user.room_password
       );
 
-      if (!validRoomPassword)
+      if (!validRoomPassword) {
         return res
           .status(400)
-          .send({ msg: "Invalid username or name password" });
+          .send({ msg: "Invalid username or room password" });
+      }
+
+      const accessToken = jwt.sign(
+        {
+          id: user._id,
+        },
+        process.env.JWTSECRET,
+        { expiresIn: "1h" }
+      );
+
+      const { room_password, name_password, ...others } = user._doc;
+      return res.status(200).send({
+        user: { ...others, icon: req.body.icon },
+        accessToken: accessToken,
+      });
+    } else {
+      return res.status(400).send({ msg: "Room password is required" });
     }
-    const accessToken = jwt.sign(
-      {
-        id: user._id,
-      },
-      process.env.JWTSECRET,
-      { expiresIn: "1h" }
-    );
-    const { room_password, name_password, ...others } = user._doc;
-    return res.status(200).send({
-      user: { ...others, icon: req.body.icon },
-      accessToken: accessToken,
-    });
   } catch (err) {
     return res.status(500).send({ msg: err.message });
   }
