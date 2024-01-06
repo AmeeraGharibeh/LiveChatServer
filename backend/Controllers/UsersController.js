@@ -140,6 +140,92 @@ const createName = async (req, res) => {
   }
 };
 
+const login = async (req, res) => {
+  let user;
+  if (req.body.room_password && req.body.name_password) {
+    user = await User.findOne({ username: req.body.username });
+    if (!user) {
+      return res.status(404).send({ msg: "User not found!" });
+    }
+    const validNamePassword = verifyPassword(
+      req.body.name_password,
+      user.name_password
+    );
+    const validRoomPassword = verifyPassword(
+      req.body.room_password,
+      user.room_password
+    );
+    if (validNamePassword && validRoomPassword) {
+      const accessToken = jwt.sign(
+        {
+          id: user._id,
+        },
+        process.env.JWTSECRET,
+        { expiresIn: "1h" }
+      );
+
+      const { room_password, name_password, ...others } = user._doc;
+
+      return res.status(200).send({
+        user: { ...others, icon: req.body.icon },
+        accessToken: accessToken,
+      });
+    } else if (!validNamePassword && validRoomPassword) {
+      const accessToken = jwt.sign({ id: user._id }, process.env.JWTSECRET, {
+        expiresIn: "1h",
+      });
+
+      const { room_password, ...others } = user._doc;
+
+      return res.status(200).send({
+        user: { ...others, icon: req.body.icon },
+        accessToken: accessToken,
+      });
+    } else if (!validRoomPassword && validNamePassword) {
+      const accessToken = jwt.sign(
+        {
+          id: user._id,
+        },
+        process.env.JWTSECRET,
+        { expiresIn: "1h" }
+      );
+
+      const { room_password, name_password, ...others } = user._doc;
+
+      return res.status(200).send({
+        user: { ...others, icon: req.body.icon },
+        accessToken: accessToken,
+      });
+    } else if (
+      (!validNamePassword && !validRoomPassword) ||
+      (!req.body.name_password && !req.body.room_password)
+    ) {
+      const visitorId = uuidv4();
+      const user = {
+        username: req.body.username,
+        room_id: req.body.room_id,
+        _id: visitorId,
+        user_type: "visitor",
+        state: "Available",
+        icon: req.body.icon,
+      };
+
+      const accessToken = jwt.sign(
+        {
+          id: user._id,
+        },
+        process.env.JWTSECRET,
+        { expiresIn: "1h" }
+      );
+      const { room_password, name_password, ...others } = user;
+
+      return res.status(200).send({
+        user: { ...others, icon: req.body.icon },
+        accessToken: accessToken,
+      });
+    }
+  }
+};
 const memberLogin = async (req, res) => {
   console.log("member login fired");
   let user;
@@ -173,7 +259,7 @@ const memberLogin = async (req, res) => {
       expiresIn: "1h",
     });
 
-    const { room_password, name_password, ...others } = user._doc;
+    const { room_password, ...others } = user._doc;
 
     return res.status(200).send({
       user: { ...others, icon: req.body.icon },
@@ -788,6 +874,7 @@ const unblockUser = async (req, res) => {
 module.exports = {
   createUser,
   createName,
+  login,
   memberLogin,
   visitorLogin,
   NameLogin,

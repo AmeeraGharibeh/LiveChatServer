@@ -7,6 +7,7 @@ const {
 const {
   createUser,
   createName,
+  login,
   memberLogin,
   visitorLogin,
   NameLogin,
@@ -33,6 +34,7 @@ const { blockedMiddleware } = require("./BlockCheck");
 
 router.post("/", verifyTokenAndAdmin, createUser);
 router.post("/name", verifyTokenAndAuthorization, createName);
+router.post("/login", blockedMiddleware, login);
 router.post("/login/member", blockedMiddleware, memberLogin);
 router.post("/login/visitor", blockedMiddleware, visitorLogin);
 router.post("/login/name", blockedMiddleware, NameLogin);
