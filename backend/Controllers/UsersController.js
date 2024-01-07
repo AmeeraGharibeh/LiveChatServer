@@ -16,81 +16,19 @@ const verifyPassword = async (password, hashedPassword) => {
   return bcrypt.compare(password, hashedPassword);
 };
 
-// const createUser = async (req, res) => {
-//   console.log(req.body);
-//   const body = req.body.body;
-//   try {
-//     const hashedPass = await hashPassword(body.room_password);
-
-//     const items = await User.find({ room_id: body.room_id });
-//     const usernameExists = items.some(
-//       (item) => item.username === body.username
-//     );
-//     if (usernameExists) {
-//       res.status(400).json({ msg: "اسم المستخدم موجود بالفعل في الغرفة" });
-//     } else {
-//       const newUser = new User({
-//         username: body.username,
-//         room_password: hashedPass,
-//         room_id: body.room_id,
-//         user_type: body.user_type,
-//         permissions: body.permissions,
-//       });
-//       const saved = await newUser.save();
-
-//       const report = new Reports({
-//         master_name: req.body.master,
-//         room_id: body.room_id,
-//         action_user: body.username,
-//         action_name_ar: "اضافة مستخدم",
-//         action_name_en: "Add user",
-//       });
-//       await report.save();
-//       res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
-//     }
-//   } catch (err) {
-//     res.status(500).send({ msg: "something went wrong" });
-//   }
-// };
-
 const createUser = async (req, res) => {
   console.log(req.body);
   const body = req.body.body;
   try {
-    const items = await User.find({
-      username: body.username,
-    });
-    if (items.length > 0 && items[0].room_id === req.body.room_id) {
-      // User already exists in the room, check the name_type
-      if (items[0].name_type === "-") {
-        res.status(400).json({
-          msg: "اسم المستخدم موجود بالفعل في الغرفة.",
-        });
-      } else {
-        // Update the existing user document
-        items[0].user_type = body.user_type;
-        items[0].room_password = await hashPassword(body.room_password);
-        items[0].room_id = body.room_id;
-        items[0].permissions = body.permissions;
-        const updatedUser = await items[0].save();
+    const hashedPass = await hashPassword(body.room_password);
 
-        const report = new Reports({
-          master_name: req.body.master,
-          room_id: body.room_id,
-          action_user: body.username,
-          action_name_ar: "اضافة مستخدم",
-          action_name_en: "add user",
-        });
-        await report.save();
-
-        res
-          .status(200)
-          .json({ msg: "تمت اضافة المستخدم بنجاح!", user: updatedUser });
-      }
+    const items = await User.find({ room_id: body.room_id });
+    const usernameExists = items.some(
+      (item) => item.username === body.username
+    );
+    if (usernameExists) {
+      res.status(400).json({ msg: "اسم المستخدم موجود بالفعل في الغرفة" });
     } else {
-      // User doesn't exist in the room, create a new user
-      const hashedPass = await hashPassword(body.room_password);
-
       const newUser = new User({
         username: body.username,
         room_password: hashedPass,
@@ -111,9 +49,71 @@ const createUser = async (req, res) => {
       res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
     }
   } catch (err) {
-    res.status(500).send({ msg: "حدث خطأ ما" });
+    res.status(500).send({ msg: "something went wrong" });
   }
 };
+
+// const createUser = async (req, res) => {
+//   console.log(req.body);
+//   const body = req.body.body;
+//   try {
+//     const items = await User.find({
+//       username: body.username,
+//     });
+//     if (items.length > 0 && items[0].room_id === req.body.room_id) {
+//       // User already exists in the room, check the name_type
+//       if (items[0].name_type === "-") {
+//         res.status(400).json({
+//           msg: "اسم المستخدم موجود بالفعل في الغرفة.",
+//         });
+//       } else {
+//         // Update the existing user document
+//         items[0].user_type = body.user_type;
+//         items[0].room_password = await hashPassword(body.room_password);
+//         items[0].room_id = body.room_id;
+//         items[0].permissions = body.permissions;
+//         const updatedUser = await items[0].save();
+
+//         const report = new Reports({
+//           master_name: req.body.master,
+//           room_id: body.room_id,
+//           action_user: body.username,
+//           action_name_ar: "اضافة مستخدم",
+//           action_name_en: "add user",
+//         });
+//         await report.save();
+
+//         res
+//           .status(200)
+//           .json({ msg: "تمت اضافة المستخدم بنجاح!", user: updatedUser });
+//       }
+//     } else {
+//       // User doesn't exist in the room, create a new user
+//       const hashedPass = await hashPassword(body.room_password);
+
+//       const newUser = new User({
+//         username: body.username,
+//         room_password: hashedPass,
+//         room_id: body.room_id,
+//         user_type: body.user_type,
+//         permissions: body.permissions,
+//       });
+//       const saved = await newUser.save();
+
+//       const report = new Reports({
+//         master_name: req.body.master,
+//         room_id: body.room_id,
+//         action_user: body.username,
+//         action_name_ar: "اضافة مستخدم",
+//         action_name_en: "Add user",
+//       });
+//       await report.save();
+//       res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
+//     }
+//   } catch (err) {
+//     res.status(500).send({ msg: "حدث خطأ ما" });
+//   }
+// };
 
 const createName = async (req, res) => {
   console.log(req.body);
