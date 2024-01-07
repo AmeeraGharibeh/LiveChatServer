@@ -9,11 +9,11 @@ const ImageModel = require("../Models/ImageModel");
 
 const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
+  return await bcrypt.hash(password, salt);
 };
 
 const verifyPassword = async (password, hashedPassword) => {
-  return bcrypt.compare(password, hashedPassword);
+  return await bcrypt.compare(password, hashedPassword);
 };
 
 const createUser = async (req, res) => {
@@ -245,7 +245,7 @@ const memberLogin = async (req, res) => {
     }
 
     // Verify room password before proceeding
-    const validRoomPassword = bcrypt.compare(
+    const validRoomPassword = verifyPassword(
       req.body.room_password,
       user.room_password
     );
