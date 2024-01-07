@@ -245,7 +245,7 @@ const memberLogin = async (req, res) => {
     }
 
     // Verify room password before proceeding
-    const validRoomPassword = verifyPassword(
+    const validRoomPassword = await bcrypt.compare(
       req.body.room_password,
       user.room_password
     );
