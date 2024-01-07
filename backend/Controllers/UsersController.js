@@ -232,7 +232,9 @@ const memberLogin = async (req, res) => {
   try {
     // Require room password to be present
     if (!req.body.room_password) {
-      return res.status(400).send({ msg: "Room password is required" });
+      return res
+        .status(400)
+        .send({ msg: "كلمة مرور الغرفة مطلوبة للأعضاء المسجلين في الغرفة" });
     }
 
     user = await User.findOne({
@@ -241,7 +243,7 @@ const memberLogin = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).send({ msg: "User not found!" });
+      return res.status(404).send({ msg: "المستخدم غير موجود" });
     }
 
     // Verify room password before proceeding
@@ -251,7 +253,7 @@ const memberLogin = async (req, res) => {
     );
 
     if (!validRoomPassword) {
-      return res.status(400).send({ msg: "Invalid room password" });
+      return res.status(400).send({ msg: "كلمة مرور الغرفة غير صحيحة" });
     }
 
     // Generate access token only after successful password verification
@@ -308,11 +310,11 @@ const NameLogin = async (req, res) => {
     user = await User.findOne({ username: req.body.username });
 
     if (!user) {
-      return res.status(404).send({ msg: "User not found!" });
+      return res.status(404).send({ msg: "المستخدم غير موجود" });
     }
 
     // Step 2: Verify the name password for the user
-    const validNamePassword = verifyPassword(
+    const validNamePassword = await bcrypt.compare(
       req.body.name_password,
       user.name_password
     );
@@ -337,7 +339,7 @@ const NameLogin = async (req, res) => {
 
     // Step 3: If room password is provided, check if the user follows the room
     if (req.body.room_password) {
-      const validRoomPassword = verifyPassword(
+      const validRoomPassword = await verifyPassword(
         req.body.room_password,
         user.room_password
       );
@@ -360,7 +362,7 @@ const NameLogin = async (req, res) => {
         });
       } else {
         // If the room password is incorrect, return an error
-        return res.status(400).send({ msg: "Invalid room password" });
+        return res.status(400).send({ msg: "كلمة مرور الغرفة غير صحيحة" });
       }
     }
 
@@ -368,7 +370,7 @@ const NameLogin = async (req, res) => {
     user = await User.findOne({ username: "visitor" });
 
     if (!user) {
-      return res.status(404).send({ msg: "Visitor not found!" });
+      return res.status(404).send({ msg: "الاسم غير موجود" });
     }
 
     const visitorId = uuidv4();
