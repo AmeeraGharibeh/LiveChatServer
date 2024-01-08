@@ -305,6 +305,7 @@ const visitorLogin = async (req, res) => {
 const NameLogin = async (req, res) => {
   try {
     let user;
+    let member;
 
     // Step 1: Check if the user exists by username
     user = await User.findOne({ username: req.body.username });
@@ -319,40 +320,52 @@ const NameLogin = async (req, res) => {
       user.name_password
     );
 
-    // If name password is correct, login as a name member
+    // If name password is correct, check for room password
     if (validNamePassword) {
-      const accessToken = jwt.sign(
-        {
-          id: user._id,
-        },
-        process.env.JWTSECRET,
-        { expiresIn: "1h" }
-      );
+      // Step 3: If room password is provided, check if the user follows the room
 
-      const { room_password, name_password, ...others } = user._doc;
+      if (req.body.room_password) {
+        member = await User.findOne({
+          username: req.body.username,
+          room_id: req.body.room_id,
+        });
 
-      return res.status(200).send({
-        user: { ...others, icon: req.body.icon },
-        accessToken: accessToken,
-      });
-    }
-
-    // Step 3: If room password is provided, check if the user follows the room
-    if (req.body.room_password) {
-      const validRoomPassword = await verifyPassword(
-        req.body.room_password,
-        user.room_password
-      );
-
-      // If both room and name passwords are correct, return the member user
-      if (validRoomPassword) {
-        const accessToken = jwt.sign(
-          {
-            id: user._id,
-          },
-          process.env.JWTSECRET,
-          { expiresIn: "1h" }
+        if (!member) {
+          return res.status(404).send({ msg: "المستخدم غير موجود" });
+        }
+        const validRoomPassword = await verifyPassword(
+          req.body.room_password,
+          member.room_password
         );
+
+        if (validRoomPassword) {
+          // Both name and room passwords are correct, return the member user
+          const accessToken = jwt.sign(
+            { id: user._id },
+            process.env.JWTSECRET,
+            { expiresIn: "1h" }
+          );
+
+          const { room_password, name_password, ...others } = user._doc;
+
+          return res.status(200).send({
+            user: {
+              ...others,
+              icon: req.body.icon,
+              user_type: member.user_type,
+              permissions: member.permissions,
+            },
+            accessToken: accessToken,
+          });
+        } else {
+          // If the room password is incorrect, return an error
+          return res.status(400).send({ msg: "كلمة مرور الغرفة غير صحيحة" });
+        }
+      } else {
+        // Room password not provided, login as a name user only
+        const accessToken = jwt.sign({ id: user._id }, process.env.JWTSECRET, {
+          expiresIn: "1h",
+        });
 
         const { room_password, name_password, ...others } = user._doc;
 
@@ -360,19 +373,10 @@ const NameLogin = async (req, res) => {
           user: { ...others, icon: req.body.icon },
           accessToken: accessToken,
         });
-      } else {
-        // If the room password is incorrect, return an error
-        return res.status(400).send({ msg: "كلمة مرور الغرفة غير صحيحة" });
       }
     }
 
     // Step 4: If name password is incorrect and room password is not provided, login as a visitor
-    user = await User.findOne({ username: "visitor" });
-
-    if (!user) {
-      return res.status(404).send({ msg: "الاسم غير موجود" });
-    }
-
     const visitorId = uuidv4();
     const visitorUser = {
       username: req.body.username,
@@ -383,9 +387,7 @@ const NameLogin = async (req, res) => {
     };
 
     const accessToken = jwt.sign(
-      {
-        id: visitorUser._id,
-      },
+      { id: visitorUser._id },
       process.env.JWTSECRET,
       { expiresIn: "1h" }
     );
