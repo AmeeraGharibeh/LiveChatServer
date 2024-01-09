@@ -140,7 +140,7 @@ async function uploadImagesToBucket(directory, files) {
 
     const uploadPromises = files.map(async (file) => {
       const timestamp = Date.now();
-      const uniqueFilename = `${timestamp}_${file.originalname.replace(
+      const uniqueFilename = `${directory}${timestamp}_${file.originalname.replace(
         / /g,
         "_"
       )}`;
@@ -156,7 +156,7 @@ async function uploadImagesToBucket(directory, files) {
         });
 
         blobStream.on("finish", async () => {
-          const publicUrl = `https://storage.googleapis.com/${bucket.name}/${directory}/${blob.name}`;
+          const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
           try {
             await blob.makePublic();
             resolve({ filename: uniqueFilename, url: publicUrl });
