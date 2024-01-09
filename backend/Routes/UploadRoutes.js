@@ -132,7 +132,7 @@ const gc = require("../Config");
 const bucket = gc.bucket("grocery-372908.appspot.com");
 const upload = multer();
 
-async function uploadImagesToBucket(files) {
+async function uploadImagesToBucket(directory, files) {
   try {
     if (!files || files.length === 0) {
       throw new Error("Please upload at least one file!");
@@ -156,7 +156,7 @@ async function uploadImagesToBucket(files) {
         });
 
         blobStream.on("finish", async () => {
-          const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+          const publicUrl = `https://storage.googleapis.com/${bucket.name}/${directory}/${blob.name}`;
           try {
             await blob.makePublic();
             resolve({ filename: uniqueFilename, url: publicUrl });
