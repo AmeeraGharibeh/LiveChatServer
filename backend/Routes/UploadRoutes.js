@@ -140,7 +140,7 @@ async function uploadImagesToBucket(directory, files) {
 
     const uploadPromises = files.map(async (file) => {
       const timestamp = Date.now();
-      const uniqueFilename = `${directory}${timestamp}_${file.originalname.replace(
+      const uniqueFilename = `${directory}/${timestamp}_${file.originalname.replace(
         / /g,
         "_"
       )}`;
