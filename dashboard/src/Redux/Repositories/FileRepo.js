@@ -1,6 +1,6 @@
 import { initializeUserRequest } from "../../apiRequest";
 
-export const uploadFile = async (file) => {
+export const uploadFile = async (file, bucket) => {
   console.log("File to be uploaded:", file);
   return initializeUserRequest()
     .then(async (request) => {
@@ -8,7 +8,7 @@ export const uploadFile = async (file) => {
       formData.append("images", file);
 
       console.log("FormData object:", formData);
-      return request.post("img/tmp/", formData, {
+      return request.post(`img/tmp/${bucket}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

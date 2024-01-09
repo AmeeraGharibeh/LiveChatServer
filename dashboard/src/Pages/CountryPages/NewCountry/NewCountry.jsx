@@ -31,7 +31,7 @@ export default function NewCountry() {
 
  const uploadImage = async (file) => {
   try {
-    const response = await uploadFile(file);
+    const response = await uploadFile(file, 'CountriesPics');
 
     if (response && response.msg && response.files && response.files.length > 0) {
       toast.success(response.msg);

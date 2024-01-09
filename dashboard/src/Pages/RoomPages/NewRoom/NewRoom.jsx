@@ -52,7 +52,7 @@ const handleDropdownCountry = (value) => {
   }
    const uploadImage = async (file) => {
   try {
-    const response = await uploadFile(file);
+    const response = await uploadFile(file, 'RoomsPics');
 
     if (response && response.msg && response.files && response.files.length > 0) {
       toast.success(response.msg);
