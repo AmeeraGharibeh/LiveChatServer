@@ -128,15 +128,11 @@
 
 const router = require("express").Router();
 const multer = require("multer");
-const { Storage } = require("@google-cloud/storage");
 const gc = require("../Config");
-
-const storage = new Storage();
+const bucket = gc.bucket("grocery-372908.appspot.com");
 const upload = multer();
 
-async function uploadImagesToBucket(bucketName, files) {
-  const bucket = storage.bucket(bucketName);
-
+async function uploadImagesToBucket(files) {
   try {
     if (!files || files.length === 0) {
       throw new Error("Please upload at least one file!");
@@ -183,11 +179,11 @@ async function uploadImagesToBucket(bucketName, files) {
   }
 }
 
-router.post("/tmp/:bucketName", upload.array("images", 1), async (req, res) => {
+router.post("/tmp/:directory", upload.array("images", 1), async (req, res) => {
   try {
-    const { bucketName } = req.params; // Extract bucketName from route params
+    const { directory } = req.params; // Extract directory from route params
 
-    const results = await uploadImagesToBucket(bucketName, req.files);
+    const results = await uploadImagesToBucket(directory, req.files);
 
     res.status(200).send({
       msg: "Uploaded files successfully",
