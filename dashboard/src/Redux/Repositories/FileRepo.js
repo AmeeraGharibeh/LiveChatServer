@@ -8,7 +8,7 @@ export const uploadFile = async (file, bucket) => {
       formData.append("images", file);
 
       console.log("FormData object:", formData);
-      return request.post(`img/tmp/${bucket}/`, formData, {
+      return request.post(`img/tmp/${bucket}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
