@@ -134,7 +134,7 @@ const bucket = gc.bucket("grocery-372908.appspot.com");
 const upload = multer();
 
 router.post(
-  "tmp/:directory",
+  "/tmp/:directory",
   upload.array("images", 1),
   async (req, res, next) => {
     try {
