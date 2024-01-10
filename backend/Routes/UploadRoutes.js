@@ -130,71 +130,81 @@ const router = require("express").Router();
 const multer = require("multer");
 const gc = require("../Config");
 const bucket = gc.bucket("grocery-372908.appspot.com");
+
 const upload = multer();
 
-async function uploadImagesToBucket(directory, files) {
-  try {
-    if (!files || files.length === 0) {
-      throw new Error("Please upload at least one file!");
+router.post(
+  "/:directory",
+  upload.array("images", 1),
+  async (req, res, next) => {
+    try {
+      const { directory } = req.params;
+
+      if (!req.files || req.files.length === 0) {
+        return res
+          .status(400)
+          .send({ message: "Please upload at least one file!" });
+      }
+
+      const uploadPromises = req.files.map((file) => {
+        const timestamp = Date.now();
+        const uniqueFilename = `${directory}/${timestamp}_${file.originalname.replace(
+          / /g,
+          "_"
+        )}`;
+
+        const blob = bucket.file(uniqueFilename);
+        const blobStream = blob.createWriteStream({
+          resumable: false,
+        });
+
+        return new Promise((resolve, reject) => {
+          blobStream.on("error", (err) => {
+            reject(err);
+          });
+
+          blobStream.on("finish", async (data) => {
+            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+            try {
+              // Make the file public
+              await blob.makePublic();
+
+              // Resolve the promise with the correct data
+              resolve({ filename: uniqueFilename, url: publicUrl });
+            } catch (err) {
+              // If making it public fails, resolve with an error
+              resolve({
+                filename: uniqueFilename,
+                url: publicUrl,
+                error: `Public access failed: ${err.message}`,
+              });
+            }
+          });
+
+          blobStream.end(file.buffer);
+        });
+      });
+
+      Promise.all(uploadPromises)
+        .then((results) => {
+          res.status(200).send({
+            msg: "Uploaded files successfully",
+            files: results,
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: "Could not upload one or more files",
+            error: err.message,
+          });
+        });
+    } catch (err) {
+      res.status(500).send({
+        message: "Could not upload the files",
+        error: err.message,
+      });
     }
-
-    const uploadPromises = files.map(async (file) => {
-      const timestamp = Date.now();
-      const uniqueFilename = `${directory}/${timestamp}_${file.originalname.replace(
-        / /g,
-        "_"
-      )}`;
-
-      const blob = bucket.file(uniqueFilename);
-      const blobStream = blob.createWriteStream({
-        resumable: false,
-      });
-
-      await new Promise((resolve, reject) => {
-        blobStream.on("error", (err) => {
-          reject(err);
-        });
-
-        blobStream.on("finish", async () => {
-          const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-          try {
-            await blob.makePublic();
-            resolve({ filename: uniqueFilename, url: publicUrl });
-          } catch (err) {
-            reject(
-              new Error(
-                `Uploaded the file '${uniqueFilename}' successfully, but public access is denied!`
-              )
-            );
-          }
-        });
-
-        blobStream.end(file.buffer);
-      });
-    });
-
-    return Promise.all(uploadPromises);
-  } catch (err) {
-    throw new Error(`Could not upload the files: ${err.message}`);
   }
-}
-
-router.post("/tmp/:directory", upload.array("images", 1), async (req, res) => {
-  try {
-    const { directory } = req.params; // Extract directory from route params
-
-    const results = await uploadImagesToBucket(directory, req.files);
-
-    res.status(200).send({
-      msg: "Uploaded files successfully",
-      files: results,
-    });
-  } catch (err) {
-    res.status(500).send({
-      message: "Could not upload one or more files",
-      error: err.message,
-    });
-  }
-});
+);
 
 module.exports = router;
