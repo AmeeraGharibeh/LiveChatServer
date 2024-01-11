@@ -74,7 +74,7 @@ const updateAdmin = async (req, res) => {
 
       const updated = await Auth.findByIdAndUpdate(
         req.params.id,
-        { $set: req.body },
+        { $set: req.body.body },
         { new: true }
       );
       return res.status(200).json(updated);
