@@ -22,7 +22,7 @@ const deleteImage = async (req, res) => {
   try {
     await Images.findByIdAndDelete(req.params.id);
 
-    res.status(200).json({ msg: "تم حذف الصورة بنجاح" });
+    res.status(200).json({ msg: "تم حذف الصورة بنجاح", id: req.params.id });
   } catch (err) {
     res.status(500).send({ msg: err.message });
   }
