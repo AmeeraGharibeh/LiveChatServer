@@ -129,6 +129,7 @@
 const router = require("express").Router();
 const multer = require("multer");
 const gc = require("../Config");
+const AppImages = require("../Models/AppImages");
 const bucket = gc.bucket("grocery-372908.appspot.com");
 
 const upload = multer();
@@ -169,6 +170,8 @@ router.post(
               // Make the file public
               await blob.makePublic();
 
+              const image = new AppImages({ url: publicUrl, directory });
+              await image.save();
               // Resolve the promise with the correct data
               resolve({ filename: uniqueFilename, url: publicUrl });
             } catch (err) {
