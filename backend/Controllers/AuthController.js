@@ -49,6 +49,7 @@ const signup = async (req, res) => {
 
 const updateAdmin = async (req, res) => {
   try {
+    console.log("controller " + JSON.stringify(req.body));
     const user = await Auth.findOne({ _id: req.params.id });
 
     if (!user) {
