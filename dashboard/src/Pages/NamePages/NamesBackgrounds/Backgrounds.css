@@ -1,0 +1,36 @@
+.backgrounds-layout{
+    flex: 4;
+    margin: 20px;
+    direction: rtl;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+
+.backgrounds-container,
+.vip-backgrounds-container {
+    flex-basis: 50%;
+    box-sizing: border-box;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+/* Optional: Add styling for the hr1 and button inside containers */
+.backgrounds-container hr1,
+.vip-backgrounds-container hr1 {
+    margin-bottom: 15px;
+}
+
+.backgrounds-container button,
+.vip-backgrounds-container button {
+    padding: 10px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}

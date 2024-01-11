@@ -85,6 +85,7 @@ export const updateAdmin = async (id, user, dispatch) => {
   dispatch(updateAdminStart());
   initializeUserRequest()
     .then(async (request) => {
+      console.log("admin is " + JSON.stringify(user));
       const val = await request.put(`auth/updateadmin/${id}`, user);
       console.log(val.data);
       dispatch(updateAdminSuccess(val.data));

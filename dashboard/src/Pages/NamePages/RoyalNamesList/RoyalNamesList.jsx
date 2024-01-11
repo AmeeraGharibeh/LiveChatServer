@@ -93,7 +93,7 @@ export default function RootsList() {
         </Link>
       
       </div>
-       <Link to="/namebackground">
+       <Link to="/backgrounds">
           <button className="background-button">خلفيات الاسم الملكي</button>
         </Link>
     <div>

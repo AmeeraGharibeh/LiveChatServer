@@ -27,6 +27,7 @@ import BlockedPage from "./Pages/BlockedPages/BlockedList/BlockedList.jsx";
 import ReportPage from "./Pages/SupportPages/ReportPage/ReportPage.jsx";
 import { checkAuthState } from "./Redux/Repositories/AuthRepo.js";
 import LogsPage from "./Pages/Logs/Logs.jsx";
+import Backgrounds from "./Pages/NamePages/NamesBackgrounds/Backgrounds.jsx";
 
 function App() {
   const dispatch = useDispatch();
@@ -92,6 +93,8 @@ function App() {
                 path="/protectednameslist"
                 element={<ProtectedNamesList />}
               />
+
+              <Route exact path="/backgrounds" element={<Backgrounds />} />
 
               <Route exact path="/support" element={<SupportPage />} />
               <Route exact path="/reports" element={<ReportPage />} />
