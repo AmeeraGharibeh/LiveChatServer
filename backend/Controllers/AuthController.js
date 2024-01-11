@@ -49,7 +49,7 @@ const signup = async (req, res) => {
 
 const updateAdmin = async (req, res) => {
   try {
-    console.log("controller " + JSON.stringify(req.body));
+    console.log("controller " + JSON.stringify(req.body.body));
     const user = await Auth.findOne({ _id: req.params.id });
 
     if (!user) {
@@ -57,17 +57,17 @@ const updateAdmin = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(
-      req.body.old_pass,
+      req.body.body.old_pass,
       user.dashboard_password
     );
 
     if (!isMatch) {
       return res.status(500).send({ msg: "كلمة المرور القديمة غير صحيحة" });
     } else {
-      if (req.body.dashboard_password) {
+      if (req.body.body.dashboard_password) {
         const salt = await bcrypt.genSalt(10);
-        req.body.dashboard_password = await bcrypt.hash(
-          req.body.dashboard_password,
+        req.body.body.dashboard_password = await bcrypt.hash(
+          req.body.body.dashboard_password,
           salt
         );
       }
