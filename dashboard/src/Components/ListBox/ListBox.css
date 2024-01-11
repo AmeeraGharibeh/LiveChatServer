@@ -1,0 +1,26 @@
+.image-item-container {
+    position: relative;
+    display: inline-block;
+        /* Ensures the container only takes as much width as necessary */
+}
+
+.delete-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.delete-button {
+    background-color: #f00;
+    /* Background color of the circular container */
+    color: #fff;
+    /* Text color (x icon color) */
+    border: none;
+    border-radius: 50%;
+    /* Make it a circle */
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    cursor: pointer;
+}

@@ -1,7 +1,15 @@
 .rootsList {
     flex: 4;
 }
-
+  .addButtonContainer {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+  }
+        .buttonGroup {
+            display: flex;
+            justify-content: space-between;
+        }
 .rootAddButton {
     border: none;
     padding: 5px;
@@ -9,6 +17,7 @@
     border-radius: 5px;
     cursor: pointer;
     color: white;
+    display: inline-block;
     font-size: 16px;
     margin: 10px;
 }

@@ -84,18 +84,20 @@ export default function RootsList() {
   return (
     <div className='rootsList'>
        <div className="addButtonContainer">
-        
-         <Link to="/newUser/vip">
+          <Link to="/backgrounds">
+          <button className="background-button">خلفيات الاسم الملكي</button>
+        </Link>
+       <div className='buttonGroup'>
+          <Link to="/newUser/vip">
           <button className="rootAddButton">VIP اضافة اسم ملكي</button>
         </Link>
          <Link to="/newUser/royal">
           <button className="rootAddButton">اضافة اسم ملكي</button>
         </Link>
-      
+       </div>
+        
       </div>
-       <Link to="/backgrounds">
-          <button className="background-button">خلفيات الاسم الملكي</button>
-        </Link>
+ 
     <div>
       <DataTable columns={columns} data={users} 
       totalRows= {totalRows}

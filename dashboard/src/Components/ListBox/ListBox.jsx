@@ -1,36 +1,40 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const ListBox = ({ items }) => {
-  const [selectedItem, setSelectedItem] = useState('');
+import { useDispatch } from 'react-redux';
+import { deleteImage } from '../../Redux/Repositories/ImagesRepo';
 
-  const handleChange = (event) => {
-    setSelectedItem(event.target.value);
-  };
+const ImageList = ({ items }) => {
 
+    const dispatch = useDispatch();
+
+  function showAlert(id) {
+  const result = window.confirm('هل أنت متأكد من حذف الصورة؟');
+  if (result) {
+    deleteImage(id ,dispatch,);
+  }
+}
   return (
-    <div>
-      <h2>Image List Box Example</h2>
-      <select value={selectedItem} onChange={handleChange}>
-        <option value="">Select an item</option>
-        {items.map((item) => (
-          <option key={item.value} value={item.value}>
-            {item.label}
-          </option>
-        ))}
-      </select>
-
-      {selectedItem && (
-        <div>
-          <p>Selected Item: {selectedItem}</p>
+    <div className='image-list-container'>
+      {items.map((item) => (
+        <div key={item._id} className="image-item-container">
+          <div className="delete-container">
+            <button
+              className="delete-button"
+              onClick={() => showAlert(item._id)}
+            >
+              &#x2715;
+            </button>
+          </div>
+          <p>{item.label}</p>
           <img
-            src={items.find((item) => item.value === selectedItem)?.imageSrc}
-            alt={`Image for ${selectedItem}`}
-            style={{ maxWidth: '100%', maxHeight: '200px' }}
+            src={item.url}
+            alt={`Image for ${item.directory}`}
+            style={{ maxWidth: '100%', maxHeight: '200px', alignContent: 'center' }}
           />
         </div>
-      )}
+      ))}
     </div>
   );
 };
 
-export default ListBox;
+export default ImageList;

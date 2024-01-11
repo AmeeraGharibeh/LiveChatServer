@@ -1,5 +1,4 @@
 import "./CountriesList.css";
-import { DataGrid } from '@mui/x-data-grid';
 import { DeleteOutline } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -8,7 +7,6 @@ import {deleteCountry, getCountries} from '../../../Redux/Repositories/Countries
 import { toast, ToastContainer } from 'react-toastify';
 import { resetCountryState } from "../../../Redux/CountriesRedux";
 import DataTable from '../../../Components/DataTable/DataTable';
-import { original } from "@reduxjs/toolkit";
 
 
 export default function CountriesList() {
@@ -16,7 +14,6 @@ export default function CountriesList() {
   const countries = useSelector((state)=> state.country.countries);
   const totalRows = useSelector(state => state.country.totalRows);
   const limit = useSelector((state)=> state.country.Limit);
-  const {isSuccess, error} = useSelector((state)=> state.country);
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(()=> {

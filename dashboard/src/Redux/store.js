@@ -2,9 +2,9 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import authReducer from "./AuthRedux";
 import countryReducer from "./CountriesRedux";
 import roomReducer from "./RoomsRedux";
-import usersReducer from "./UsersRedux"
-import logsReducer from "./LogsRedux"
-
+import usersReducer from "./UsersRedux";
+import logsReducer from "./LogsRedux";
+import imagesReducer from "./ImagesRedux";
 
 import {
   persistStore,
@@ -29,7 +29,8 @@ const rootReducer = combineReducers({
   country: countryReducer,
   room: roomReducer,
   user: usersReducer,
-  log: logsReducer
+  log: logsReducer,
+  image: imagesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -39,7 +40,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [ PAUSE, PERSIST, REHYDRATE, PURGE, FLUSH, REGISTER ],
+        ignoredActions: [PAUSE, PERSIST, REHYDRATE, PURGE, FLUSH, REGISTER],
       },
     }),
 });
