@@ -12,6 +12,7 @@ const UploadRouter = require("./Routes/UploadRoutes");
 const ReportsRouter = require("./Routes/ReportsRoutes");
 const BlockedRouter = require("./Routes/BlockedRoutes");
 const LogsRouter = require("./Routes/LogRoutes");
+const ImagesRouter = require("./Routes/ImagesRoutes");
 const Logs = require("./Models/LogModel");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
@@ -813,6 +814,7 @@ app.use("/img", UploadRouter);
 app.use("/reports", ReportsRouter);
 app.use("/blocked", BlockedRouter);
 app.use("/logs", LogsRouter);
+app.use("/images", ImagesRouter);
 
 /////////////////////////////////////////////////////
 server.listen(8002, () => {

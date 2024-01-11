@@ -191,7 +191,7 @@ router.post(
       Promise.all(uploadPromises)
         .then((results) => {
           res.status(200).send({
-            msg: "Uploaded files successfully",
+            msg: "تم الرفع بنجاح",
             files: results,
           });
         })
