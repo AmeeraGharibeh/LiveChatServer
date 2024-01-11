@@ -2,7 +2,14 @@ const Images = require("../Models/AppImages");
 
 const getImages = async (req, res) => {
   try {
-    const images = await Images.find();
+    const directoryQuery = req.query.directory;
+
+    let query = {};
+    if (directoryQuery) {
+      query = { directory: directoryQuery };
+    }
+
+    const images = await Images.find(query);
     const response = { images };
     res.status(200).json(response);
   } catch (err) {
