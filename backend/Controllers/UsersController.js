@@ -597,9 +597,11 @@ const updateUserAlbum = async (req, res) => {
     }
     user.album.push(req.body.pic);
 
-    const updated = await User.updateOne(
-      { _id: req.params.id },
-      { $set: { album: user.album } },
+    const updated = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: { album: user.album },
+      },
       { new: true }
     );
 
