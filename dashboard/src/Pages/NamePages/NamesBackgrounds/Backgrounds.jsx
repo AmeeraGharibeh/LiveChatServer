@@ -8,7 +8,8 @@ import ImageList from '../../../Components/ListBox/ListBox';
 
 export default function Backgrounds() {
   const dispatch = useDispatch();
-    const images = useSelector((state)=> state.image.images);
+  const images = useSelector((state)=> state.image.images);
+  const loading = useSelector((state)=> state.image.isFetching);
   const [vipImages, setVipImages] = useState([]);
   const [backgroundImages, setBackgroundImages] = useState([]);
 
@@ -54,7 +55,7 @@ export default function Backgrounds() {
       <input type="file" id="file1" onChange={(e) => uploadImage(e.target.files[0], 0)} />
       <h3>VIP خلفيات</h3>
     </div>
-    <ImageList items={vipImages}/>
+   {loading ? 'Loading...' : <ImageList items={vipImages}/>}
   </div>
 
     <div className='backgrounds-container'>
@@ -63,7 +64,7 @@ export default function Backgrounds() {
       <input type="file" id="file2" onChange={(e) => uploadImage(e.target.files[0], 1)} />
       <h3>خلفيات الملكي</h3>
     </div>
-    <ImageList items={backgroundImages}/>
+   {loading ? 'Loading...' : <ImageList items={backgroundImages}/>}
   </div>
 </div>
          </>
