@@ -1,7 +1,5 @@
 .image-item-container {
     position: relative;
-    display: inline-block;
-        /* Ensures the container only takes as much width as necessary */
 }
 
 .delete-container {
