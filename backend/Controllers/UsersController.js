@@ -132,7 +132,7 @@ const createName = async (req, res) => {
         name_type: body.name_type,
         user_type: "visitor",
         name_password: hashedNamePass,
-        name_end_date: endDate,
+        name_end_date: time(endDate),
       });
       const saved = await newUser.save();
 
@@ -792,7 +792,7 @@ const userStats = async (req, res) => {
 const blockUser = async (req, res) => {
   console.log("block body " + JSON.stringify(req.body));
   const body = req.body.body;
-
+  const now = new Date();
   try {
     const userId = req.params.id;
     let blocked;
@@ -807,7 +807,7 @@ const blockUser = async (req, res) => {
       location: body.location,
       is_ip_blocked: body.is_ip_blocked,
       is_device_blocked: body.is_device_blocked,
-      date: time(),
+      date: time(now),
     };
 
     const existingBlocked = await Blocked.findOne({ user_id: userId });

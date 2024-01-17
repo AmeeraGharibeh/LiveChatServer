@@ -1,5 +1,4 @@
-const time = () => {
-  const now = new Date();
+const time = (now) => {
   now.setUTCHours(now.getUTCHours() + 3);
   const options = {
     year: "numeric",
