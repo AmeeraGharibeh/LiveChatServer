@@ -26,11 +26,6 @@ const UserSchema = mongoose.Schema(
       default: "-",
     },
 
-    name_start_date: {
-      type: String,
-      default: "-",
-    },
-
     name_end_date: {
       type: String,
       default: "-",

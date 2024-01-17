@@ -120,7 +120,9 @@ const createName = async (req, res) => {
   const body = req.body.body;
   try {
     const hashedNamePass = await hashPassword(body.name_password);
-
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + parseInt(body.name_end_date));
+    console.log("end date is " + endDate);
     const users = await User.find({ username: body.username });
     if (users.length > 0) {
       res.status(400).json({ msg: "هذا الاسم مستخدم بالفعل" });
@@ -130,6 +132,7 @@ const createName = async (req, res) => {
         name_type: body.name_type,
         user_type: "visitor",
         name_password: hashedNamePass,
+        name_end_date: endDate,
       });
       const saved = await newUser.save();
 
