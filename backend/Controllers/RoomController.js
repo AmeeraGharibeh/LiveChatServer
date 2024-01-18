@@ -3,7 +3,10 @@ const User = require("../Models/UserModel");
 const Logs = require("../Models/LogModel");
 const Reports = require("../Models/ReportsModel");
 const bcrypt = require("bcryptjs");
-const { calculateDateAfterDays } = require("../Config/Helpers/time_helper");
+const {
+  calculateDateAfterDays,
+  time,
+} = require("../Config/Helpers/time_helper");
 
 const createRoom = async function (req, res) {
   console.log(req.body);
