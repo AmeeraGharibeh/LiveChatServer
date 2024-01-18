@@ -10,7 +10,7 @@ const createRoom = async function (req, res) {
   let roomData = req.body.body;
   const password = req.body.body.room_password;
   const permissions = req.body.body.permissions;
-  roomData.end_date = calculateDateAfterDays(roomData.room_duration);
+  roomData.end_date = time(calculateDateAfterDays(roomData.room_duration));
   const newRoom = new Rooms(roomData);
   try {
     await newRoom.save().then(async (val) => {
