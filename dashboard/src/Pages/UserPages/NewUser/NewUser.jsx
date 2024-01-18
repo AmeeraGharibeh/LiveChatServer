@@ -9,21 +9,26 @@ import MultiSelectDropdown from "../../../Components/MultiSelectDropdown";
 
 
 export default function NewUser() {
+   const dates = [
+  {"_id" : '1', 'ar': 'شهر', 'en' : '1 month'}, 
+  {"_id" : '2', 'ar': '3 أشهر', 'en' :"3 months"},
+  {"_id" : '3', 'ar': '6 أشهر', 'en': "6 months"},
+  {"_id" : '4', 'ar': 'سنة', 'en': "12 months"}
+  ]
   const [inputs, setInputs] = useState({});
     const location = useLocation();
   const type = location.pathname.split('/')[2];
   const [rooms, setRooms] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]);
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState(dates[0]);
   const allRooms = useSelector((state)=> state.room.rooms);
   const success = useSelector((state) => state.user.success);
   const loading = useSelector((state) => state.user.isFetching);
   const error = useSelector((state) => state.user.error);
- const dates = ["شهر", '3 أشهر', '6 أشهر', 'سنة']
+
   const dispatch = useDispatch();
 
   useEffect(()=>{
-    setDate(dates[0]);
     setRooms(allRooms);
     console.log(type)
   }, []);
@@ -32,9 +37,12 @@ export default function NewUser() {
     dispatch(resetUserState());
   }, []);
 
+ useEffect(()=> {
+  }, [date]);
 
 const handleDropdownDate = (value) => {
-  setRooms(value);
+  console.log('data is ' + value)
+  setDate(value);
     };
 
 const handleSelectedOptionsChange = (newSelectedOptions) => {
@@ -53,7 +61,8 @@ const handleSelectedOptionsChange = (newSelectedOptions) => {
   const userData = { 
       ...inputs,
     name_type: type,
-    rooms: selectedRooms
+    rooms: selectedRooms,
+    name_end_date: date['en']
   };
     console.log(userData)
     addUser(userData, dispatch);
@@ -73,7 +82,7 @@ const handleSelectedOptionsChange = (newSelectedOptions) => {
         </div>
         <div className="addUserItem">
           <label>تاريخ الانتهاء</label>
-          <DropdownMenu className="dropdown" options={dates} default = {date} onDropdownChange={handleDropdownDate}/>
+          <DropdownMenu className="dropdown" options={dates} value = {'ar'} default = {date} onDropdownChange={handleDropdownDate}/>
         </div> 
       {   type === 'root' ?  <div className="addUserItem">
           <label> اضافة الروت إلى غرفة أو عدة غرف</label>

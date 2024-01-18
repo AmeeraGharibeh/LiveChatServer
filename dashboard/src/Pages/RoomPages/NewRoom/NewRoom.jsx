@@ -18,6 +18,7 @@ export default function NewRoom() {
   const {isSuccess, error, isFetching} = useSelector((state) => state.room);
   const countries = useSelector((state)=> state.country.countries);
   const [file, setFile] = useState(null);
+  const [totalCapacity, setTotalCapacity] = useState(0);
 
   const dispatch = useDispatch();
 
@@ -46,9 +47,18 @@ const handleDropdownCountry = (value) => {
     })
   }
    const handleLimits = (e)=> {
-    setLimitsInput(prev => {
-      return {...prev, [e.target.name]: e.target.value}
-    })
+    setLimitsInput((prev) => {
+    const updatedLimits = { ...prev, [e.target.name]: e.target.value };
+
+    const newTotalCapacity = Object.values(updatedLimits).reduce(
+      (total, value) => total + parseInt(value, 10) || 0,
+      0
+    );
+
+    setTotalCapacity(newTotalCapacity);
+
+    return updatedLimits;
+  });
   }
    const uploadImage = async (file) => {
   try {
@@ -78,6 +88,7 @@ const handleDropdownCountry = (value) => {
       room_type: type.name_en,
       permissions, 
       room_img: file,
+      room_capacity: totalCapacity,
       account_limits:  limitsInput};
     addRoom(roomData, dispatch);
   }
@@ -107,10 +118,6 @@ const handleDropdownCountry = (value) => {
           <input name="room_owner" type="text" onChange={handleChange} />
         </div>
              <div className="addRoomItem">
-          <label>حساب الماستر</label>
-          <input name="username" type="text" value={'master'} readonly={true} />
-        </div>
-             <div className="addRoomItem">
           <label>كلمة المرور للغرفة</label>
           <input name="room_password" type="text" onChange={handleChange} />
         </div>
@@ -121,11 +128,6 @@ const handleDropdownCountry = (value) => {
           <div className="addRoomItem">
           <label>الإيميل</label>
           <input name="email" type="text" onChange={handleChange}/>
-        </div>
-      
-          <div className="addRoomItem">
-          <label>سعة الغرفة</label>
-          <input name="room_capacity" type="number" onChange={handleChange}/>
         </div>
           <div className="addRoomItem">
           <label>مدة الغرفة</label>
@@ -138,7 +140,9 @@ const handleDropdownCountry = (value) => {
           : <input type="file" id="file"  onChange={(e) => uploadImage(e.target.files[0], 1)} />
       }
         </div>  
-       <div className="addRoomItem">
+      
+      </form>
+       <div className="addRoomItemLimits">
           <label>حد الحسابات</label>
           <div className="limits">
             <div className="addRoomItem">
@@ -160,7 +164,6 @@ const handleDropdownCountry = (value) => {
         
           </div>
         </div>
-      </form>
          <div className="addRoomItem">
        
         <button className="addRoomButton" onClick={handleClick} disabled={isFetching || isSuccess} >{isFetching ? "بالانتظار..." : isSuccess ? "تمت الاضافة" : "تأكيد" }</button>     
