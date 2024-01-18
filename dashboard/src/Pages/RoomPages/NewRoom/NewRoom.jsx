@@ -130,8 +130,8 @@ const handleDropdownCountry = (value) => {
           <input name="email" type="text" onChange={handleChange}/>
         </div>
           <div className="addRoomItem">
-          <label>مدة الغرفة</label>
-          <input name="room_duration" type="text" onChange={handleChange} />
+          <label>مدة الغرفة "بالأيام"</label>
+          <input name="room_duration" type="number" onChange={handleChange} />
         </div>
          <div className="addRoomItem">
           <label>صورة الغرفة</label>
