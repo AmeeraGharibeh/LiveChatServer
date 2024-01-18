@@ -3,13 +3,16 @@ const User = require("../Models/UserModel");
 const Logs = require("../Models/LogModel");
 const Reports = require("../Models/ReportsModel");
 const bcrypt = require("bcryptjs");
+const { calculateDateAfterDays } = require("../Config/Helpers/time_helper");
 
 const createRoom = async function (req, res) {
   console.log(req.body);
+  let roomData = req.body.body;
   const password = req.body.body.room_password;
   const permissions = req.body.body.permissions;
   const newRoom = new Rooms(req.body.body);
   try {
+    roomData.end_date = calculateDateAfterDays(roomData.room_duration);
     await newRoom.save().then(async (val) => {
       try {
         console.log("first" + password);
