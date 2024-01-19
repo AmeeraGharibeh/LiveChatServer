@@ -740,15 +740,24 @@ const getUsersByRoom = async (req, res) => {
 const getUsersByType = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
-  const type = req.query.type;
+  const types = req.query.type; // Modify to handle multiple types
+
+  // Convert the types to an array if it's a comma-separated string
+  const typeArray = types ? types.split(",") : [];
 
   try {
-    const totalItems = await User.countDocuments({ name_type: type });
+    // Use $in operator to match any of the specified types
+    const totalItems = await User.countDocuments({
+      name_type: { $in: typeArray },
+    });
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
 
-    const items = await User.find({ name_type: type }).skip(skip).limit(limit);
+    // Use $in operator to find users with any of the specified types
+    const items = await User.find({ name_type: { $in: typeArray } })
+      .skip(skip)
+      .limit(limit);
 
     const response = {
       current_page: currentPage,
@@ -764,6 +773,7 @@ const getUsersByType = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 const userStats = async (req, res) => {
   const date = new Date();
   const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
