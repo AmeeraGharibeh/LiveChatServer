@@ -16,7 +16,7 @@ export default function RootsList() {
 
   useEffect(()=> {
     
-    getUserByType( "royal" , currentPage, 10, dispatch);
+    getUserByType( "royal,vip" , currentPage, 10, dispatch);
   }, [dispatch, currentPage])
 
   const columns = [
