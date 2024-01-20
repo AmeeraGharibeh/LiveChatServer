@@ -31,16 +31,17 @@ const checkStoppedUsers = async (device) => {
 const checkMembershipExpiration = async (req, res, next) => {
   const query = { username: req.body.username, user_type: { $ne: "-" } };
   const result = await Users.find(query);
-  console.log(time(new Date()));
+  console.log("result is " + result);
 
   if (
     result &&
     result.name_end_date &&
     new Date(result.name_end_date) < time(new Date())
   ) {
+    console.log("user found");
+
     return res.status(401).json({
-      message:
-        "نأسف لقد انتهت صلاحية عضويتك, يمكنك التجديد خلال أسبوع أو سيتم حذف العضوية",
+      msg: "نأسف لقد انتهت صلاحية عضويتك, يمكنك التجديد خلال أسبوع أو سيتم حذف العضوية",
     });
   }
 
