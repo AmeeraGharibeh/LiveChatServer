@@ -57,7 +57,7 @@ const checkMembershipExpiration = async (req, res, next) => {
     }
 
     const weekAgo = new Date(currentDate);
-    weekAgo.setDate(currentDate.getDate() - 7);
+    weekAgo.setDate(currentDate.getTime() - 7);
 
     if (expirationDate < time(weekAgo)) {
       // Delete the user from the database
