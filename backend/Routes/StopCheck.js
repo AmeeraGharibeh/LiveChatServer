@@ -31,6 +31,8 @@ const checkStoppedUsers = async (device) => {
 const checkMembershipExpiration = async (req, res, next) => {
   const query = { username: req.body.username, user_type: { $ne: "-" } };
   const result = await Users.find(query);
+  console.log(time(new Date()));
+
   if (
     result &&
     result.name_end_date &&
