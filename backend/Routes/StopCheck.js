@@ -44,9 +44,9 @@ const checkMembershipExpiration = async (req, res, next) => {
     const minutes = parseInt(parts[4], 10);
     const seconds = parseInt(parts[5], 10);
     const formatted = new Date(year, month, day, hours, minutes, seconds);
-    console.log("formatted is " + formatted);
+    console.log("formatted is " + time(formatted));
 
-    if (formatted < time(new Date())) {
+    if (time(formatted) < time(new Date())) {
       return res.status(401).json({
         msg: "نأسف لقد انتهت صلاحية عضويتك, يمكنك التجديد خلال أسبوع أو سيتم حذف العضوية",
       });
