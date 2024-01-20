@@ -52,7 +52,7 @@ const checkMembershipExpiration = async (req, res, next) => {
       return res.status(401).json({
         msg: `نأسف لقد انتهت صلاحية عضويتك، وتم حذف العضوية بنجاح.`,
       });
-    } else {
+    } else if (time(formatted) < time(new Date())) {
       const remainingDays = Math.ceil(
         (afterWeek - new Date()) / (1000 * 60 * 60 * 24)
       );
