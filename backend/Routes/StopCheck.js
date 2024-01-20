@@ -50,16 +50,11 @@ const checkMembershipExpiration = async (req, res, next) => {
 
     const differenceInDays = Math.floor(remining / (1000 * 60 * 60 * 24));
 
-    if (expirationDate < currentDate) {
+    if (differenceInDays > 7) {
       return res.status(401).json({
         msg: `نأسف لقد انتهت صلاحية عضويتك, يمكنك التجديد خلال ${differenceInDays} أيام أو سيتم حذف العضوية`,
       });
-    }
-
-    const week = new Date(expirationDate.getTime() + 7);
-    console.log("week is " + week);
-    if (currentDate > time(week)) {
-      // Delete the user from the database
+    } else {
       await Users.findByIdAndDelete(user._id);
       console.log("User deleted from the database");
     }
