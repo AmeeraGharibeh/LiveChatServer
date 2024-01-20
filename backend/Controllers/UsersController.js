@@ -6,7 +6,7 @@ const Reports = require("../Models/ReportsModel");
 const Blocked = require("../Models/BlockedModel");
 const { time } = require("../Config/Helpers/time_helper");
 const ImageModel = require("../Models/ImageModel");
-const cron = require("node-cron");
+//const cron = require("node-cron");
 
 const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10);
