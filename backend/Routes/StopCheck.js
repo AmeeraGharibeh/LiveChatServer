@@ -30,14 +30,12 @@ const checkStoppedUsers = async (device) => {
 
 const checkMembershipExpiration = async (req, res, next) => {
   const query = { username: req.body.username, user_type: { $ne: "-" } };
-  await Users.find(query).then((result) => {
-    console.log("end is " + result["name_end_date"]);
-    console.log("end is " + result["username"]);
-  });
+  const result = await Users.find(query);
+  console.log("end is " + result);
 
   if (result) {
     console.log("now is " + time(new Date()));
-    const parts = result["name_end_date"].split(/[\s,\/:]+/); // Split by spaces, commas, slashes, and colons
+    const parts = result.name_end_date.split(/[\s,\/:]+/); // Split by spaces, commas, slashes, and colons
     const month = parseInt(parts[0], 10) - 1; // Months are zero-based in JavaScript Dates
     const day = parseInt(parts[1], 10);
     const year = parseInt(parts[2], 10);
