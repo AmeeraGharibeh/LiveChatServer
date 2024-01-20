@@ -33,12 +33,17 @@ const checkMembershipExpiration = async (req, res, next) => {
   const result = await Users.find(query);
   console.log("now is " + time(new Date()));
   console.log("end is " + new Date(result.name_end_date));
+  const parts = result.name_end_date.split(/[\s,\/:]+/); // Split by spaces, commas, slashes, and colons
+  const month = parseInt(parts[0], 10) - 1; // Months are zero-based in JavaScript Dates
+  const day = parseInt(parts[1], 10);
+  const year = parseInt(parts[2], 10);
+  const hours = parseInt(parts[3], 10) + (parts[6] === "PM" ? 12 : 0); // Adjust for PM
+  const minutes = parseInt(parts[4], 10);
+  const seconds = parseInt(parts[5], 10);
 
-  if (
-    result &&
-    result.name_end_date &&
-    new Date(result.name_end_date) < time(new Date())
-  ) {
+  const formatted = new Date(year, month, day, hours, minutes, seconds);
+
+  if (result && result.name_end_date && formatted < time(new Date())) {
     console.log("user found");
 
     return res.status(401).json({
