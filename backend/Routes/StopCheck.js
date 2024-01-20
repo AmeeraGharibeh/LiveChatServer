@@ -48,7 +48,7 @@ const checkMembershipExpiration = async (req, res, next) => {
 
     const remining = expirationDate - currentDate;
 
-    const differenceInDays = Math.floor(remining / (1000 * 60 * 60 * 24));
+    const differenceInDays = remining / (1000 * 60 * 60 * 24);
 
     if (expirationDate < currentDate) {
       return res.status(401).json({
