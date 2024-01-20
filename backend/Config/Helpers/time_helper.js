@@ -15,7 +15,6 @@ const time = (now) => {
 const calculateDateAfterDays = (days) => {
   const currentDate = new Date();
 
-  // Calculate the new date after the specified number of days
   const newDate = new Date(currentDate.getTime() + days * 24 * 60 * 60 * 1000);
 
   return newDate;
