@@ -46,7 +46,7 @@ const checkMembershipExpiration = async (req, res, next) => {
     const expirationDate = time(formatted);
     const currentDate = time(new Date());
 
-    const remining = expirationDate - currentDate;
+    const remining = formatted - new Date();
 
     const differenceInDays = remining / (1000 * 60 * 60 * 24);
 
