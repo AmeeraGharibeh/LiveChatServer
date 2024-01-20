@@ -43,14 +43,11 @@ const checkMembershipExpiration = async (req, res, next) => {
     const seconds = parseInt(parts[5], 10);
     const formatted = new Date(year, month, day, hours, minutes, seconds);
 
-    const expirationDate = time(formatted);
-    const currentDate = time(new Date());
-
     const remining = new Date() - formatted;
 
     const differenceInDays = Math.floor(remining / (1000 * 60 * 60 * 24));
 
-    if (differenceInDays > 7) {
+    if (time(formatted) < time(new Date())) {
       return res.status(401).json({
         msg: `نأسف لقد انتهت صلاحية عضويتك, يمكنك التجديد خلال ${differenceInDays} أيام أو سيتم حذف العضوية`,
       });
