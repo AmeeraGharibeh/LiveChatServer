@@ -30,11 +30,11 @@ const checkStoppedUsers = async (device) => {
 
 const checkMembershipExpiration = async (req, res, next) => {
   const query = { username: req.body.username, user_type: { $ne: "-" } };
-  const result = await Users.find(query).toArray();
+  const result = await Users.find(query);
   if (
-    result[0] &&
-    result[0].name_end_date &&
-    new Date(result[0].name_end_date) < time(new Date())
+    result &&
+    result.name_end_date &&
+    new Date(result.name_end_date) < time(new Date())
   ) {
     return res.status(401).json({
       message:
