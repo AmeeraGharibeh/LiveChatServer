@@ -36,16 +36,16 @@ const checkMembershipExpiration = async (req, res, next) => {
     const user = result[0];
     console.log("user is " + user);
     console.log("user is " + user.name_end_date);
-    const parts = user.name_end_date.split(/[\s,\/:]+/); // Split by spaces, commas, slashes, and colons
-    const month = parseInt(parts[0], 10) - 1; // Months are zero-based in JavaScript Dates
-    const day = parseInt(parts[1], 10);
-    const year = parseInt(parts[2], 10);
-    const hours = parseInt(parts[3], 10) + (parts[6] === "PM" ? 12 : 0); // Adjust for PM
-    const minutes = parseInt(parts[4], 10);
-    const seconds = parseInt(parts[5], 10);
-    const formatted = new Date(year, month, day, hours, minutes, seconds);
+    // const parts = user.name_end_date.split(/[\s,\/:]+/); // Split by spaces, commas, slashes, and colons
+    // const month = parseInt(parts[0], 10) - 1; // Months are zero-based in JavaScript Dates
+    // const day = parseInt(parts[1], 10);
+    // const year = parseInt(parts[2], 10);
+    // const hours = parseInt(parts[3], 10) + (parts[6] === "PM" ? 12 : 0); // Adjust for PM
+    // const minutes = parseInt(parts[4], 10);
+    // const seconds = parseInt(parts[5], 10);
+    // const formatted = new Date(year, month, day, hours, minutes, seconds);
 
-    if (formatted < time(new Date())) {
+    if (new Date(user.name_end_date) < time(new Date())) {
       return res.status(401).json({
         msg: "نأسف لقد انتهت صلاحية عضويتك, يمكنك التجديد خلال أسبوع أو سيتم حذف العضوية",
       });
