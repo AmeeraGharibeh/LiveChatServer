@@ -31,13 +31,19 @@ const {
   unblockUser,
 } = require("../Controllers/UsersController");
 const { blockedMiddleware } = require("./BlockCheck");
+const { checkMembershipExpiration } = require("./StopCheck");
 
 router.post("/", verifyTokenAndAdmin, createUser);
 router.post("/name", verifyTokenAndAuthorization, createName);
-router.post("/login", blockedMiddleware, login);
+router.post("/login", checkMembershipExpiration, blockedMiddleware, login);
 router.post("/login/member", blockedMiddleware, memberLogin);
 router.post("/login/visitor", blockedMiddleware, visitorLogin);
-router.post("/login/name", blockedMiddleware, NameLogin);
+router.post(
+  "/login/name",
+  checkMembershipExpiration,
+  blockedMiddleware,
+  NameLogin
+);
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.put("/name/:id", verifyTokenAndAuthorization, updateNameUser);
 router.put("/update/:id", updateUserProfile);

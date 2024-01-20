@@ -1,4 +1,6 @@
+const { time } = require("../Config/Helpers/time_helper");
 const StopModel = require("../Models/StopModel");
+const Users = require("../Models/UserModel");
 
 const checkStoppedUsers = async (device) => {
   try {
@@ -6,28 +8,41 @@ const checkStoppedUsers = async (device) => {
 
     if (stoppedUser) {
       if (stoppedUser.period === "forever") {
-        return stoppedUser; // Return stoppedUser if the period is "forever"
+        return stoppedUser;
       } else {
         const currentDate = new Date();
         const blockEndDate = new Date(stoppedUser.end_date);
 
         if (currentDate > blockEndDate) {
-          // Remove the user from the stop list if the block end date has passed
           await StopModel.findByIdAndRemove(stoppedUser._id);
           console.log(`User unblocked: ${stoppedUser.username}`);
         } else {
-          return stoppedUser; // Return stoppedUser if the user is still blocked
+          return stoppedUser;
         }
       }
     }
-
-    // If stoppedUser is not found or conditions are not met, it returns undefined
     return stoppedUser;
   } catch (error) {
     console.error(error);
-    // Consider handling the error and returning an appropriate response
     throw new Error("Internal server error");
   }
 };
 
-module.exports = { checkStoppedUsers };
+const checkMembershipExpiration = async (req, res, next) => {
+  const query = { username: req.body.username, user_type: { $ne: "-" } };
+  const result = await U.find(query).toArray();
+  if (
+    result[0] &&
+    result[0].name_end_date &&
+    new Date(result[0].name_end_date) < time(new Date())
+  ) {
+    return res.status(401).json({
+      message:
+        "نأسف لقد انتهت صلاحية عضويتك, يمكنك التجديد خلال أسبوع أو سيتم حذف العضوية",
+    });
+  }
+
+  next();
+};
+
+module.exports = { checkStoppedUsers, checkMembershipExpiration };

@@ -6,6 +6,7 @@ const Reports = require("../Models/ReportsModel");
 const Blocked = require("../Models/BlockedModel");
 const { time } = require("../Config/Helpers/time_helper");
 const ImageModel = require("../Models/ImageModel");
+const cron = require("node-cron");
 
 const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10);
@@ -889,6 +890,40 @@ const unblockUser = async (req, res) => {
     return res.status(500).json({ msg: "Internal server error" });
   }
 };
+
+// Schedule a task to run every day at a specific time
+// cron.schedule('0 0 * * *', async () => {
+//   try {
+//     // Find users whose membership has expired
+//     const expiredUsers = await User.find({ name_end_date: { $lte: new Date() } });
+
+//     // Process each expired user
+//     expiredUsers.forEach(async (user) => {
+//       // Check if the user has renewed within a week
+//       const renewalDeadline = new Date(user.name_end_date);
+//       renewalDeadline.setDate(renewalDeadline.getDate() + 7);
+
+//       if (time(new Date()) <= time(renewalDeadline)) {
+//         // User has a week to renew; you can notify the user here
+//       await User.findByIdAndUpdate(
+//         user._id,
+//         {
+//           hasExpired: true,
+//         },
+//         { new: true }
+//       );
+//       } else {
+//         // User didn't renew within a week; delete from the database
+//         await User.findByIdAndDelete(user._id);
+//         console.log(
+//           `User ${user.username} removed from the database due to expired membership.`
+//         );
+//       }
+//     });
+//   } catch (error) {
+//     console.error('Error checking and handling expired memberships:', error);
+//   }
+// });
 
 module.exports = {
   createUser,
