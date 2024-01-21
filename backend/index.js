@@ -250,6 +250,9 @@ io.on("connection", async (socket) => {
     const room_id = data.room_id;
     const time = data.time;
     const type = data.type;
+    const device = data.device;
+    const icon = data.icon;
+    const name_type = data.name_type;
 
     io.to(room_id).emit("imageSaved", {
       message: img,
@@ -257,6 +260,9 @@ io.on("connection", async (socket) => {
       senderId,
       type,
       time,
+      device,
+      icon,
+      name_type,
     });
     // Get the image bytes from the data object.
 
