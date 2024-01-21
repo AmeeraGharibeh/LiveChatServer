@@ -251,26 +251,27 @@ io.on("connection", async (socket) => {
     const time = data.time;
     const type = data.type;
 
+    io.to(room_id).emit("imageSaved", {
+      message: img,
+      sender,
+      senderId,
+      type,
+      time,
+    });
     // Get the image bytes from the data object.
 
-    const imageBuffer = Buffer.from(img, "base64");
-    const filename = Date.now() + ".jpg";
+    // const imageBuffer = Buffer.from(img, "base64");
+    // const filename = Date.now() + ".jpg";
 
-    // Save the image to disk
-    fs.writeFile(filename, imageBuffer, (err) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      // Notify the client that the image has been saved.
-      io.to(room_id).emit("imageSaved", {
-        message: imageBuffer.toString(),
-        sender,
-        senderId,
-        type,
-        time,
-      });
-    });
+    // // Save the image to disk
+    // fs.writeFile(filename, imageBuffer, (err) => {
+    //   if (err) {
+    //     console.error(err);
+    //     return;
+    //   }
+    //   // Notify the client that the image has been saved.
+
+    // });
   });
   // Handle private messages
   const activeConversations = {};
