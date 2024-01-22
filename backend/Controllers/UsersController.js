@@ -1,4 +1,5 @@
 const User = require("../Models/UserModel");
+const Room = require("../Models/RoomModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
@@ -24,6 +25,7 @@ const createUser = async (req, res) => {
     const hashedPass = await hashPassword(body.room_password);
 
     const items = await User.find({ room_id: body.room_id });
+    const room = await Room.findById(body.room_id);
     const usernameExists = items.some(
       (item) => item.username === body.username
     );
@@ -31,9 +33,8 @@ const createUser = async (req, res) => {
     if (usernameExists) {
       res.status(400).json({ msg: "اسم المستخدم موجود بالفعل في الغرفة" });
     } else {
-      // Check user type and corresponding limit
       const userType = body.user_type.toLowerCase();
-      const limits = body.limits;
+      const limits = room.limits;
 
       const typesCount = items.filter(
         (item) => item.user_type === userType
