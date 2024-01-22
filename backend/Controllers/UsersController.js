@@ -38,7 +38,8 @@ const createUser = async (req, res) => {
       const typesCount = items.filter(
         (item) => item.user_type === userType
       ).length;
-
+      console.log("count is " + typesCount);
+      console.log("limit is " + limits[userType]);
       if (userType === limits[userType] && typesCount >= parseInt(admin, 10)) {
         res
           .status(400)
