@@ -41,10 +41,11 @@ const createUser = async (req, res) => {
       console.log("count is " + typesCount);
       console.log("limit is " + limits[userType]);
       console.log("condition is " + parseInt(limits[userType]) <= typesCount);
+
       if (parseInt(limits[userType]) <= typesCount) {
-        return res
-          .status(401)
-          .json({ msg: "تم الوصول إلى الحد الأقصى لعدد المسؤولين في الغرفة" });
+        res.status(400).json({
+          msg: "تم الوصول إلى الحد الأقصى لعدد المسؤولين في الغرفة",
+        });
       } else {
         const newUser = new User({
           username: body.username,
@@ -69,7 +70,7 @@ const createUser = async (req, res) => {
       }
     }
   } catch (err) {
-    res.status(500).send({ msg: "حدث خطأ ما" });
+    res.status(500).json({ msg: "حدث خطأ ما" });
   }
 };
 
