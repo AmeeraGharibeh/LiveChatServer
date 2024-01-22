@@ -27,30 +27,47 @@ const createUser = async (req, res) => {
     const usernameExists = items.some(
       (item) => item.username === body.username
     );
+
     if (usernameExists) {
       res.status(400).json({ msg: "اسم المستخدم موجود بالفعل في الغرفة" });
     } else {
-      const newUser = new User({
-        username: body.username,
-        room_password: hashedPass,
-        room_id: body.room_id,
-        user_type: body.user_type,
-        permissions: body.permissions,
-      });
-      const saved = await newUser.save();
+      // Check user type and corresponding limit
+      const userType = body.user_type.toLowerCase();
+      const limits = body.limits;
 
-      const report = new Reports({
-        master_name: req.body.master,
-        room_id: body.room_id,
-        action_user: body.username,
-        action_name_ar: "اضافة مستخدم",
-        action_name_en: "Add user",
-      });
-      await report.save();
-      res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
+      const typesCount = items.filter(
+        (item) => item.user_type === userType
+      ).length;
+
+      if (userType === limits[userType] && typesCount >= parseInt(admin, 10)) {
+        res
+          .status(400)
+          .json({ msg: "تم الوصول إلى الحد الأقصى لعدد المسؤولين في الغرفة" });
+      } else {
+        const newUser = new User({
+          username: body.username,
+          room_password: hashedPass,
+          room_id: body.room_id,
+          user_type: userType, // Use the converted user type
+          permissions: body.permissions,
+        });
+
+        const saved = await newUser.save();
+
+        const report = new Reports({
+          master_name: req.body.master,
+          room_id: body.room_id,
+          action_user: body.username,
+          action_name_ar: "اضافة مستخدم",
+          action_name_en: "Add user",
+        });
+
+        await report.save();
+        res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
+      }
     }
   } catch (err) {
-    res.status(500).send({ msg: "something went wrong" });
+    res.status(500).send({ msg: "حدث خطأ ما" });
   }
 };
 
