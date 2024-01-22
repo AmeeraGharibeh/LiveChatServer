@@ -43,7 +43,7 @@ const createUser = async (req, res) => {
       console.log("condition is " + parseInt(limits[userType]) <= typesCount);
       if (parseInt(limits[userType]) <= typesCount) {
         res
-          .status(400)
+          .status(401)
           .json({ msg: "تم الوصول إلى الحد الأقصى لعدد المسؤولين في الغرفة" });
       } else {
         const newUser = new User({
