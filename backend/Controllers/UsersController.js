@@ -713,7 +713,9 @@ const getAllUsers = async (req, res) => {
     const totalItems = await User.countDocuments();
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
-    const items = await User.find()
+
+    // Update the query to exclude users with MASTER username
+    const items = await User.find({ username: { $ne: "MASTER" } })
       .skip((currentPage <= 0 ? 1 : currentPage - 1) * limit)
       .limit(limit);
 
