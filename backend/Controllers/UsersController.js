@@ -710,7 +710,9 @@ const getAllUsers = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
 
   try {
-    const totalItems = await User.countDocuments();
+    const totalItems = await User.countDocuments({
+      username: { $ne: "MASTER" },
+    });
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
 
