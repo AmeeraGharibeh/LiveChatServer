@@ -13,8 +13,8 @@ const ReportsRouter = require("./Routes/ReportsRoutes");
 const BlockedRouter = require("./Routes/BlockedRoutes");
 const LogsRouter = require("./Routes/LogRoutes");
 const ImagesRouter = require("./Routes/ImagesRoutes");
+const EmojieRouter = require("./Routes/EmojieRoutes");
 const Logs = require("./Models/LogModel");
-const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 const http = require("http");
 const socketIo = require("socket.io");
@@ -822,6 +822,7 @@ app.use("/reports", ReportsRouter);
 app.use("/blocked", BlockedRouter);
 app.use("/logs", LogsRouter);
 app.use("/images", ImagesRouter);
+app.use("/emojies", EmojieRouter);
 
 /////////////////////////////////////////////////////
 server.listen(8002, () => {
