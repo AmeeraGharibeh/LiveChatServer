@@ -50,4 +50,5 @@ module.exports = {
   getEmojies,
   deleteEmojie,
   addEmojie,
+  deleteEmojieByCategory,
 };
