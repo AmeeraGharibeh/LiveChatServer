@@ -3,7 +3,7 @@ const {
   getEmojies,
   deleteEmojie,
   addEmojie,
-} = require("../Controllers/ImagesController");
+} = require("../Controllers/EmojieController");
 const { verifyTokenAndAuthorization } = require("./verifyToken");
 
 router.get("/", getEmojies);
