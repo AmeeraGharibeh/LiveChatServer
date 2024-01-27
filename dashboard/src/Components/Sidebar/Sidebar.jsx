@@ -1,7 +1,6 @@
 import './Sidebar.css';
 import { Link } from "react-router-dom";
-
-import {LineStyle,  PersonOutline, PublicOutlined, ForumOutlined, Star, Block, Help, Flag, CompareArrows, CheckCircleOutline, StarOutlineTwoTone, LocalActivity} from '@mui/icons-material'
+import {LineStyle,  PersonOutline, PublicOutlined, ForumOutlined, Star, Block, Help, Flag, CompareArrows, CheckCircleOutline, StarOutlineTwoTone, LocalActivity, EmojiEmotionsOutlined} from '@mui/icons-material'
 import { useState } from 'react';
 
 export default function Sidebar() {
@@ -73,11 +72,17 @@ export default function Sidebar() {
             الدعم الفني
            {index === 10 && <div className="active"></div>}
             </div></li></Link>
+             <Link to="/emojies" className="link">
+            <li className="sidebarListItem" onClick={() => {setIndex(11)}}><EmojiEmotionsOutlined/>
+            <div className='label'>
+            السمايلات والإيموجي
+           {index === 11 && <div className="active"></div>}
+            </div></li></Link>
              <Link to="/reports" className="link">
-            <li className="sidebarListItem" onClick={() => {setIndex(11)}}><Flag/>
+            <li className="sidebarListItem" onClick={() => {setIndex(12)}}><Flag/>
             <div className='label'>
             التبليغات
-           {index === 11 && <div className="active"></div>}
+           {index === 12 && <div className="active"></div>}
             </div></li></Link>
           </ul>
         

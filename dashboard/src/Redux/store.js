@@ -5,6 +5,7 @@ import roomReducer from "./RoomsRedux";
 import usersReducer from "./UsersRedux";
 import logsReducer from "./LogsRedux";
 import imagesReducer from "./ImagesRedux";
+import emojieReducer from "./EmojieRedux";
 
 import {
   persistStore,
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   user: usersReducer,
   log: logsReducer,
   image: imagesReducer,
+  emojie: emojieReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

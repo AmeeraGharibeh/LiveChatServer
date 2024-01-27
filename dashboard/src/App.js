@@ -25,6 +25,7 @@ import NewRoot from "./Pages/RootPages/NewRoot/NewRoot.jsx";
 import SupportPage from "./Pages/SupportPages/SupportPage/SupportPage.jsx";
 import BlockedPage from "./Pages/BlockedPages/BlockedList/BlockedList.jsx";
 import ReportPage from "./Pages/SupportPages/ReportPage/ReportPage.jsx";
+import EmojiesPage from "./Pages/EmojjesPage/EmojiesPage.jsx";
 import { checkAuthState } from "./Redux/Repositories/AuthRepo.js";
 import LogsPage from "./Pages/Logs/Logs.jsx";
 import Backgrounds from "./Pages/NamePages/NamesBackgrounds/Backgrounds.jsx";
@@ -99,6 +100,7 @@ function App() {
               <Route exact path="/support" element={<SupportPage />} />
               <Route exact path="/reports" element={<ReportPage />} />
               <Route exact path="/blocked" element={<BlockedPage />} />
+              <Route exact path="/emojies" element={<EmojiesPage />} />
               <Route exact path="/logs" element={<LogsPage />} />
             </Routes>
           </div>

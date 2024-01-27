@@ -25,8 +25,6 @@ export default function NewCountry() {
   useEffect(()=> {
    {isSuccess && toast.success('تمت اضافة الدولة بنجاح')}
    {error && toast.error(error)}
-
-
   }, [])
 
  const uploadImage = async (file) => {

@@ -1,0 +1,31 @@
+.emojies {
+    flex: 4;
+    padding: 20px;
+    width: 100%;
+    direction: rtl;
+}
+  .emojiesTopContainer {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+  }
+.upload-button{
+    display: none;
+}
+.emojie{
+    display: grid;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.emojie img {
+    width: 50%;
+}
+
+.emojies-list {
+    margin: 20px;
+}
+.emojies-list img {
+    width: 5%;
+}
