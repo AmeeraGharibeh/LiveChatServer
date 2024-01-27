@@ -30,6 +30,22 @@ const deleteEmojie = async (req, res) => {
     res.status(500).send({ msg: err.message });
   }
 };
+
+const deleteEmojieByCategory = async (req, res) => {
+  try {
+    const emojisToDelete = await Emojie.find({ category: req.params.category });
+
+    // Delete all found emojis
+    await Emojie.deleteMany({ category: req.params.category });
+
+    res.status(200).json({
+      msg: `تم حذف ${emojisToDelete.length} ايموجي من التصنيف${req.params.category}`,
+      deletedEmojis: emojisToDelete,
+    });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
 module.exports = {
   getEmojies,
   deleteEmojie,
