@@ -25,6 +25,7 @@ const deleteEmojie = async (req, res) => {
   try {
     await Emojie.findByIdAndDelete(req.params.id);
 
+    console.log("by id " + req.params.id);
     res.status(200).json({ msg: "تم حذف الإيموجي بنجاح", id: req.params.id });
   } catch (err) {
     res.status(500).send({ msg: err.message });
@@ -33,10 +34,14 @@ const deleteEmojie = async (req, res) => {
 
 const deleteEmojieByCategory = async (req, res) => {
   try {
+    console.log("by category " + req.params.category);
+
     await Emojie.find({ category: req.params.category });
 
     // Delete all found emojis
-    await Emojie.deleteMany({ category: req.params.category });
+    const emojisToDelete = await Emojie.deleteMany({
+      category: req.params.category,
+    });
 
     res.status(200).json({
       msg: `تم حذف ${emojisToDelete.length} ايموجي من التصنيف${req.params.category}`,
