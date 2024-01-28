@@ -23,20 +23,20 @@ const addEmojie = async (req, res) => {
 
 const deleteEmojie = async (req, res) => {
   try {
-    if (req.params.id) {
+    const { id, category } = req.query;
+
+    if (id) {
       // Delete by ID
-      await Emojie.findByIdAndDelete(req.params.id);
-      console.log("by id " + req.params.id);
-      res.status(200).json({ msg: "تم حذف الإيموجي بنجاح", id: req.params.id });
-    } else if (req.params.category) {
+      await Emojie.findByIdAndDelete(id);
+      console.log("by id " + id);
+      res.status(200).json({ msg: "تم حذف الإيموجي بنجاح", id });
+    } else if (category) {
       // Delete by Category
-      console.log("by category " + req.params.category);
-      const emojisToDelete = await Emojie.deleteMany({
-        category: req.params.category,
-      });
+      console.log("by category " + category);
+      const emojisToDelete = await Emojie.deleteMany({ category });
       res.status(200).json({
-        msg: `تم حذف ${emojisToDelete.deletedCount} ايموجي من التصنيف ${req.params.category}`,
-        category: req.params.category,
+        msg: `تم حذف ${emojisToDelete.deletedCount} ايموجي من التصنيف ${category}`,
+        category,
       });
     } else {
       res.status(400).json({ msg: "يجب توفير معرف الإيموجي أو فئة التصنيف." });
