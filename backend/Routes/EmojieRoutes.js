@@ -7,7 +7,7 @@ const {
 const { verifyTokenAndAuthorization } = require("./verifyToken");
 
 router.get("/", getEmojies);
-router.delete("/:id", verifyTokenAndAuthorization, deleteEmojie);
+router.delete("/", verifyTokenAndAuthorization, deleteEmojie);
 router.post("/", verifyTokenAndAuthorization, addEmojie);
 
 module.exports = router;
