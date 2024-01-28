@@ -23,37 +23,31 @@ const addEmojie = async (req, res) => {
 
 const deleteEmojie = async (req, res) => {
   try {
-    await Emojie.findByIdAndDelete(req.params.id);
-
-    console.log("by id " + req.params.id);
-    res.status(200).json({ msg: "تم حذف الإيموجي بنجاح", id: req.params.id });
+    if (req.params.id) {
+      // Delete by ID
+      await Emojie.findByIdAndDelete(req.params.id);
+      console.log("by id " + req.params.id);
+      res.status(200).json({ msg: "تم حذف الإيموجي بنجاح", id: req.params.id });
+    } else if (req.params.category) {
+      // Delete by Category
+      console.log("by category " + req.params.category);
+      const emojisToDelete = await Emojie.deleteMany({
+        category: req.params.category,
+      });
+      res.status(200).json({
+        msg: `تم حذف ${emojisToDelete.deletedCount} ايموجي من التصنيف ${req.params.category}`,
+        category: req.params.category,
+      });
+    } else {
+      res.status(400).json({ msg: "يجب توفير معرف الإيموجي أو فئة التصنيف." });
+    }
   } catch (err) {
     res.status(500).send({ msg: err.message });
   }
 };
 
-const deleteEmojieByCategory = async (req, res) => {
-  try {
-    console.log("by category " + req.params.category);
-
-    await Emojie.find({ category: req.params.category });
-
-    // Delete all found emojis
-    const emojisToDelete = await Emojie.deleteMany({
-      category: req.params.category,
-    });
-
-    res.status(200).json({
-      msg: `تم حذف ${emojisToDelete.length} ايموجي من التصنيف${req.params.category}`,
-      category: req.params.category,
-    });
-  } catch (err) {
-    res.status(500).send({ msg: err.message });
-  }
-};
 module.exports = {
   getEmojies,
   deleteEmojie,
   addEmojie,
-  deleteEmojieByCategory,
 };
