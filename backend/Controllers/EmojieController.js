@@ -27,7 +27,7 @@ const deleteEmojie = async (req, res) => {
 
     if (id) {
       // Delete by ID
-      await Emojie.findByIdAndDelete(id);
+      await Emojie.findByIdAndDelete({ _id: id });
       console.log("by id " + id);
       res.status(200).json({ msg: "تم حذف الإيموجي بنجاح", id });
     } else if (category) {

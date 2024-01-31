@@ -11,6 +11,10 @@ const EmojieSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    symbol: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
