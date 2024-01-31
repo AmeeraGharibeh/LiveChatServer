@@ -264,20 +264,6 @@ io.on("connection", async (socket) => {
       icon,
       name_type,
     });
-    // Get the image bytes from the data object.
-
-    // const imageBuffer = Buffer.from(img, "base64");
-    // const filename = Date.now() + ".jpg";
-
-    // // Save the image to disk
-    // fs.writeFile(filename, imageBuffer, (err) => {
-    //   if (err) {
-    //     console.error(err);
-    //     return;
-    //   }
-    //   // Notify the client that the image has been saved.
-
-    // });
   });
 
   // Handle send Emoji
@@ -287,7 +273,7 @@ io.on("connection", async (socket) => {
     const senderId = data.senderId;
     const room_id = data.room_id;
     const time = data.time;
-    const type = data.emoji;
+    const type = data.type;
     const device = data.device;
     const icon = data.icon;
     const name_type = data.name_type;
