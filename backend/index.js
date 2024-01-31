@@ -279,6 +279,31 @@ io.on("connection", async (socket) => {
 
     // });
   });
+
+  // Handle send Emoji
+  socket.on("sendEmoji", (data) => {
+    const emoji = data.emoji;
+    const sender = data.sender;
+    const senderId = data.senderId;
+    const room_id = data.room_id;
+    const time = data.time;
+    const type = data.emoji;
+    const device = data.device;
+    const icon = data.icon;
+    const name_type = data.name_type;
+
+    io.to(room_id).emit("emojiReceived", {
+      message: emoji,
+      sender,
+      senderId,
+      type,
+      time,
+      device,
+      icon,
+      name_type,
+    });
+  });
+
   // Handle private messages
   const activeConversations = {};
 
