@@ -36,11 +36,14 @@ export const addEmojie = async (Emojie, dispatch) => {
     });
 };
 
-export const deleteEmojie = async (id, dispatch) => {
+export const deleteEmojie = async (id, type, dispatch) => {
+  console.log("query " + id + " type " + type);
   dispatch(deleteEmojieStart());
   initializeUserRequest()
     .then(async (request) => {
-      const val = await request.delete(`emojies/${id}`);
+      const val = await request.delete(
+        `emojies/?${type === "category" ? "category" : "id"}=${id}`
+      );
       console.log(val["data"]);
       dispatch(deleteEmojieSuccess(id));
     })
