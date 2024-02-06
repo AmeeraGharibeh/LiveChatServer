@@ -253,6 +253,7 @@ io.on("connection", async (socket) => {
     const device = data.device;
     const icon = data.icon;
     const name_type = data.name_type;
+    const user_type = data.user_type;
 
     io.to(room_id).emit("imageSaved", {
       message: img,
@@ -263,6 +264,7 @@ io.on("connection", async (socket) => {
       device,
       icon,
       name_type,
+      user_type,
     });
   });
 
@@ -277,6 +279,7 @@ io.on("connection", async (socket) => {
     const device = data.device;
     const icon = data.icon;
     const name_type = data.name_type;
+    const user_type = data.user_type;
 
     io.to(room_id).emit("emojiReceived", {
       message: emoji,
@@ -287,6 +290,7 @@ io.on("connection", async (socket) => {
       device,
       icon,
       name_type,
+      user_type,
     });
   });
 
