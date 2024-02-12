@@ -22,6 +22,7 @@ const { time } = require("./Config/Helpers/time_helper");
 const { generateToken } = require("./Config/Helpers/generate_agora_token");
 const Stopped = require("./Models/StopModel");
 const { checkStoppedUsers } = require("./Routes/StopCheck");
+const SimplePeer = require("simple-peer");
 
 ///////////////////////////////////////////////////////////
 
@@ -347,7 +348,7 @@ io.on("connection", async (socket) => {
     io.to(roomId).emit("deleteMessages");
   });
 
-  // Handle user kick
+  // Handle kick user out
   socket.on("kickUser", async (data) => {
     const room_id = data.room_id;
     const user_socket = data.user_socket;
@@ -484,6 +485,37 @@ io.on("connection", async (socket) => {
     }
   });
 
+  // WEBRTC VER.
+
+  socket.on("offer", (offer) => {
+    // Broadcast offer to all other clients
+    socket.broadcast.emit("offer", offer);
+  });
+
+  socket.on("answer", (answer) => {
+    // Broadcast answer to all other clients
+    socket.broadcast.emit("answer", answer);
+  });
+
+  socket.on("icecandidate", (candidate) => {
+    // Broadcast ICE candidate to all other clients
+    socket.broadcast.emit("icecandidate", candidate);
+  });
+  socket.on("start-stream", () => {
+    // Handle WebRTC connection
+    const peer = new SimplePeer({ initiator: true });
+    peer.on("signal", (data) => {
+      socket.emit("signal", data); // Send WebRTC signal to client
+    });
+    peer.on("stream", (stream) => {
+      // Handle incoming stream
+    });
+    socket.on("signal", (data) => {
+      peer.signal(data); // Receive WebRTC signal from client
+    });
+  });
+
+  // AGORA VER.
   // Handle audio streaming
 
   socket.on("streamRequested", (data) => {
