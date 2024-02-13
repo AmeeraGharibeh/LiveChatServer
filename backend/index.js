@@ -489,15 +489,20 @@ io.on("connection", async (socket) => {
 
   socket.on("offer", (offer) => {
     // Broadcast offer to all other clients
+    console.log("offer event emitted");
+
     socket.broadcast.emit("offer", offer);
   });
 
   socket.on("answer", (answer) => {
+    console.log("answer event emitted");
     // Broadcast answer to all other clients
     socket.broadcast.emit("answer", answer);
   });
 
   socket.on("icecandidate", (candidate) => {
+    console.log("ice candidate event emitted");
+
     // Broadcast ICE candidate to all other clients
     socket.broadcast.emit("icecandidate", candidate);
   });
