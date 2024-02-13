@@ -491,7 +491,7 @@ io.on("connection", async (socket) => {
     // Broadcast offer to all other clients
     console.log("offer event emitted");
 
-    socket.broadcast.emit("offer", offer);
+    offer["roomId"].broadcast.emit("offer", offer);
   });
 
   socket.on("answer", (answer) => {
@@ -504,7 +504,7 @@ io.on("connection", async (socket) => {
     console.log("ice candidate event emitted");
 
     // Broadcast ICE candidate to all other clients
-    socket.broadcast.emit("icecandidate", candidate);
+    candidate["roomId"].broadcast.emit("icecandidate", candidate);
   });
   socket.on("start-stream", () => {
     // Handle WebRTC connection
