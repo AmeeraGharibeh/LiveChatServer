@@ -491,20 +491,20 @@ io.on("connection", async (socket) => {
     // Broadcast offer to all other clients
     console.log("offer event emitted");
 
-    offer["roomId"].broadcast.emit("offer", offer);
+    socket.broadcast.to(offer["roomId"]).emit("offer", offer);
   });
 
   socket.on("answer", (answer) => {
     console.log("answer event emitted");
     // Broadcast answer to all other clients
-    socket.broadcast.emit("answer", answer);
+    socket.broadcast.to(answer["roomId"]).emit("answer", answer);
   });
 
   socket.on("icecandidate", (candidate) => {
     console.log("ice candidate event emitted");
 
     // Broadcast ICE candidate to all other clients
-    candidate["roomId"].broadcast.emit("icecandidate", candidate);
+    socket.broadcast.to(candidate["roomId"]).emit("icecandidate", candidate);
   });
   socket.on("start-stream", () => {
     // Handle WebRTC connection
