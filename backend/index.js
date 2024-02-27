@@ -506,6 +506,14 @@ io.on("connection", async (socket) => {
     // Broadcast ICE candidate to all other clients
     socket.broadcast.to(candidate["roomId"]).emit("icecandidate", candidate);
   });
+  socket.on("remoteicecandidate", (candidate) => {
+    console.log("ice candidate event emitted");
+
+    // Broadcast ICE candidate to all other clients
+    socket.broadcast
+      .to(candidate["roomId"])
+      .emit("remoteicecandidate", candidate);
+  });
   socket.on("start-stream", () => {
     // Handle WebRTC connection
     const peer = new SimplePeer({ initiator: true });
