@@ -491,6 +491,8 @@ io.on("connection", async (socket) => {
     console.log("register as broadcaster for room", room);
 
     broadcasters[room] = socket.id;
+    console.log("broadcaster" + broadcasters[room]);
+
     socket.to(room).emit("broadcastStarted", {
       roomId: room,
       broadcaster: broadcasters[room],
@@ -501,6 +503,7 @@ io.on("connection", async (socket) => {
     console.log("register as viewer for room", room);
     var viewerId = socket.id;
     console.log("broadcaster" + broadcasters[room]);
+    console.log("viewer" + viewerId);
     socket
       .to(broadcasters[room])
       .emit("viewerJoined", { viewerId, roomId: room });
