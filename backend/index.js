@@ -488,29 +488,29 @@ io.on("connection", async (socket) => {
 
   // WEBRTC VER.
   socket.on("startBroadcast", function (room) {
-    console.log("register as broadcaster for room", room);
+    const roomId = room["roomId"];
+    console.log("register as broadcaster for room", roomId);
 
-    broadcasters[room] = socket.id;
-    console.log("broadcaster" + broadcasters[room]);
+    broadcasters[roomId] = socket.id;
+    console.log("broadcaster" + broadcasters[roomId]);
 
-    socket.to(room).emit("broadcastStarted", {
-      roomId: room,
-      broadcaster: broadcasters[room],
+    socket.to(roomId).emit("broadcastStarted", {
+      roomId: roomId,
+      broadcaster: broadcasters[roomId],
     });
   });
 
-  socket.on("joinBroadcast", function (room) {
-    console.log("register as viewer for room", room);
+  socket.on("joinBroadcast", function (data) {
+    console.log("register as viewer for room", data["roomId"]);
     var viewerId = socket.id;
-    console.log("broadcaster" + broadcasters[room]);
+    console.log("broadcaster" + broadcasters[data["roomId"]]);
     console.log("viewer" + viewerId);
     socket
-      .to(broadcasters[room])
-      .emit("viewerJoined", { viewerId, roomId: room });
+      .to(broadcasters[data["roomId"]])
+      .emit("viewerJoined", { viewerId, roomId: data["roomId"] });
   });
 
   socket.on("offer", (offer) => {
-    // Broadcast offer to all other clients
     console.log("offer event emitted");
 
     socket.to(offer["viewerId"]).emit("offer", { offer, socket: socket.id });
@@ -518,14 +518,12 @@ io.on("connection", async (socket) => {
 
   socket.on("answer", (answer) => {
     console.log("answer event emitted");
-    // Broadcast answer to all other clients
     socket.to(answer["roomId"]).emit("answer", { answer, socket: socket.id });
   });
 
   socket.on("icecandidate", (candidate) => {
     console.log("ice candidate event emitted");
 
-    // Broadcast ICE candidate to all other clients
     socket
       .to(candidate["peerId"])
       .emit("icecandidate", { candidate, socket: socket.id });
@@ -533,7 +531,6 @@ io.on("connection", async (socket) => {
   socket.on("remoteicecandidate", (candidate) => {
     console.log("ice candidate event emitted");
 
-    // Broadcast ICE candidate to all other clients
     socket.broadcast
       .to(candidate["roomId"])
       .emit("remoteicecandidate", candidate);
