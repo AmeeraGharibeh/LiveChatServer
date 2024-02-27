@@ -513,7 +513,7 @@ io.on("connection", async (socket) => {
   socket.on("offer", (offer) => {
     console.log("offer event emitted " + offer);
 
-    socket.to(offer["viewerId"]).emit("offer", { offer, socket: socket.id });
+    socket.to(offer["peerId"]).emit("offer", { offer, socket: socket.id });
   });
 
   socket.on("answer", (answer) => {
