@@ -500,7 +500,7 @@ io.on("connection", async (socket) => {
   socket.on("joinBroadcast", function (room) {
     console.log("register as viewer for room", room);
     var viewerId = socket.id;
-
+    console.log("broadcaster" + broadcasters[room]);
     socket
       .to(broadcasters[room])
       .emit("viewerJoined", { viewerId, roomId: room });
