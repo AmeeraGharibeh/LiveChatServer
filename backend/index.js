@@ -59,6 +59,7 @@ let log;
 const speakersQueue = [];
 const ignoredUsers = new Set();
 const stoppedUsers = [];
+const broadcasters = [];
 
 io.on("connection", async (socket) => {
   console.log("A user connected");
@@ -486,25 +487,47 @@ io.on("connection", async (socket) => {
   });
 
   // WEBRTC VER.
+  socket.on("startBroadcast", function (room) {
+    console.log("register as broadcaster for room", room);
+
+    broadcasters[room] = socket.id;
+    socket.broadcast
+      .to(room)
+      .emit("broadcastStarted", {
+        roomId: room,
+        broadcaster: broadcasters[room],
+      });
+  });
+
+  socket.on("joinBroadcast", function (room) {
+    console.log("register as viewer for room", room);
+    var viewerId = socket.id;
+
+    socket
+      .to(broadcasters[room])
+      .emit("viewerJoined", { viewerId, roomId: room });
+  });
 
   socket.on("offer", (offer) => {
     // Broadcast offer to all other clients
     console.log("offer event emitted");
 
-    socket.broadcast.to(offer["roomId"]).emit("offer", offer);
+    socket.to(offer["viewerId"]).emit("offer", { offer, socket: socket.id });
   });
 
   socket.on("answer", (answer) => {
     console.log("answer event emitted");
     // Broadcast answer to all other clients
-    socket.broadcast.to(answer["roomId"]).emit("answer", answer);
+    socket.to(answer["roomId"]).emit("answer", { answer, socket: socket.id });
   });
 
   socket.on("icecandidate", (candidate) => {
     console.log("ice candidate event emitted");
 
     // Broadcast ICE candidate to all other clients
-    socket.broadcast.to(candidate["roomId"]).emit("icecandidate", candidate);
+    socket
+      .to(candidate["peerId"])
+      .emit("icecandidate", { candidate, socket: socket.id });
   });
   socket.on("remoteicecandidate", (candidate) => {
     console.log("ice candidate event emitted");
