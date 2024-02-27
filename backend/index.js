@@ -511,18 +511,18 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("offer", (offer) => {
-    console.log("offer event emitted");
+    console.log("offer event emitted " + offer);
 
     socket.to(offer["viewerId"]).emit("offer", { offer, socket: socket.id });
   });
 
   socket.on("answer", (answer) => {
-    console.log("answer event emitted");
+    console.log("answer event emitted " + answer);
     socket.to(answer["roomId"]).emit("answer", { answer, socket: socket.id });
   });
 
   socket.on("icecandidate", (candidate) => {
-    console.log("ice candidate event emitted");
+    console.log("ice candidate event emitted " + candidate);
 
     socket
       .to(candidate["peerId"])
