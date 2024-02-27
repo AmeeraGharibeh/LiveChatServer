@@ -491,12 +491,10 @@ io.on("connection", async (socket) => {
     console.log("register as broadcaster for room", room);
 
     broadcasters[room] = socket.id;
-    socket.broadcast
-      .to(room)
-      .emit("broadcastStarted", {
-        roomId: room,
-        broadcaster: broadcasters[room],
-      });
+    socket.to(room).emit("broadcastStarted", {
+      roomId: room,
+      broadcaster: broadcasters[room],
+    });
   });
 
   socket.on("joinBroadcast", function (room) {
