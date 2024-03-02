@@ -59,7 +59,6 @@ let log;
 const speakersQueue = [];
 const ignoredUsers = new Set();
 const stoppedUsers = [];
-const broadcasters = [];
 
 io.on("connection", async (socket) => {
   console.log("A user connected");
@@ -543,10 +542,9 @@ io.on("connection", async (socket) => {
   socket.on("joinBroadcast", function (data) {
     console.log("register as viewer for room", data["roomId"]);
     var viewerId = socket.id;
-    console.log("broadcaster" + broadcasters[data["roomId"]]);
     console.log("viewer" + viewerId);
     socket
-      .to(broadcasters[data["roomId"]])
+      .to(socketId)
       .emit("viewerJoined", { viewerId, roomId: data["roomId"] });
   });
 
@@ -704,245 +702,245 @@ io.on("connection", async (socket) => {
   });
 
   // AGORA VER.
-  socket.on("streamRequested", (data) => {
-    const userId = data["userId"];
-    const roomId = data["roomId"];
-    const streamer = data["streamer_name"];
+  // socket.on("streamRequested", (data) => {
+  //   const userId = data["userId"];
+  //   const roomId = data["roomId"];
+  //   const streamer = data["streamer_name"];
 
-    const stoppedUser = stoppedUsers.find(
-      (obj) => obj.device === data["device"]
-    );
+  //   const stoppedUser = stoppedUsers.find(
+  //     (obj) => obj.device === data["device"]
+  //   );
 
-    if (stoppedUser) {
-      if (
-        stoppedUser.stop_type == "is_msg_stopped" ||
-        stoppedUser.stop_type == "stop_all"
-      ) {
-        io.to(data["senderSocket"]).emit("notification", {
-          sender: "system",
-          senderId: "system",
-          message: "تم ايقافك عن المايك",
-          color: 0xfffce9f1,
-          type: "notification",
-        });
-      } else {
-        speakersQueue.push({
-          userId: userId,
-          socketId: socket.id,
-          roomId: roomId,
-          streamer_name: streamer,
-          count: speakersQueue.length + 1,
-        });
-        if (speakersQueue.length === 1) {
-          startStreaming(speakersQueue[0]);
-        } else {
-          updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
-        }
-        io.to(roomId).emit("speakersQueue", speakersQueue);
-      }
-    } else {
-      speakersQueue.push({
-        userId: userId,
-        socketId: socket.id,
-        roomId: roomId,
-        streamer_name: streamer,
-        count: speakersQueue.length + 1,
-      });
-      if (speakersQueue.length === 1) {
-        startStreaming(speakersQueue[0]);
-      } else {
-        updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
-      }
-      io.to(roomId).emit("speakersQueue", speakersQueue);
-    }
-  });
+  //   if (stoppedUser) {
+  //     if (
+  //       stoppedUser.stop_type == "is_msg_stopped" ||
+  //       stoppedUser.stop_type == "stop_all"
+  //     ) {
+  //       io.to(data["senderSocket"]).emit("notification", {
+  //         sender: "system",
+  //         senderId: "system",
+  //         message: "تم ايقافك عن المايك",
+  //         color: 0xfffce9f1,
+  //         type: "notification",
+  //       });
+  //     } else {
+  //       speakersQueue.push({
+  //         userId: userId,
+  //         socketId: socket.id,
+  //         roomId: roomId,
+  //         streamer_name: streamer,
+  //         count: speakersQueue.length + 1,
+  //       });
+  //       if (speakersQueue.length === 1) {
+  //         startStreaming(speakersQueue[0]);
+  //       } else {
+  //         updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
+  //       }
+  //       io.to(roomId).emit("speakersQueue", speakersQueue);
+  //     }
+  //   } else {
+  //     speakersQueue.push({
+  //       userId: userId,
+  //       socketId: socket.id,
+  //       roomId: roomId,
+  //       streamer_name: streamer,
+  //       count: speakersQueue.length + 1,
+  //     });
+  //     if (speakersQueue.length === 1) {
+  //       startStreaming(speakersQueue[0]);
+  //     } else {
+  //       updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
+  //     }
+  //     io.to(roomId).emit("speakersQueue", speakersQueue);
+  //   }
+  // });
 
-  socket.on("stopAudioStream", (data) => {
-    speakersQueue.shift();
-    updateOnlineUsersList(data.roomId, socket, "mic_status", "none");
+  // socket.on("stopAudioStream", (data) => {
+  //   speakersQueue.shift();
+  //   updateOnlineUsersList(data.roomId, socket, "mic_status", "none");
 
-    if (speakersQueue.length > 0) {
-      startStreaming(speakersQueue[0]);
-    } else {
-      socket.emit("endStreaming");
-      onlineUsers[data.roomId].forEach((user) => {
-        user.user["audio_status"] = "none f";
-      });
-    }
-  });
+  //   if (speakersQueue.length > 0) {
+  //     startStreaming(speakersQueue[0]);
+  //   } else {
+  //     socket.emit("endStreaming");
+  //     onlineUsers[data.roomId].forEach((user) => {
+  //       user.user["audio_status"] = "none f";
+  //     });
+  //   }
+  // });
 
-  // Add this event to handle admin stopping a user's audio stream
-  socket.on("adminStopAudioStream", (data) => {
-    // Ensure that the admin has the necessary permissions to stop a stream
-    const userIdToStop = data["userId"]; // The user ID whose stream the admin wants to stop
-    const roomId = data["roomId"];
+  // // Add this event to handle admin stopping a user's audio stream
+  // socket.on("adminStopAudioStream", (data) => {
+  //   // Ensure that the admin has the necessary permissions to stop a stream
+  //   const userIdToStop = data["userId"]; // The user ID whose stream the admin wants to stop
+  //   const roomId = data["roomId"];
 
-    // Check if the user to stop is in the speakersQueue
-    const userIndex = speakersQueue.findIndex(
-      (user) => user.userId === userIdToStop
-    );
+  //   // Check if the user to stop is in the speakersQueue
+  //   const userIndex = speakersQueue.findIndex(
+  //     (user) => user.userId === userIdToStop
+  //   );
 
-    if (userIndex !== -1) {
-      // Remove the user from the speakersQueue
-      speakersQueue.splice(userIndex, 1);
+  //   if (userIndex !== -1) {
+  //     // Remove the user from the speakersQueue
+  //     speakersQueue.splice(userIndex, 1);
 
-      // Update online users list and notify clients about the stream being stopped
-      updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
-      io.to(roomId).emit("speakersQueue", speakersQueue);
+  //     // Update online users list and notify clients about the stream being stopped
+  //     updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
+  //     io.to(roomId).emit("speakersQueue", speakersQueue);
 
-      // Check if there are more users in the queue and start streaming for the next user
-      if (speakersQueue.length > 0) {
-        startStreaming(speakersQueue[0]);
-      } else {
-        // No users in the queue, end the streaming
-        socket.emit("endStreaming");
-        onlineUsers[roomId].forEach((user) => {
-          user.user["audio_status"] = "none f";
-        });
-      }
-    } else {
-      // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
-      console.log("User not found in the speakersQueue");
-    }
-  });
-  // Add this event to handle admin granting the microphone role to a specific user
-  socket.on("adminGrantMicRole", (data) => {
-    // Ensure that the admin has the necessary permissions to grant the mic role
+  //     // Check if there are more users in the queue and start streaming for the next user
+  //     if (speakersQueue.length > 0) {
+  //       startStreaming(speakersQueue[0]);
+  //     } else {
+  //       // No users in the queue, end the streaming
+  //       socket.emit("endStreaming");
+  //       onlineUsers[roomId].forEach((user) => {
+  //         user.user["audio_status"] = "none f";
+  //       });
+  //     }
+  //   } else {
+  //     // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
+  //     console.log("User not found in the speakersQueue");
+  //   }
+  // });
+  // // Add this event to handle admin granting the microphone role to a specific user
+  // socket.on("adminGrantMicRole", (data) => {
+  //   // Ensure that the admin has the necessary permissions to grant the mic role
 
-    // Add this event to handle admin granting the mic role to a specific user and revoking it from others
-    socket.on("adminGrantMicToUser", (data) => {
-      // Ensure that the admin has the necessary permissions to grant the mic role
+  //   // Add this event to handle admin granting the mic role to a specific user and revoking it from others
+  //   socket.on("adminGrantMicToUser", (data) => {
+  //     // Ensure that the admin has the necessary permissions to grant the mic role
 
-      const userIdToGrantMic = data["userId"]; // The user ID to whom the admin wants to grant the mic role
-      const roomId = data["roomId"];
+  //     const userIdToGrantMic = data["userId"]; // The user ID to whom the admin wants to grant the mic role
+  //     const roomId = data["roomId"];
 
-      // Find the user in the speakersQueue and move them to the front
-      const userIndex = speakersQueue.findIndex(
-        (user) => user.userId === userIdToGrantMic
-      );
+  //     // Find the user in the speakersQueue and move them to the front
+  //     const userIndex = speakersQueue.findIndex(
+  //       (user) => user.userId === userIdToGrantMic
+  //     );
 
-      if (userIndex !== -1) {
-        // Move the user to the front of the speakersQueue
-        const userToGrantMic = speakersQueue.splice(userIndex, 1)[0];
-        speakersQueue.unshift(userToGrantMic);
+  //     if (userIndex !== -1) {
+  //       // Move the user to the front of the speakersQueue
+  //       const userToGrantMic = speakersQueue.splice(userIndex, 1)[0];
+  //       speakersQueue.unshift(userToGrantMic);
 
-        // Update online users list and notify clients about the updated speakersQueue
-        updateOnlineUsersList(roomId, socket.id, "mic_status", "mic");
-        io.to(roomId).emit("speakersQueue", speakersQueue);
+  //       // Update online users list and notify clients about the updated speakersQueue
+  //       updateOnlineUsersList(roomId, socket.id, "mic_status", "mic");
+  //       io.to(roomId).emit("speakersQueue", speakersQueue);
 
-        // Start streaming for the user with the mic role
-        startStreaming(speakersQueue[0]);
+  //       // Start streaming for the user with the mic role
+  //       startStreaming(speakersQueue[0]);
 
-        // Notify all other users that their mic status is revoked
-        speakersQueue.slice(1).forEach((otherUser) => {
-          io.to(otherUser.socketId).emit("notification", {
-            sender: "system",
-            senderId: "system",
-            message: "تم سحب المايك منك",
-            color: 0xfffce9f1,
-            type: "notification",
-          });
-          updateOnlineUsersList(
-            roomId,
-            otherUser.socketId,
-            "mic_status",
-            "none"
-          );
-        });
-      } else {
-        // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
-        console.log("User not found in the speakersQueue");
-      }
-    });
+  //       // Notify all other users that their mic status is revoked
+  //       speakersQueue.slice(1).forEach((otherUser) => {
+  //         io.to(otherUser.socketId).emit("notification", {
+  //           sender: "system",
+  //           senderId: "system",
+  //           message: "تم سحب المايك منك",
+  //           color: 0xfffce9f1,
+  //           type: "notification",
+  //         });
+  //         updateOnlineUsersList(
+  //           roomId,
+  //           otherUser.socketId,
+  //           "mic_status",
+  //           "none"
+  //         );
+  //       });
+  //     } else {
+  //       // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
+  //       console.log("User not found in the speakersQueue");
+  //     }
+  //   });
 
-    const userIdToGrantMic = data["userId"]; // The user ID to whom the admin wants to grant the mic role
-    const roomId = data["roomId"];
+  //   const userIdToGrantMic = data["userId"]; // The user ID to whom the admin wants to grant the mic role
+  //   const roomId = data["roomId"];
 
-    // Check if the user to grant the mic role is in the speakersQueue
-    const userIndex = speakersQueue.findIndex(
-      (user) => user.userId === userIdToGrantMic
-    );
+  //   // Check if the user to grant the mic role is in the speakersQueue
+  //   const userIndex = speakersQueue.findIndex(
+  //     (user) => user.userId === userIdToGrantMic
+  //   );
 
-    if (userIndex !== -1) {
-      // Move the user to the front of the speakersQueue
-      const userToGrantMic = speakersQueue.splice(userIndex, 1)[0];
-      speakersQueue.unshift(userToGrantMic);
+  //   if (userIndex !== -1) {
+  //     // Move the user to the front of the speakersQueue
+  //     const userToGrantMic = speakersQueue.splice(userIndex, 1)[0];
+  //     speakersQueue.unshift(userToGrantMic);
 
-      // Update online users list and notify clients about the updated speakersQueue
-      updateOnlineUsersList(roomId, socket.id, "mic_status", "mic");
-      io.to(roomId).emit("speakersQueue", speakersQueue);
+  //     // Update online users list and notify clients about the updated speakersQueue
+  //     updateOnlineUsersList(roomId, socket.id, "mic_status", "mic");
+  //     io.to(roomId).emit("speakersQueue", speakersQueue);
 
-      // Start streaming for the user with the mic role
-      startStreaming(speakersQueue[0]);
-    } else {
-      // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
-      console.log("User not found in the speakersQueue");
-    }
-  });
+  //     // Start streaming for the user with the mic role
+  //     startStreaming(speakersQueue[0]);
+  //   } else {
+  //     // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
+  //     console.log("User not found in the speakersQueue");
+  //   }
+  // });
 
-  // Handle Warning
-  socket.on("sendWarning", (data) => {
-    io.to(data.socketId).emit("notification", {
-      sender: data.admin,
-      senderId: data.adminId,
-      message: `قام المشرف : ${data.admin} بإرسال تحذير لك`,
-      color: 0xfffce9f1,
-      type: "notification",
-    });
-  });
+  // // Handle Warning
+  // socket.on("sendWarning", (data) => {
+  //   io.to(data.socketId).emit("notification", {
+  //     sender: data.admin,
+  //     senderId: data.adminId,
+  //     message: `قام المشرف : ${data.admin} بإرسال تحذير لك`,
+  //     color: 0xfffce9f1,
+  //     type: "notification",
+  //   });
+  // });
 
-  // Handle video streaming
+  // // Handle video streaming
 
-  socket.on("videoStreamRequested", (data) => {
-    const stoppedUser = stoppedUsers.find(
-      (obj) => obj.device === data["device"]
-    );
+  // socket.on("videoStreamRequested", (data) => {
+  //   const stoppedUser = stoppedUsers.find(
+  //     (obj) => obj.device === data["device"]
+  //   );
 
-    if (stoppedUser) {
-      if (
-        stoppedUser.stop_type == "is_msg_stopped" ||
-        stoppedUser.stop_type == "stop_all"
-      ) {
-        io.to(data["senderSocket"]).emit("notification", {
-          sender: "system",
-          senderId: "system",
-          message: "تم ايقافك عن الكاميرا",
-          color: 0xfffce9f1,
-          type: "notification",
-        });
-      } else {
-        startVideoStreaming(data, socket);
-      }
-    } else {
-      startVideoStreaming(data, socket);
-    }
-  });
+  //   if (stoppedUser) {
+  //     if (
+  //       stoppedUser.stop_type == "is_msg_stopped" ||
+  //       stoppedUser.stop_type == "stop_all"
+  //     ) {
+  //       io.to(data["senderSocket"]).emit("notification", {
+  //         sender: "system",
+  //         senderId: "system",
+  //         message: "تم ايقافك عن الكاميرا",
+  //         color: 0xfffce9f1,
+  //         type: "notification",
+  //       });
+  //     } else {
+  //       startVideoStreaming(data, socket);
+  //     }
+  //   } else {
+  //     startVideoStreaming(data, socket);
+  //   }
+  // });
 
-  socket.on("stopVideoStream", (data) => {
-    socket.emit("endVideoStreaming");
-  });
+  // socket.on("stopVideoStream", (data) => {
+  //   socket.emit("endVideoStreaming");
+  // });
 
-  socket.on("camViewRequest", (data) => {
-    const requesterId = data["userId"];
-    const requesterName = data["username"];
-    const streamerSocket = data["socketId"];
-    io.to(streamerSocket).emit("camViewRequest", {
-      requesterId,
-      requesterName,
-    });
-  });
+  // socket.on("camViewRequest", (data) => {
+  //   const requesterId = data["userId"];
+  //   const requesterName = data["username"];
+  //   const streamerSocket = data["socketId"];
+  //   io.to(streamerSocket).emit("camViewRequest", {
+  //     requesterId,
+  //     requesterName,
+  //   });
+  // });
 
-  socket.on("camViewAccept", (data) => {
-    const viewerSocket = data.socketId;
-    console.log("accepted");
-    io.to(viewerSocket).emit("camViewAccepted", {});
-  });
-  socket.on("camViewReject", (data) => {
-    const viewerSocket = data.socketId;
-    console.log("rejected");
+  // socket.on("camViewAccept", (data) => {
+  //   const viewerSocket = data.socketId;
+  //   console.log("accepted");
+  //   io.to(viewerSocket).emit("camViewAccepted", {});
+  // });
+  // socket.on("camViewReject", (data) => {
+  //   const viewerSocket = data.socketId;
+  //   console.log("rejected");
 
-    io.to(viewerSocket).emit("camViewRejected", {});
-  });
+  //   io.to(viewerSocket).emit("camViewRejected", {});
+  // });
   // Handle disconnection event
 
   socket.on("disconnect", () => {
@@ -959,23 +957,13 @@ function startStreaming(data) {
 
   console.log("register as broadcaster for room", roomId);
 
-  broadcasters[roomId] = socketId;
-  console.log("broadcaster" + broadcasters[roomId]);
-
   io.to(roomId).emit("broadcastStarted", {
     roomId: roomId,
-    broadcaster: broadcasters[roomId],
+    broadcaster: socketId,
     streamerId: userId,
     streamer_name: streamer,
-    //streamer_socket: socketId,
     speakingTime: 50,
   });
-  // io.to(roomId).emit("startAudioStream", {
-  //   streamerId: userId,
-  //   streamer_name: streamer,
-  //   streamer_socket: socketId,
-  //   speakingTime: 50,
-  // });
   updateOnlineUsersList(roomId, socketId, "mic_status", "on_mic");
   if (onlineUsers[roomId]) {
     onlineUsers[roomId].forEach((user) => {
