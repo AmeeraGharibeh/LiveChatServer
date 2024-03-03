@@ -37,13 +37,7 @@ const io = socketIo(server, {
 dotenv.config();
 
 ///////////////////////////////////////////////////////////
-/*app.use(cors(
-  {
-  origin: ['https://vercel.com/ameeragharibeh/live-chat-server/'],
-    methods: ['POST', 'GET'],
-    creditntials: true
-  }
-  ));*/
+
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => console.log("DB Connection Successfull!"))
@@ -543,9 +537,10 @@ io.on("connection", async (socket) => {
     console.log("register as viewer for room", data["roomId"]);
     var viewerId = socket.id;
     console.log("viewer" + viewerId);
-    socket
-      .to(socketId)
-      .emit("viewerJoined", { viewerId, roomId: data["roomId"] });
+    io.to(speakersQueue[0]["socketId"]).emit("viewerJoined", {
+      viewerId,
+      roomId: data["roomId"],
+    });
   });
 
   socket.on("stopAudioStream", (data) => {
