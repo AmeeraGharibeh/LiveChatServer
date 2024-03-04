@@ -545,7 +545,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("stopAudioStream", (data) => {
-    console.log("speakers " + speakersQueue);
+    console.log("speakers " + JSON.stringify(speakersQueue));
     let indexToRemove = speakersQueue[data["roomId"]].findIndex(
       (item) => item.socketId === data["socketId"]
     );
