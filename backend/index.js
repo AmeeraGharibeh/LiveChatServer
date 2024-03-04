@@ -558,7 +558,8 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("stopAudioStream", (data) => {
-    speakersQueue[data.roomId].shift();
+    speakersQueue[data["roomId"]].shift();
+    console.log("speakers " + speakersQueue[data["roomId"]]);
     updateOnlineUsersList(data.roomId, socket.id, "mic_status", "none");
     socket.emit("endStreaming");
     onlineUsers[data.roomId].forEach((user) => {
