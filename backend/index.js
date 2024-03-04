@@ -546,15 +546,16 @@ io.on("connection", async (socket) => {
 
   socket.on("stopAudioStream", (data) => {
     speakersQueue[data.roomId].shift();
-    updateOnlineUsersList(data.roomId, socket, "mic_status", "none");
+    updateOnlineUsersList(data.roomId, data.socketId, "mic_status", "none");
+    socket.emit("endStreaming");
+    onlineUsers[data.roomId].forEach((user) => {
+      user.user["audio_status"] = "none";
+    });
 
     if (speakersQueue[data.roomId].length > 0) {
       startStreaming(speakersQueue[data.roomId][0]);
     } else {
-      socket.emit("endStreaming");
-      onlineUsers[data.roomId].forEach((user) => {
-        user.user["audio_status"] = "none";
-      });
+      speakersQueue[roomId] = [];
     }
   });
 
