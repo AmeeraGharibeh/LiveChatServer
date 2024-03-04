@@ -550,7 +550,7 @@ io.on("connection", async (socket) => {
     // onlineUsers[data.roomId].forEach((user) => {
     //   user.user["audio_status"] = "none";
     // });
-    if (speakersQueue[data.roomId].length > 0) {
+    if (speakersQueue[data.roomId] && speakersQueue[data.roomId].length > 0) {
       let indexToRemove = speakersQueue[data["roomId"]].findIndex(
         (item) => item.socketId === data["socketId"]
       );
