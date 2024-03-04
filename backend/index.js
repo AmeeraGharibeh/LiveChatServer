@@ -515,10 +515,6 @@ io.on("connection", async (socket) => {
         } else {
           updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
         }
-        // Update the position of the user with the microphone in the online users list
-        const userIndex = onlineUsers[roomId].findIndex(
-          (user) => user.id === socket.id
-        );
       }
     } else {
       speakersQueue[roomId].push({
@@ -528,6 +524,7 @@ io.on("connection", async (socket) => {
         streamer_name: streamerName,
         count: speakersQueue[roomId].length + 1,
       });
+
       if (speakersQueue[roomId].length === 1) {
         startStreaming(speakersQueue[roomId][0]);
       } else {
@@ -548,8 +545,12 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("stopAudioStream", (data) => {
-    speakersQueue[data["roomId"]].shift();
-    console.log("speakers " + speakersQueue[data["roomId"]]);
+    let indexToRemove = speakersQueue[data["roomId"]].findIndex(
+      (item) => item.socketId === data["socketId"]
+    );
+    if (indexToRemove !== -1) {
+      speakersQueue[data["roomId"]].splice(indexToRemove, 1);
+    }
     updateOnlineUsersList(data.roomId, socket.id, "mic_status", "none");
     socket.emit("endStreaming");
     onlineUsers[data.roomId].forEach((user) => {
