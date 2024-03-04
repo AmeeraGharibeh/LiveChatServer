@@ -519,16 +519,6 @@ io.on("connection", async (socket) => {
         const userIndex = onlineUsers[roomId].findIndex(
           (user) => user.id === socket.id
         );
-        if (userIndex !== -1) {
-          onlineUsers[roomId].splice(userIndex, 1);
-          onlineUsers[roomId].unshift({
-            id: socket.id,
-            user: { mic_status: "mic" },
-          });
-        }
-
-        io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
-        io.to(roomId).emit("onlineUsers", onlineUsers[roomId]); // Emit updated online users list
       }
     } else {
       speakersQueue[roomId].push({
@@ -1024,12 +1014,26 @@ function sendPrivateMessage(senderId, friendId) {
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
   if (onlineUsers[roomId] && socketId) {
-    onlineUsers[roomId].forEach((user) => {
+    const updatedUsers = onlineUsers[roomId].map((user) => {
       if (user.id === socketId) {
         user.user[field] = val;
       }
+      return user;
     });
-    console.log("value changed in" + field + " with " + val);
+
+    // Efficiently find the first user with 'mic_status' === 'on_mic'
+    const micOnUser = updatedUsers.find(
+      (user) => user.user.mic_status === "on_mic"
+    );
+
+    // Reorder the list if a user with 'mic_status' === 'on_mic' is found
+    if (micOnUser) {
+      const otherUsers = updatedUsers.filter((user) => user !== micOnUser);
+      const reorderedUsers = [micOnUser, ...otherUsers];
+      onlineUsers[roomId] = reorderedUsers;
+    }
+
+    console.log("value changed in " + field + " with " + val);
     io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
   }
 }
