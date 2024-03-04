@@ -551,7 +551,7 @@ io.on("connection", async (socket) => {
     if (indexToRemove !== -1) {
       speakersQueue[data["roomId"]].splice(indexToRemove, 1);
     }
-    updateOnlineUsersList(data.roomId, socket.id, "mic_status", "none");
+    updateOnlineUsersList(data.roomId, data["socketId"], "mic_status", "none");
     socket.emit("endStreaming");
     onlineUsers[data.roomId].forEach((user) => {
       user.user["audio_status"] = "none";
