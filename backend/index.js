@@ -555,7 +555,7 @@ io.on("connection", async (socket) => {
     if (speakersQueue[data.roomId].length > 0) {
       startStreaming(speakersQueue[data.roomId][0]);
     } else {
-      speakersQueue[roomId] = [];
+      speakersQueue[data.roomId] = [];
     }
   });
 
