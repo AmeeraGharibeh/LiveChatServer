@@ -547,9 +547,9 @@ io.on("connection", async (socket) => {
   socket.on("stopAudioStream", (data) => {
     updateOnlineUsersList(data.roomId, data["socketId"], "mic_status", "none");
     socket.emit("endStreaming");
-    onlineUsers[data.roomId].forEach((user) => {
-      user.user["audio_status"] = "none";
-    });
+    // onlineUsers[data.roomId].forEach((user) => {
+    //   user.user["audio_status"] = "none";
+    // });
     if (speakersQueue[data.roomId].length > 0) {
       let indexToRemove = speakersQueue[data["roomId"]].findIndex(
         (item) => item.socketId === data["socketId"]
