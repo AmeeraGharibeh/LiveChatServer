@@ -22,7 +22,6 @@ const { time } = require("./Config/Helpers/time_helper");
 const { generateToken } = require("./Config/Helpers/generate_agora_token");
 const Stopped = require("./Models/StopModel");
 const { checkStoppedUsers } = require("./Routes/StopCheck");
-const SimplePeer = require("simple-peer");
 
 ///////////////////////////////////////////////////////////
 
@@ -50,7 +49,7 @@ mongoose
 const onlineUsers = {};
 const clients = {};
 let log;
-const speakersQueue = [];
+const speakersQueue = {};
 const ignoredUsers = new Set();
 const stoppedUsers = [];
 
@@ -485,6 +484,8 @@ io.on("connection", async (socket) => {
     const userId = room["userId"];
     const streamerName = room["speakerName"];
 
+    if (!speakersQueue[roomId]) speakersQueue[roomId] = [];
+
     const stoppedUser = stoppedUsers.find(
       (obj) => obj.device === data["device"]
     );
@@ -502,34 +503,34 @@ io.on("connection", async (socket) => {
           type: "notification",
         });
       } else {
-        speakersQueue.push({
+        speakersQueue[roomId].push({
           userId: userId,
           socketId: socket.id,
           roomId: roomId,
           streamer_name: streamerName,
-          count: speakersQueue.length + 1,
+          count: speakersQueue[roomId].length + 1,
         });
-        if (speakersQueue.length === 1) {
-          startStreaming(speakersQueue[0]);
+        if (speakersQueue[roomId].length === 1) {
+          startStreaming(speakersQueue[roomId][0]);
         } else {
           updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
         }
-        io.to(roomId).emit("speakersQueue", speakersQueue);
+        io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
       }
     } else {
-      speakersQueue.push({
+      speakersQueue[roomId].push({
         userId: userId,
         socketId: socket.id,
         roomId: roomId,
         streamer_name: streamerName,
-        count: speakersQueue.length + 1,
+        count: speakersQueue[roomId].length + 1,
       });
-      if (speakersQueue.length === 1) {
-        startStreaming(speakersQueue[0]);
+      if (speakersQueue[roomId].length === 1) {
+        startStreaming(speakersQueue[roomId][0]);
       } else {
         updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
       }
-      io.to(roomId).emit("speakersQueue", speakersQueue);
+      io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
     }
   });
 
@@ -537,18 +538,18 @@ io.on("connection", async (socket) => {
     console.log("register as viewer for room", data["roomId"]);
     var viewerId = socket.id;
     console.log("viewer" + viewerId);
-    io.to(speakersQueue[0]["socketId"]).emit("viewerJoined", {
+    io.to(speakersQueue[data.roomId][0]["socketId"]).emit("viewerJoined", {
       viewerId,
       roomId: data["roomId"],
     });
   });
 
   socket.on("stopAudioStream", (data) => {
-    speakersQueue.shift();
+    speakersQueue[data.roomId].shift();
     updateOnlineUsersList(data.roomId, socket, "mic_status", "none");
 
-    if (speakersQueue.length > 0) {
-      startStreaming(speakersQueue[0]);
+    if (speakersQueue[data.roomId].length > 0) {
+      startStreaming(speakersQueue[data.roomId][0]);
     } else {
       socket.emit("endStreaming");
       onlineUsers[data.roomId].forEach((user) => {
@@ -582,22 +583,22 @@ io.on("connection", async (socket) => {
     const userIdToStop = data["userId"]; // The user ID whose stream the admin wants to stop
     const roomId = data["roomId"];
 
-    // Check if the user to stop is in the speakersQueue
-    const userIndex = speakersQueue.findIndex(
+    // Check if the user to stop is in the speakersQueue[roomId]
+    const userIndex = speakersQueue[roomId].findIndex(
       (user) => user.userId === userIdToStop
     );
 
     if (userIndex !== -1) {
-      // Remove the user from the speakersQueue
-      speakersQueue.splice(userIndex, 1);
+      // Remove the user from the speakersQueue[roomId]
+      speakersQueue[roomId].splice(userIndex, 1);
 
       // Update online users list and notify clients about the stream being stopped
       updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
-      io.to(roomId).emit("speakersQueue", speakersQueue);
+      io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
 
       // Check if there are more users in the queue and start streaming for the next user
-      if (speakersQueue.length > 0) {
-        startStreaming(speakersQueue[0]);
+      if (speakersQueue[roomId].length > 0) {
+        startStreaming(speakersQueue[roomId][0]);
       } else {
         // No users in the queue, end the streaming
         socket.emit("endStreaming");
@@ -606,7 +607,7 @@ io.on("connection", async (socket) => {
         });
       }
     } else {
-      // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
+      // User not found in the speakersQueue[roomId], handle accordingly (e.g., send an error message)
       console.log("User not found in the speakersQueue");
     }
   });
@@ -621,25 +622,25 @@ io.on("connection", async (socket) => {
       const userIdToGrantMic = data["userId"]; // The user ID to whom the admin wants to grant the mic role
       const roomId = data["roomId"];
 
-      // Find the user in the speakersQueue and move them to the front
-      const userIndex = speakersQueue.findIndex(
+      // Find the user in the speakersQueue[roomId] and move them to the front
+      const userIndex = speakersQueue[roomId].findIndex(
         (user) => user.userId === userIdToGrantMic
       );
 
       if (userIndex !== -1) {
-        // Move the user to the front of the speakersQueue
-        const userToGrantMic = speakersQueue.splice(userIndex, 1)[0];
-        speakersQueue.unshift(userToGrantMic);
+        // Move the user to the front of the speakersQueue[roomId]
+        const userToGrantMic = speakersQueue[roomId].splice(userIndex, 1)[0];
+        speakersQueue[roomId].unshift(userToGrantMic);
 
-        // Update online users list and notify clients about the updated speakersQueue
+        // Update online users list and notify clients about the updated speakersQueue[roomId]
         updateOnlineUsersList(roomId, socket.id, "mic_status", "mic");
-        io.to(roomId).emit("speakersQueue", speakersQueue);
+        io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
 
         // Start streaming for the user with the mic role
-        startStreaming(speakersQueue[0]);
+        startStreaming(speakersQueue[roomId][0]);
 
         // Notify all other users that their mic status is revoked
-        speakersQueue.slice(1).forEach((otherUser) => {
+        speakersQueue[roomId].slice(1).forEach((otherUser) => {
           io.to(otherUser.socketId).emit("notification", {
             sender: "system",
             senderId: "system",
@@ -655,33 +656,33 @@ io.on("connection", async (socket) => {
           );
         });
       } else {
-        // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
-        console.log("User not found in the speakersQueue");
+        // User not found in the speakersQueue[roomId], handle accordingly (e.g., send an error message)
+        console.log("User not found in the speakersQueue[roomId]");
       }
     });
 
     const userIdToGrantMic = data["userId"]; // The user ID to whom the admin wants to grant the mic role
     const roomId = data["roomId"];
 
-    // Check if the user to grant the mic role is in the speakersQueue
-    const userIndex = speakersQueue.findIndex(
+    // Check if the user to grant the mic role is in the speakersQueue[roomId]
+    const userIndex = speakersQueue[roomId].findIndex(
       (user) => user.userId === userIdToGrantMic
     );
 
     if (userIndex !== -1) {
-      // Move the user to the front of the speakersQueue
-      const userToGrantMic = speakersQueue.splice(userIndex, 1)[0];
-      speakersQueue.unshift(userToGrantMic);
+      // Move the user to the front of the speakersQueue[roomId]
+      const userToGrantMic = speakersQueue[roomId].splice(userIndex, 1)[0];
+      speakersQueue[roomId].unshift(userToGrantMic);
 
-      // Update online users list and notify clients about the updated speakersQueue
+      // Update online users list and notify clients about the updated speakersQueue[roomId]
       updateOnlineUsersList(roomId, socket.id, "mic_status", "mic");
-      io.to(roomId).emit("speakersQueue", speakersQueue);
+      io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
 
       // Start streaming for the user with the mic role
-      startStreaming(speakersQueue[0]);
+      startStreaming(speakersQueue[roomId][0]);
     } else {
-      // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
-      console.log("User not found in the speakersQueue");
+      // User not found in the speakersQueue[roomId], handle accordingly (e.g., send an error message)
+      console.log("User not found in the speakersQueue[roomId]");
     }
   });
 
@@ -719,43 +720,43 @@ io.on("connection", async (socket) => {
   //         type: "notification",
   //       });
   //     } else {
-  //       speakersQueue.push({
+  //       speakersQueue[roomId].push({
   //         userId: userId,
   //         socketId: socket.id,
   //         roomId: roomId,
   //         streamer_name: streamer,
-  //         count: speakersQueue.length + 1,
+  //         count: speakersQueue[roomId].length + 1,
   //       });
-  //       if (speakersQueue.length === 1) {
-  //         startStreaming(speakersQueue[0]);
+  //       if (speakersQueue[roomId].length === 1) {
+  //         startStreaming(speakersQueue[roomId][0]);
   //       } else {
   //         updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
   //       }
-  //       io.to(roomId).emit("speakersQueue", speakersQueue);
+  //       io.to(roomId).emit("speakersQueue[roomId]", speakersQueue[roomId]);
   //     }
   //   } else {
-  //     speakersQueue.push({
+  //     speakersQueue[roomId].push({
   //       userId: userId,
   //       socketId: socket.id,
   //       roomId: roomId,
   //       streamer_name: streamer,
-  //       count: speakersQueue.length + 1,
+  //       count: speakersQueue[roomId].length + 1,
   //     });
-  //     if (speakersQueue.length === 1) {
-  //       startStreaming(speakersQueue[0]);
+  //     if (speakersQueue[roomId].length === 1) {
+  //       startStreaming(speakersQueue[roomId][0]);
   //     } else {
   //       updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
   //     }
-  //     io.to(roomId).emit("speakersQueue", speakersQueue);
+  //     io.to(roomId).emit("speakersQueue[roomId]", speakersQueue[roomId]);
   //   }
   // });
 
   // socket.on("stopAudioStream", (data) => {
-  //   speakersQueue.shift();
+  //   speakersQueue[roomId].shift();
   //   updateOnlineUsersList(data.roomId, socket, "mic_status", "none");
 
-  //   if (speakersQueue.length > 0) {
-  //     startStreaming(speakersQueue[0]);
+  //   if (speakersQueue[roomId].length > 0) {
+  //     startStreaming(speakersQueue[roomId][0]);
   //   } else {
   //     socket.emit("endStreaming");
   //     onlineUsers[data.roomId].forEach((user) => {
@@ -770,22 +771,22 @@ io.on("connection", async (socket) => {
   //   const userIdToStop = data["userId"]; // The user ID whose stream the admin wants to stop
   //   const roomId = data["roomId"];
 
-  //   // Check if the user to stop is in the speakersQueue
-  //   const userIndex = speakersQueue.findIndex(
+  //   // Check if the user to stop is in the speakersQueue[roomId]
+  //   const userIndex = speakersQueue[roomId].findIndex(
   //     (user) => user.userId === userIdToStop
   //   );
 
   //   if (userIndex !== -1) {
-  //     // Remove the user from the speakersQueue
-  //     speakersQueue.splice(userIndex, 1);
+  //     // Remove the user from the speakersQueue[roomId]
+  //     speakersQueue[roomId].splice(userIndex, 1);
 
   //     // Update online users list and notify clients about the stream being stopped
   //     updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
-  //     io.to(roomId).emit("speakersQueue", speakersQueue);
+  //     io.to(roomId).emit("speakersQueue[roomId]", speakersQueue[roomId]);
 
   //     // Check if there are more users in the queue and start streaming for the next user
-  //     if (speakersQueue.length > 0) {
-  //       startStreaming(speakersQueue[0]);
+  //     if (speakersQueue[roomId].length > 0) {
+  //       startStreaming(speakersQueue[roomId][0]);
   //     } else {
   //       // No users in the queue, end the streaming
   //       socket.emit("endStreaming");
@@ -794,8 +795,8 @@ io.on("connection", async (socket) => {
   //       });
   //     }
   //   } else {
-  //     // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
-  //     console.log("User not found in the speakersQueue");
+  //     // User not found in the speakersQueue[roomId], handle accordingly (e.g., send an error message)
+  //     console.log("User not found in the speakersQueue[roomId]");
   //   }
   // });
   // // Add this event to handle admin granting the microphone role to a specific user
@@ -809,25 +810,25 @@ io.on("connection", async (socket) => {
   //     const userIdToGrantMic = data["userId"]; // The user ID to whom the admin wants to grant the mic role
   //     const roomId = data["roomId"];
 
-  //     // Find the user in the speakersQueue and move them to the front
-  //     const userIndex = speakersQueue.findIndex(
+  //     // Find the user in the speakersQueue[roomId] and move them to the front
+  //     const userIndex = speakersQueue[roomId].findIndex(
   //       (user) => user.userId === userIdToGrantMic
   //     );
 
   //     if (userIndex !== -1) {
-  //       // Move the user to the front of the speakersQueue
-  //       const userToGrantMic = speakersQueue.splice(userIndex, 1)[0];
-  //       speakersQueue.unshift(userToGrantMic);
+  //       // Move the user to the front of the speakersQueue[roomId]
+  //       const userToGrantMic = speakersQueue[roomId].splice(userIndex, 1)[0];
+  //       speakersQueue[roomId].unshift(userToGrantMic);
 
-  //       // Update online users list and notify clients about the updated speakersQueue
+  //       // Update online users list and notify clients about the updated speakersQueue[roomId]
   //       updateOnlineUsersList(roomId, socket.id, "mic_status", "mic");
-  //       io.to(roomId).emit("speakersQueue", speakersQueue);
+  //       io.to(roomId).emit("speakersQueue[roomId]", speakersQueue[roomId]);
 
   //       // Start streaming for the user with the mic role
-  //       startStreaming(speakersQueue[0]);
+  //       startStreaming(speakersQueue[roomId][0]);
 
   //       // Notify all other users that their mic status is revoked
-  //       speakersQueue.slice(1).forEach((otherUser) => {
+  //       speakersQueue[roomId].slice(1).forEach((otherUser) => {
   //         io.to(otherUser.socketId).emit("notification", {
   //           sender: "system",
   //           senderId: "system",
@@ -843,33 +844,33 @@ io.on("connection", async (socket) => {
   //         );
   //       });
   //     } else {
-  //       // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
-  //       console.log("User not found in the speakersQueue");
+  //       // User not found in the speakersQueue[roomId], handle accordingly (e.g., send an error message)
+  //       console.log("User not found in the speakersQueue[roomId]");
   //     }
   //   });
 
   //   const userIdToGrantMic = data["userId"]; // The user ID to whom the admin wants to grant the mic role
   //   const roomId = data["roomId"];
 
-  //   // Check if the user to grant the mic role is in the speakersQueue
-  //   const userIndex = speakersQueue.findIndex(
+  //   // Check if the user to grant the mic role is in the speakersQueue[roomId]
+  //   const userIndex = speakersQueue[roomId].findIndex(
   //     (user) => user.userId === userIdToGrantMic
   //   );
 
   //   if (userIndex !== -1) {
-  //     // Move the user to the front of the speakersQueue
-  //     const userToGrantMic = speakersQueue.splice(userIndex, 1)[0];
-  //     speakersQueue.unshift(userToGrantMic);
+  //     // Move the user to the front of the speakersQueue[roomId]
+  //     const userToGrantMic = speakersQueue[roomId].splice(userIndex, 1)[0];
+  //     speakersQueue[roomId].unshift(userToGrantMic);
 
-  //     // Update online users list and notify clients about the updated speakersQueue
+  //     // Update online users list and notify clients about the updated speakersQueue[roomId]
   //     updateOnlineUsersList(roomId, socket.id, "mic_status", "mic");
-  //     io.to(roomId).emit("speakersQueue", speakersQueue);
+  //     io.to(roomId).emit("speakersQueue[roomId]", speakersQueue[roomId]);
 
   //     // Start streaming for the user with the mic role
-  //     startStreaming(speakersQueue[0]);
+  //     startStreaming(speakersQueue[roomId][0]);
   //   } else {
-  //     // User not found in the speakersQueue, handle accordingly (e.g., send an error message)
-  //     console.log("User not found in the speakersQueue");
+  //     // User not found in the speakersQueue[roomId], handle accordingly (e.g., send an error message)
+  //     console.log("User not found in the speakersQueue[roomId]");
   //   }
   // });
 
