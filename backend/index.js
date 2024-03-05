@@ -503,7 +503,7 @@ io.on("connection", async (socket) => {
         streamer_name: streamerName,
         count: speakersQueue[roomId].length + 1,
       });
-      if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
+      if (speakersQueue[roomId] && speakersQueue[roomId].length === 1) {
         startStreaming(speakersQueue[roomId][0]);
       } else {
         updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
@@ -524,7 +524,7 @@ io.on("connection", async (socket) => {
     console.log("register as viewer for room", data["roomId"]);
     var viewerId = socket.id;
     console.log("viewer" + viewerId);
-    io.to(speakersQueue[data.roomId][0]["socketId"]).emit("viewerJoined", {
+    io.to(speakersQueue[data["roomId"]][0]["socketId"]).emit("viewerJoined", {
       viewerId,
       roomId: data["roomId"],
     });
