@@ -556,9 +556,9 @@ io.on("connection", async (socket) => {
     //   user.user["audio_status"] = "none";
     // });
 
-    if (speakersQueue[roomId].length > 0) {
-      startStreaming(speakersQueue[roomId][0]);
-    }
+    // if (speakersQueue[roomId].length > 0) {
+    //   startStreaming(speakersQueue[roomId][0]);
+    // }
   });
 
   // Admin stops a user's audio stream
