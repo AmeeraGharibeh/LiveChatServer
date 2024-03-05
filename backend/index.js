@@ -544,8 +544,10 @@ io.on("connection", async (socket) => {
 
   socket.on("stopAudioStream", (data) => {
     const roomId = data["roomId"];
-    speakersQueue[roomId].splice(0, 1);
-   updateOnlineUsersList(roomId, socket, "mic_status", "none");
+    if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
+      speakersQueue[roomId].splice(0, 1);
+    }
+    updateOnlineUsersList(roomId, socket, "mic_status", "none");
 
     onlineUsers[roomId].forEach((user) => {
       user.user["audio_status"] = "none";
