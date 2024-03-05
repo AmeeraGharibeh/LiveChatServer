@@ -540,14 +540,14 @@ io.on("connection", async (socket) => {
     //   speakersQueue[roomId].splice(indexToRemove, 1);
     // }
     updateOnlineUsersList(roomId, data["socketId"], "mic_status", "none");
-    socket.emit("endStreaming");
-    onlineUsers[roomId].forEach((user) => {
-      user.user["audio_status"] = "none";
-    });
+    //socket.emit("endStreaming");
+
     if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
       startStreaming(speakersQueue[roomId][0]);
     } else {
-      speakersQueue[roomId] = [];
+      onlineUsers[roomId].forEach((user) => {
+        user.user["audio_status"] = "none";
+      });
     }
   });
 
