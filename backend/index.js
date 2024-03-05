@@ -478,6 +478,16 @@ io.on("connection", async (socket) => {
     }
   });
   // AUDIO & VIDEO BROADCASTING
+  function handleQueueChanges(roomId) {
+    if (speakersQueue[roomId].length === 1) {
+      startStreaming(speakersQueue[roomId][0]);
+    } else if (speakersQueue[roomId].length > 1) {
+      updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
+      io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
+    } else {
+      // No users in queue, handle ending stream (if applicable)
+    }
+  }
   // WEBRTC VER.
   socket.on("startBroadcast", function (room) {
     const roomId = room["roomId"];
@@ -487,7 +497,7 @@ io.on("connection", async (socket) => {
     if (!speakersQueue[roomId]) speakersQueue[roomId] = [];
 
     const stoppedUser = stoppedUsers.find(
-      (obj) => obj.device === data["device"]
+      (obj) => obj.device === room["device"]
     );
 
     if (
@@ -503,14 +513,16 @@ io.on("connection", async (socket) => {
         streamer_name: streamerName,
         count: speakersQueue[roomId].length + 1,
       });
-      if (speakersQueue[roomId] && speakersQueue[roomId].length === 1) {
+      handleQueueChanges(roomId);
+
+      if (speakersQueue[roomId].length === 1) {
         startStreaming(speakersQueue[roomId][0]);
       } else {
         updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
       }
       io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
     } else {
-      io.to(data["senderSocket"]).emit("notification", {
+      io.to(roomId).emit("notification", {
         sender: "system",
         senderId: "system",
         message: "تم ايقافك عن المايك",
@@ -532,21 +544,39 @@ io.on("connection", async (socket) => {
 
   socket.on("stopAudioStream", (data) => {
     const roomId = data["roomId"];
-    //speakersQueue[roomId].splice(0, 1);
+    speakersQueue[roomId].splice(0, 1);
     onlineUsers[roomId].forEach((user) => {
       user.user["audio_status"] = "none";
     });
-    // let indexToRemove = speakersQueue[roomId].findIndex(
-    //   (item) => item.socketId === data["socketId"]
-    // );
-    // if (indexToRemove !== -1) {
-    //   speakersQueue[roomId].splice(indexToRemove, 1);
-    // }
-    updateOnlineUsersList(roomId, data["socketId"], "mic_status", "none");
-    //socket.emit("endStreaming");
 
-    if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
+    updateOnlineUsersList(roomId, data["socketId"], "mic_status", "none");
+    if (speakersQueue[roomId].length > 0) {
       startStreaming(speakersQueue[roomId][0]);
+    }
+  });
+
+  // Admin stops a user's audio stream
+  socket.on("adminStopAudioStream", (data) => {
+    const userIdToStop = data["userId"];
+    const roomId = data["roomId"];
+    const userIndex = speakersQueue[roomId].findIndex(
+      (user) => user.userId === userIdToStop
+    );
+
+    if (userIndex !== -1) {
+      speakersQueue[roomId].splice(userIndex, 1);
+      updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
+      io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
+      if (speakersQueue[roomId].length > 0) {
+        startStreaming(speakersQueue[roomId][0]);
+      } else {
+        socket.emit("endStreaming");
+        onlineUsers[roomId].forEach((user) => {
+          user.user["audio_status"] = "none";
+        });
+      }
+    } else {
+      console.log("User not found in the speakersQueue");
     }
   });
 
