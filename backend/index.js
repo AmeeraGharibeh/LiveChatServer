@@ -530,25 +530,25 @@ io.on("connection", async (socket) => {
     });
   });
 
-  // socket.on("stopAudioStream", (data) => {
-  //   const roomId = data["roomId"];
-  //   let indexToRemove = speakersQueue[roomId].findIndex(
-  //     (item) => item.socketId === data["socketId"]
-  //   );
-  //   if (indexToRemove !== -1) {
-  //     speakersQueue[roomId].splice(indexToRemove, 1);
-  //   }
-  //   updateOnlineUsersList(roomId, data["socketId"], "mic_status", "none");
-  //   socket.emit("endStreaming");
-  //   onlineUsers[roomId].forEach((user) => {
-  //     user.user["audio_status"] = "none";
-  //   });
-  //   if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
-  //     startStreaming(speakersQueue[roomId][0]);
-  //   } else {
-  //     speakersQueue[roomId] = [];
-  //   }
-  // });
+  socket.on("stopAudioStream", (data) => {
+    const roomId = data["roomId"];
+    let indexToRemove = speakersQueue[roomId].findIndex(
+      (item) => item.socketId === data["socketId"]
+    );
+    if (indexToRemove !== -1) {
+      speakersQueue[roomId].splice(indexToRemove, 1);
+    }
+    updateOnlineUsersList(roomId, data["socketId"], "mic_status", "none");
+    socket.emit("endStreaming");
+    onlineUsers[roomId].forEach((user) => {
+      user.user["audio_status"] = "none";
+    });
+    if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
+      startStreaming(speakersQueue[roomId][0]);
+    } else {
+      speakersQueue[roomId] = [];
+    }
+  });
 
   socket.on("offer", (offer) => {
     console.log("offer event emitted " + offer);
