@@ -510,28 +510,14 @@ io.on("connection", async (socket) => {
           streamer_name: streamerName,
           count: speakersQueue[roomId].length + 1,
         });
-        if (speakersQueue[roomId].length === 1) {
-          startStreaming(speakersQueue[roomId][0]);
-        } else {
-          updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
-        }
       }
-    } else {
-      speakersQueue[roomId].push({
-        userId: userId,
-        socketId: socket.id,
-        roomId: roomId,
-        streamer_name: streamerName,
-        count: speakersQueue[roomId].length + 1,
-      });
-
-      if (speakersQueue[roomId].length === 1) {
-        startStreaming(speakersQueue[roomId][0]);
-      } else {
-        updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
-      }
-      io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
     }
+    if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
+      startStreaming(speakersQueue[roomId][0]);
+    } else {
+      updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
+    }
+    io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
   });
 
   socket.on("joinBroadcast", function (data) {
@@ -546,18 +532,18 @@ io.on("connection", async (socket) => {
 
   socket.on("stopAudioStream", (data) => {
     const roomId = data["roomId"];
+    let indexToRemove = speakersQueue[roomId].findIndex(
+      (item) => item.socketId === data["socketId"]
+    );
+    if (indexToRemove !== -1) {
+      speakersQueue[roomId].splice(indexToRemove, 1);
+    }
     updateOnlineUsersList(roomId, data["socketId"], "mic_status", "none");
     socket.emit("endStreaming");
     onlineUsers[roomId].forEach((user) => {
       user.user["audio_status"] = "none";
     });
     if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
-      let indexToRemove = speakersQueue[roomId].findIndex(
-        (item) => item.socketId === data["socketId"]
-      );
-      if (indexToRemove !== -1) {
-        speakersQueue[roomId].splice(indexToRemove, 1);
-      }
       startStreaming(speakersQueue[roomId][0]);
     } else {
       speakersQueue[roomId] = [];
