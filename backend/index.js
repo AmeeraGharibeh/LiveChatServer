@@ -490,34 +490,34 @@ io.on("connection", async (socket) => {
       (obj) => obj.device === data["device"]
     );
 
-    if (stoppedUser) {
-      if (
-        stoppedUser.stop_type == "is_msg_stopped" ||
-        stoppedUser.stop_type == "stop_all"
-      ) {
-        io.to(data["senderSocket"]).emit("notification", {
-          sender: "system",
-          senderId: "system",
-          message: "تم ايقافك عن المايك",
-          color: 0xfffce9f1,
-          type: "notification",
-        });
+    if (
+      !stoppedUser ||
+      (stoppedUser &&
+        stoppedUser.stop_type != "is_msg_stopped" &&
+        stoppedUser.stop_type != "stop_all")
+    ) {
+      speakersQueue[roomId].push({
+        userId: userId,
+        socketId: socket.id,
+        roomId: roomId,
+        streamer_name: streamerName,
+        count: speakersQueue[roomId].length + 1,
+      });
+      if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
+        startStreaming(speakersQueue[roomId][0]);
       } else {
-        speakersQueue[roomId].push({
-          userId: userId,
-          socketId: socket.id,
-          roomId: roomId,
-          streamer_name: streamerName,
-          count: speakersQueue[roomId].length + 1,
-        });
+        updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
       }
-    }
-    if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
-      startStreaming(speakersQueue[roomId][0]);
+      io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
     } else {
-      updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
+      io.to(data["senderSocket"]).emit("notification", {
+        sender: "system",
+        senderId: "system",
+        message: "تم ايقافك عن المايك",
+        color: 0xfffce9f1,
+        type: "notification",
+      });
     }
-    io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
   });
 
   socket.on("joinBroadcast", function (data) {
