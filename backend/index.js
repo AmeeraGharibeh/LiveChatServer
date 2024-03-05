@@ -536,10 +536,13 @@ io.on("connection", async (socket) => {
     console.log("register as viewer for room", data["roomId"]);
     var viewerId = socket.id;
     console.log("viewer" + viewerId);
-    io.to(speakersQueue[data["roomId"]][0]["socketId"]).emit("viewerJoined", {
-      viewerId,
-      roomId: data["roomId"],
-    });
+    io.to(speakersQueue[data["roomId"]][0][data["socketId"]]).emit(
+      "viewerJoined",
+      {
+        viewerId,
+        roomId: data["roomId"],
+      }
+    );
   });
 
   socket.on("stopAudioStream", (data) => {
