@@ -547,7 +547,7 @@ io.on("connection", async (socket) => {
     if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
       speakersQueue[roomId].splice(0, 1);
     }
-    updateOnlineUsersList(roomId, socket, "mic_status", "none");
+    updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
 
     if (onlineUsers[roomId] && onlineUsers[roomId].length > 0) {
       onlineUsers[roomId].forEach((user) => {
