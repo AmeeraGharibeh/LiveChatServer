@@ -549,10 +549,11 @@ io.on("connection", async (socket) => {
     }
     updateOnlineUsersList(roomId, socket, "mic_status", "none");
 
-    onlineUsers[roomId].forEach((user) => {
-      user.user["audio_status"] = "none";
-    });
-
+    if (onlineUsers[roomId] && onlineUsers[roomId].length > 0) {
+      onlineUsers[roomId].forEach((user) => {
+        user.user["audio_status"] = "none";
+      });
+    }
     if (speakersQueue[roomId].length > 0) {
       startStreaming(speakersQueue[roomId][0]);
     }
