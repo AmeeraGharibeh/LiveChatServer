@@ -536,7 +536,7 @@ io.on("connection", async (socket) => {
     console.log("register as viewer for room", data["roomId"]);
     var viewerId = socket.id;
     console.log("viewer" + viewerId);
-    io.to(data["broadcaster"]).emit("viewerJoined", {
+    io.to(data["socketId"]).emit("viewerJoined", {
       viewerId,
       roomId: data["roomId"],
     });
@@ -981,7 +981,7 @@ function startStreaming(data) {
 
   io.to(roomId).emit("broadcastStarted", {
     roomId: roomId,
-    broadcaster: socketId,
+    socketId: socketId,
     streamerId: userId,
     streamer_name: streamer,
     speakingTime: 50,
