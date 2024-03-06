@@ -515,12 +515,12 @@ io.on("connection", async (socket) => {
       });
       handleQueueChanges(roomId);
 
-      if (speakersQueue[roomId].length === 1) {
-        startStreaming(speakersQueue[roomId][0]);
-      } else {
-        updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
-      }
-      io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
+      // if (speakersQueue[roomId].length === 1) {
+      //   startStreaming(speakersQueue[roomId][0]);
+      // } else {
+      //   updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
+      // }
+      // io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
     } else {
       io.to(roomId).emit("notification", {
         sender: "system",
