@@ -536,13 +536,10 @@ io.on("connection", async (socket) => {
     console.log("register as viewer for room", data["roomId"]);
     var viewerId = socket.id;
     console.log("viewer" + viewerId);
-    io.to(speakersQueue[data["roomId"]][0][data["socketId"]]).emit(
-      "viewerJoined",
-      {
-        viewerId,
-        roomId: data["roomId"],
-      }
-    );
+    io.to(speakersQueue[data["roomId"]][0]["socketId"]).emit("viewerJoined", {
+      viewerId,
+      roomId: data["roomId"],
+    });
   });
 
   socket.on("stopAudioStream", (data) => {
@@ -552,13 +549,13 @@ io.on("connection", async (socket) => {
     }
     updateOnlineUsersList(roomId, socket, "mic_status", "none");
 
-    // onlineUsers[roomId].forEach((user) => {
-    //   user.user["audio_status"] = "none";
-    // });
+    onlineUsers[roomId].forEach((user) => {
+      user.user["audio_status"] = "none";
+    });
 
-    // if (speakersQueue[roomId].length > 0) {
-    //   startStreaming(speakersQueue[roomId][0]);
-    // }
+    if (speakersQueue[roomId].length > 0) {
+      startStreaming(speakersQueue[roomId][0]);
+    }
   });
 
   // Admin stops a user's audio stream
