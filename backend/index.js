@@ -545,7 +545,7 @@ io.on("connection", async (socket) => {
   socket.on("stopAudioStream", (data) => {
     const roomId = data["roomId"];
     if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
-      speakersQueue[roomId].splice(0, 1);
+      speakersQueue[roomId].shift();
     }
     updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
 
