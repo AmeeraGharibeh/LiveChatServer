@@ -514,13 +514,6 @@ io.on("connection", async (socket) => {
         count: speakersQueue[roomId].length + 1,
       });
       handleQueueChanges(roomId);
-
-      // if (speakersQueue[roomId].length === 1) {
-      //   startStreaming(speakersQueue[roomId][0]);
-      // } else {
-      //   updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
-      // }
-      // io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
     } else {
       io.to(roomId).emit("notification", {
         sender: "system",
@@ -554,6 +547,7 @@ io.on("connection", async (socket) => {
         user.user["audio_status"] = "none";
       });
     }
+    socket.to(socket.id).emit("endBroadcast");
     if (speakersQueue[roomId].length > 0) {
       startStreaming(speakersQueue[roomId][0]);
     }
