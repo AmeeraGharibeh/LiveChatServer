@@ -964,12 +964,15 @@ io.on("connection", async (socket) => {
     console.log("disconnect");
   });
 });
+const currentTime = new Date();
 
 function startStreaming(data) {
   const userId = data["userId"];
   const roomId = data["roomId"];
   const streamer = data["streamer_name"];
   const socketId = data["socketId"];
+  const endTime = new Date(currentTime.getTime() + 50 * 1000); // Convert seconds to milliseconds
+  const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
 
   console.log("register as broadcaster for room", roomId);
 
@@ -978,7 +981,7 @@ function startStreaming(data) {
     socketId: socketId,
     streamerId: userId,
     streamer_name: streamer,
-    speakingTime: 50,
+    speakingTime: speakingEnds,
   });
   updateOnlineUsersList(roomId, socketId, "mic_status", "on_mic");
   if (onlineUsers[roomId]) {
