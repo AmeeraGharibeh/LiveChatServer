@@ -964,14 +964,13 @@ io.on("connection", async (socket) => {
     console.log("disconnect");
   });
 });
-const currentTime = new Date();
 
 function startStreaming(data) {
   const userId = data["userId"];
   const roomId = data["roomId"];
   const streamer = data["streamer_name"];
   const socketId = data["socketId"];
-  const endTime = new Date(currentTime.getTime() + 50 * 1000); // Convert seconds to milliseconds
+  const endTime = new Date(Date().getTime() + 100 * 1000); // Convert seconds to milliseconds
   const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
 
   console.log("register as broadcaster for room", roomId);
