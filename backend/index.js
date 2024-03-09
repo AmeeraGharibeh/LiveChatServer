@@ -537,6 +537,7 @@ io.on("connection", async (socket) => {
 
   socket.on("stopAudioStream", (data) => {
     const roomId = data["roomId"];
+    socket.to(roomId).emit("endBroadcast");
     if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
       speakersQueue[roomId].shift();
     }
@@ -547,7 +548,6 @@ io.on("connection", async (socket) => {
         user.user["audio_status"] = "none";
       });
     }
-    socket.to(roomId).emit("endBroadcast");
     if (speakersQueue[roomId].length > 0) {
       startStreaming(speakersQueue[roomId][0]);
     }
@@ -970,7 +970,7 @@ function startStreaming(data) {
   const roomId = data["roomId"];
   const streamer = data["streamer_name"];
   const socketId = data["socketId"];
-  const endTime = new Date(new Date().getTime() + 100 * 1000); // Convert seconds to milliseconds
+  const endTime = new Date(new Date().getTime() + 60 * 1000);
   const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
 
   console.log("register as broadcaster for room", roomId);
