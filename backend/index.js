@@ -537,7 +537,6 @@ io.on("connection", async (socket) => {
 
   socket.on("stopAudioStream", (data) => {
     const roomId = data["roomId"];
-    socket.to(socket.id).emit("endBroadcast");
     if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
       speakersQueue[roomId].shift();
     }
@@ -548,6 +547,7 @@ io.on("connection", async (socket) => {
         user.user["audio_status"] = "none";
       });
     }
+    socket.to(roomId).emit("endBroadcast");
     if (speakersQueue[roomId].length > 0) {
       startStreaming(speakersQueue[roomId][0]);
     }
