@@ -553,30 +553,30 @@ io.on("connection", async (socket) => {
     }
   });
 
-  // Admin stops a user's audio stream
-  socket.on("adminStopAudioStream", (data) => {
-    const userIdToStop = data["userId"];
-    const roomId = data["roomId"];
-    const userIndex = speakersQueue[roomId].findIndex(
-      (user) => user.userId === userIdToStop
-    );
+  // // Admin stops a user's audio stream
+  // socket.on("adminStopAudioStream", (data) => {
+  //   const userIdToStop = data["userId"];
+  //   const roomId = data["roomId"];
+  //   const userIndex = speakersQueue[roomId].findIndex(
+  //     (user) => user.userId === userIdToStop
+  //   );
 
-    if (userIndex !== -1) {
-      speakersQueue[roomId].splice(userIndex, 1);
-      updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
-      io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
-      if (speakersQueue[roomId].length > 0) {
-        startStreaming(speakersQueue[roomId][0]);
-      } else {
-        socket.emit("endStreaming");
-        onlineUsers[roomId].forEach((user) => {
-          user.user["audio_status"] = "none";
-        });
-      }
-    } else {
-      console.log("User not found in the speakersQueue");
-    }
-  });
+  //   if (userIndex !== -1) {
+  //     speakersQueue[roomId].splice(userIndex, 1);
+  //     updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
+  //     io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
+  //     if (speakersQueue[roomId].length > 0) {
+  //       startStreaming(speakersQueue[roomId][0]);
+  //     } else {
+  //       socket.emit("endStreaming");
+  //       onlineUsers[roomId].forEach((user) => {
+  //         user.user["audio_status"] = "none";
+  //       });
+  //     }
+  //   } else {
+  //     console.log("User not found in the speakersQueue");
+  //   }
+  // });
 
   socket.on("offer", (offer) => {
     console.log("offer event emitted " + offer);
@@ -704,6 +704,59 @@ io.on("connection", async (socket) => {
       // User not found in the speakersQueue[roomId], handle accordingly (e.g., send an error message)
       console.log("User not found in the speakersQueue[roomId]");
     }
+  });
+
+  // Handle video streaming
+
+  socket.on("videoStreamRequested", (data) => {
+    const stoppedUser = stoppedUsers.find(
+      (obj) => obj.device === data["device"]
+    );
+
+    if (stoppedUser) {
+      if (
+        stoppedUser.stop_type == "is_msg_stopped" ||
+        stoppedUser.stop_type == "stop_all"
+      ) {
+        io.to(data["socketId"]).emit("notification", {
+          sender: "system",
+          senderId: "system",
+          message: "تم ايقافك عن الكاميرا",
+          color: 0xfffce9f1,
+          type: "notification",
+        });
+      } else {
+        startVideoStreaming(data, socket);
+      }
+    } else {
+      startVideoStreaming(data, socket);
+    }
+  });
+
+  socket.on("stopVideoStream", (data) => {
+    socket.emit("endVideoStreaming");
+  });
+
+  socket.on("camViewRequest", (data) => {
+    const viewerId = data["viewerSocket"];
+    const requesterName = data["username"];
+    const streamerSocket = data["socketId"];
+    io.to(streamerSocket).emit("camViewRequest", {
+      viewerId,
+      requesterName,
+    });
+  });
+
+  socket.on("camViewAccept", (data) => {
+    const viewerSocket = data["viewerSocket"];
+    console.log("accepted");
+    io.to(viewerSocket).emit("camViewAccepted", { viewerId: viewerSocket });
+  });
+  socket.on("camViewReject", (data) => {
+    const viewerSocket = data["viewerSocket"];
+    console.log("rejected");
+
+    io.to(viewerSocket).emit("camViewRejected", {});
   });
 
   // Handle Warning
@@ -905,58 +958,6 @@ io.on("connection", async (socket) => {
   //   });
   // });
 
-  // // Handle video streaming
-
-  // socket.on("videoStreamRequested", (data) => {
-  //   const stoppedUser = stoppedUsers.find(
-  //     (obj) => obj.device === data["device"]
-  //   );
-
-  //   if (stoppedUser) {
-  //     if (
-  //       stoppedUser.stop_type == "is_msg_stopped" ||
-  //       stoppedUser.stop_type == "stop_all"
-  //     ) {
-  //       io.to(data["senderSocket"]).emit("notification", {
-  //         sender: "system",
-  //         senderId: "system",
-  //         message: "تم ايقافك عن الكاميرا",
-  //         color: 0xfffce9f1,
-  //         type: "notification",
-  //       });
-  //     } else {
-  //       startVideoStreaming(data, socket);
-  //     }
-  //   } else {
-  //     startVideoStreaming(data, socket);
-  //   }
-  // });
-
-  // socket.on("stopVideoStream", (data) => {
-  //   socket.emit("endVideoStreaming");
-  // });
-
-  // socket.on("camViewRequest", (data) => {
-  //   const requesterId = data["userId"];
-  //   const requesterName = data["username"];
-  //   const streamerSocket = data["socketId"];
-  //   io.to(streamerSocket).emit("camViewRequest", {
-  //     requesterId,
-  //     requesterName,
-  //   });
-  // });
-
-  // socket.on("camViewAccept", (data) => {
-  //   const viewerSocket = data.socketId;
-  //   console.log("accepted");
-  //   io.to(viewerSocket).emit("camViewAccepted", {});
-  // });
-  // socket.on("camViewReject", (data) => {
-  //   const viewerSocket = data.socketId;
-  //   console.log("rejected");
-
-  //   io.to(viewerSocket).emit("camViewRejected", {});
-  // });
   // Handle disconnection event
 
   socket.on("disconnect", () => {
@@ -996,9 +997,9 @@ function startVideoStreaming(data, socket) {
   const userId = data["userId"];
   const roomId = data["roomId"];
 
-  const token = generateToken(roomId);
   io.to(roomId).emit("startVideoStream", {
-    streamToken: token,
+    roomId: roomId,
+    socketId: socket.id,
     streamerId: userId,
   });
   updateOnlineUsersList(roomId, socket.id, "cam_status", "on_cam");
