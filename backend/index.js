@@ -749,6 +749,7 @@ io.on("connection", async (socket) => {
 
   socket.on("camViewAccept", (data) => {
     const viewerSocket = data["viewerSocket"];
+    const streamerSocket = data["streamerSocket"];
     console.log("accepted");
     io.to(streamerSocket).emit("camViewAccepted", {
       viewerId: viewerSocket,
