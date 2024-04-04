@@ -734,8 +734,8 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("stopVideoStream", (data) => {
-    io.to(roomId).emit("endVideoStreaming");
-    updateOnlineUsersList(roomId, socket.id, "cam_status", "none");
+    io.to(data.roomId).emit("endVideoStreaming");
+    updateOnlineUsersList(data.roomId, socket.id, "cam_status", "none");
   });
 
   socket.on("camViewRequest", (data) => {
