@@ -754,6 +754,7 @@ io.on("connection", async (socket) => {
     console.log("accepted");
     io.to(streamerSocket).emit("camViewAccepted", {
       viewerId: viewerSocket,
+      streamerSocket: streamerSocket,
       roomId: data["roomId"],
     });
   });
