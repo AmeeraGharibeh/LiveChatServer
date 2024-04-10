@@ -532,6 +532,7 @@ io.on("connection", async (socket) => {
     io.to(data["socketId"]).emit("viewerJoined", {
       viewerId,
       roomId: data["roomId"],
+      streamerSocket: data["socketId"],
     });
   });
 
