@@ -758,6 +758,7 @@ io.on("connection", async (socket) => {
       streamerSocket: streamerSocket,
       roomId: data["roomId"],
     });
+    io.to(viewerSocket).emit("camJoined");
   });
   socket.on("camViewReject", (data) => {
     const viewerSocket = data["viewerSocket"];
