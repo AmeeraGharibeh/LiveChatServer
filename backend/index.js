@@ -979,7 +979,7 @@ function startStreaming(data) {
   const roomId = data["roomId"];
   const streamer = data["streamer_name"];
   const socketId = data["socketId"];
-  const endTime = new Date(new Date().getTime() + 60 * 1000);
+  const endTime = new Date(new Date().getTime() + 60 * 1000); // 60 seconds from now
   const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
 
   console.log("register as broadcaster for room", roomId);
@@ -1000,7 +1000,31 @@ function startStreaming(data) {
     });
     io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
   }
+
+  // Schedule task to end stream after endTime
+  const timeDifference = endTime.getTime() - new Date().getTime();
+  setTimeout(() => {
+    endStreaming(roomId);
+  }, timeDifference);
 }
+
+function endStreaming(roomId) {
+  io.to(roomId).emit("endBroadcast");
+  if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
+    speakersQueue[roomId].shift();
+  }
+  updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
+
+  if (onlineUsers[roomId] && onlineUsers[roomId].length > 0) {
+    onlineUsers[roomId].forEach((user) => {
+      user.user["audio_status"] = "none";
+    });
+  }
+  if (speakersQueue[roomId].length > 0) {
+    startStreaming(speakersQueue[roomId][0]);
+  }
+}
+
 function startVideoStreaming(data, socket) {
   const userId = data["userId"];
   const roomId = data["roomId"];
