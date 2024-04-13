@@ -537,21 +537,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("stopAudioStream", (data) => {
-    const roomId = data["roomId"];
-    socket.to(roomId).emit("endBroadcast");
-    if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
-      speakersQueue[roomId].shift();
-    }
-    updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
-
-    if (onlineUsers[roomId] && onlineUsers[roomId].length > 0) {
-      onlineUsers[roomId].forEach((user) => {
-        user.user["audio_status"] = "none";
-      });
-    }
-    if (speakersQueue[roomId].length > 0) {
-      startStreaming(speakersQueue[roomId][0]);
-    }
+    endStreaming(data);
   });
 
   // // Admin stops a user's audio stream
