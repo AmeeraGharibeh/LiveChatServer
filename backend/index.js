@@ -997,7 +997,7 @@ function startStreaming(data) {
   }
 
   // Schedule task to end stream after endTime
-  const timeDifference = endTime.getTime() - new Date().getTime() - 1000;
+  const timeDifference = endTime.getTime() - new Date().getTime() + 1000;
   setTimeout(() => {
     endStreaming(data);
   }, timeDifference);
@@ -1005,18 +1005,17 @@ function startStreaming(data) {
 
 function endStreaming(data) {
   io.to(data["roomId"]).emit("endBroadcast");
+  updateOnlineUsersList(data["roomId"], data["socketId"], "mic_status", "none");
+  if (onlineUsers[data["roomId"]] && onlineUsers[data["roomId"]].length > 0) {
+    onlineUsers[data["roomId"]].forEach((user) => {
+      user.user["audio_status"] = "none";
+    });
+  }
   if (
     speakersQueue[data["roomId"]] &&
     speakersQueue[data["roomId"]].length > 0
   ) {
     speakersQueue[data["roomId"]].shift();
-  }
-  updateOnlineUsersList(data["roomId"], data["socketId"], "mic_status", "none");
-
-  if (onlineUsers[data["roomId"]] && onlineUsers[data["roomId"]].length > 0) {
-    onlineUsers[data["roomId"]].forEach((user) => {
-      user.user["audio_status"] = "none";
-    });
   }
   if (speakersQueue[data["roomId"]].length > 0) {
     startStreaming(speakersQueue[data["roomId"]][0]);
