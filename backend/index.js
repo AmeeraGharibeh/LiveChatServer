@@ -988,7 +988,7 @@ function startStreaming(data) {
   }
 
   // Schedule task to end stream after endTime
-  const timeDifference = endTime.getTime() - new Date().getTime();
+  const timeDifference = endTime.getTime() - new Date().getTime() - 1000; // Subtract 1000 milliseconds (1 second)
   setTimeout(() => {
     endStreaming(data);
   }, timeDifference);
