@@ -1062,7 +1062,7 @@ function sendPrivateMessage(senderId, friendId) {
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
   if (onlineUsers[roomId] && socketId) {
-    const updatedUsers = onlineUsers[roomId].map((user) => {
+    onlineUsers[roomId].map((user) => {
       if (user.id === socketId) {
         user.user[field] = val;
       }
@@ -1079,7 +1079,7 @@ function updateOnlineUsersList(roomId, socketId, field, val) {
     //   onlineUsers[roomId] = reorderedUsers;
     // }
 
-    // console.log("value changed in " + field + " with " + val);
+    console.log("value changed in " + field + " with " + val);
     io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
   }
 }
