@@ -1069,19 +1069,17 @@ function updateOnlineUsersList(roomId, socketId, field, val) {
       return user;
     });
 
-    // Efficiently find the first user with 'mic_status' === 'on_mic'
-    const micOnUser = updatedUsers.find(
-      (user) => user.user.mic_status === "on_mic"
-    );
+    // const micOnUser = updatedUsers.find(
+    //   (user) => user.user.mic_status === "on_mic"
+    // );
 
-    // Reorder the list if a user with 'mic_status' === 'on_mic' is found
-    if (micOnUser) {
-      const otherUsers = updatedUsers.filter((user) => user !== micOnUser);
-      const reorderedUsers = [micOnUser, ...otherUsers];
-      onlineUsers[roomId] = reorderedUsers;
-    }
+    // if (micOnUser) {
+    //   const otherUsers = updatedUsers.filter((user) => user !== micOnUser);
+    //   const reorderedUsers = [micOnUser, ...otherUsers];
+    //   onlineUsers[roomId] = reorderedUsers;
+    // }
 
-    console.log("value changed in " + field + " with " + val);
+    // console.log("value changed in " + field + " with " + val);
     io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
   }
 }
