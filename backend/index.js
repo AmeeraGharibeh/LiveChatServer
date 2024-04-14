@@ -539,6 +539,15 @@ io.on("connection", async (socket) => {
   socket.on("stopAudioStream", (data) => {
     endStreaming(data);
   });
+  socket.on("muteAudio", function (data) {
+    const roomId = data.roomId;
+    updateOnlineUsersList(roomId, socket.id, "audio_status", "mute");
+  });
+
+  socket.on("unmuteAudio", function (data) {
+    const roomId = data.roomId;
+    updateOnlineUsersList(roomId, socket.id, "audio_status", "unmute");
+  });
 
   // // Admin stops a user's audio stream
   // socket.on("adminStopAudioStream", (data) => {
@@ -988,7 +997,7 @@ function startStreaming(data) {
   }
 
   // Schedule task to end stream after endTime
-  const timeDifference = endTime.getTime() - new Date().getTime() - 1000; // Subtract 1000 milliseconds (1 second)
+  const timeDifference = endTime.getTime() - new Date().getTime() - 1000;
   setTimeout(() => {
     endStreaming(data);
   }, timeDifference);
