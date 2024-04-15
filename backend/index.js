@@ -1006,16 +1006,13 @@ function startStreaming(data) {
 function endStreaming(data) {
   io.to(data["roomId"]).emit("endBroadcast");
   updateOnlineUsersList(data["roomId"], data["socketId"], "mic_status", "none");
-  if (onlineUsers[data["roomId"]] && onlineUsers[data["roomId"]].length > 0) {
-    onlineUsers[data["roomId"]].forEach((user) => {
+  if (onlineUsers[roomId] && onlineUsers[roomId].length > 0) {
+    onlineUsers[roomId].forEach((user) => {
       user.user["audio_status"] = "none";
     });
   }
-  if (
-    speakersQueue[data["roomId"]] &&
-    speakersQueue[data["roomId"]].length > 0
-  ) {
-    speakersQueue[data["roomId"]].shift();
+  if (speakersQueue[roomId] && speakersQueue[roomId].length > 0) {
+    speakersQueue[roomId].shift();
   }
   if (speakersQueue[data["roomId"]].length > 0) {
     startStreaming(speakersQueue[data["roomId"]][0]);
@@ -1062,25 +1059,25 @@ function sendPrivateMessage(senderId, friendId) {
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
   if (onlineUsers[roomId] && socketId) {
-    onlineUsers[roomId].map((user) => {
+    const updatedUsers = onlineUsers[roomId].map((user) => {
       if (user.id === socketId) {
         user.user[field] = val;
       }
       return user;
     });
 
-    // const micOnUser = updatedUsers.find(
-    //   (user) => user.user.mic_status === "on_mic"
-    // );
+    const micOnUser = updatedUsers.find(
+      (user) => user.user.mic_status === "on_mic"
+    );
 
-    // if (micOnUser) {
-    //   const otherUsers = updatedUsers.filter((user) => user !== micOnUser);
-    //   const reorderedUsers = [micOnUser, ...otherUsers];
-    //   onlineUsers[roomId] = reorderedUsers;
-    // }
+    if (micOnUser) {
+      const otherUsers = updatedUsers.filter((user) => user !== micOnUser);
+      const reorderedUsers = [micOnUser, ...otherUsers];
+      onlineUsers[roomId] = reorderedUsers;
+    }
 
     console.log("value changed in " + field + " with " + val);
-    io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
+    io.to(roomId).emit("onlineUsers", onlineUsers[roomId]);
   }
 }
 
