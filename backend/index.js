@@ -1011,6 +1011,9 @@ function endStreaming(data) {
       user.user["audio_status"] = "none";
     });
   }
+  io.to(data["roomId"]).emit("onlineUsers", [
+    ...new Set(onlineUsers[data.room_id]),
+  ]);
   if (
     speakersQueue[data["roomId"]] &&
     speakersQueue[data["roomId"]].length > 0
