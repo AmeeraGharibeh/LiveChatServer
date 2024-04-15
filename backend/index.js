@@ -1005,15 +1005,19 @@ function startStreaming(data) {
 
 function endStreaming(data) {
   io.to(data["roomId"]).emit("endBroadcast");
+
   updateOnlineUsersList(data["roomId"], data["socketId"], "mic_status", "none");
-  if (onlineUsers[data["roomId"]] && onlineUsers[data["roomId"]].length > 0) {
+
+  if (onlineUsers[data["roomId"]]) {
     onlineUsers[data["roomId"]].forEach((user) => {
-      user.user["audio_status"] = "none";
+      if (user.id !== data["socketId"]) {
+        user.user["audio_status"] = "none";
+      }
     });
+    io.to(data["roomId"]).emit("onlineUsers", [
+      ...new Set(onlineUsers[data["roomId"]]),
+    ]);
   }
-  io.to(data["roomId"]).emit("onlineUsers", [
-    ...new Set(onlineUsers[data.room_id]),
-  ]);
   if (
     speakersQueue[data["roomId"]] &&
     speakersQueue[data["roomId"]].length > 0
