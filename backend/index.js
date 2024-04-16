@@ -19,7 +19,6 @@ const { v4: uuidv4 } = require("uuid");
 const http = require("http");
 const socketIo = require("socket.io");
 const { time } = require("./Config/Helpers/time_helper");
-const { generateToken } = require("./Config/Helpers/generate_agora_token");
 const Stopped = require("./Models/StopModel");
 const { checkStoppedUsers } = require("./Routes/StopCheck");
 
@@ -484,8 +483,6 @@ io.on("connection", async (socket) => {
     } else if (speakersQueue[roomId].length > 1) {
       updateOnlineUsersList(roomId, socket.id, "mic_status", "mic_wait");
       io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
-    } else {
-      // No users in queue, handle ending stream (if applicable)
     }
   }
   // WEBRTC VER.
@@ -595,24 +592,19 @@ io.on("connection", async (socket) => {
 
   // Add this event to handle admin stopping a user's audio stream
   socket.on("adminStopAudioStream", (data) => {
-    // Ensure that the admin has the necessary permissions to stop a stream
-    const userIdToStop = data["userId"]; // The user ID whose stream the admin wants to stop
+    const userIdToStop = data["userId"];
     const roomId = data["roomId"];
 
-    // Check if the user to stop is in the speakersQueue[roomId]
     const userIndex = speakersQueue[roomId].findIndex(
       (user) => user.userId === userIdToStop
     );
 
     if (userIndex !== -1) {
-      // Remove the user from the speakersQueue[roomId]
       speakersQueue[roomId].splice(userIndex, 1);
 
-      // Update online users list and notify clients about the stream being stopped
       updateOnlineUsersList(roomId, socket.id, "mic_status", "none");
       io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
 
-      // Check if there are more users in the queue and start streaming for the next user
       if (speakersQueue[roomId].length > 0) {
         startStreaming(speakersQueue[roomId][0]);
       } else {
@@ -974,7 +966,8 @@ function startStreaming(data) {
   const roomId = data["roomId"];
   const streamer = data["streamer_name"];
   const socketId = data["socketId"];
-  const endTime = new Date(new Date().getTime() + 60 * 1000); // 60 seconds from now
+  const time = new Date(new Date().getTime() + 60 * 1000);
+  const endTime = time.setHours(new Date().getHours() + 3);
   const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
 
   console.log("register as broadcaster for room", roomId);
@@ -996,7 +989,6 @@ function startStreaming(data) {
     io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
   }
 
-  // Schedule task to end stream after endTime
   const timeDifference = endTime.getTime() - new Date().getTime() + 1000;
   setTimeout(() => {
     endStreaming(data);
