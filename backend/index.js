@@ -966,8 +966,7 @@ function startStreaming(data) {
   const roomId = data["roomId"];
   const streamer = data["streamer_name"];
   const socketId = data["socketId"];
-  const time = new Date(new Date().getTime() + 60 * 1000);
-  const endTime = time.setHours(new Date().getHours() + 3);
+  const endTime = new Date(new Date().getTime() + 60 * 1000);
   const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
 
   console.log("register as broadcaster for room", roomId);
