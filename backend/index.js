@@ -574,20 +574,32 @@ io.on("connection", async (socket) => {
   socket.on("offer", (offer) => {
     console.log("offer event emitted " + offer);
 
-    socket.to(offer["peerId"]).emit("offer", { offer, socket: socket.id });
+    socket.to(offer["peerId"]).emit("offer", {
+      offer,
+      socket: socket.id,
+      streamType: offer["streamType"],
+    });
   });
 
   socket.on("answer", (answer) => {
     console.log("answer event emitted " + answer);
-    socket.to(answer["roomId"]).emit("answer", { answer, socket: socket.id });
+    socket.to(answer["roomId"]).emit("answer", {
+      answer,
+      socket: socket.id,
+      socket: socket.id,
+      streamType: answer["streamType"],
+    });
   });
 
   socket.on("icecandidate", (candidate) => {
     console.log("ice candidate event emitted " + candidate);
 
-    socket
-      .to(candidate["peerId"])
-      .emit("icecandidate", { candidate, socket: socket.id });
+    socket.to(candidate["peerId"]).emit("icecandidate", {
+      candidate,
+      socket: socket.id,
+      socket: socket.id,
+      streamType: candidate["streamType"],
+    });
   });
 
   // Add this event to handle admin stopping a user's audio stream
