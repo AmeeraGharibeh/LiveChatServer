@@ -722,7 +722,9 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("stopVideoStream", (data) => {
-    io.to(data.roomId).emit("endVideoStreaming");
+    io.to(data.roomId).emit("endVideoStreaming", {
+      socketId: data["socketId"],
+    });
     updateOnlineUsersList(data.roomId, socket.id, "cam_status", "none");
   });
 
@@ -995,7 +997,7 @@ function startStreaming(data) {
 }
 
 function endStreaming(data) {
-  io.to(data["roomId"]).emit("endBroadcast");
+  io.to(data["roomId"]).emit("endBroadcast", { socketId: data["socketId"] });
 
   updateOnlineUsersList(data["roomId"], data["socketId"], "mic_status", "none");
 
