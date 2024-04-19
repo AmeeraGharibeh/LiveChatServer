@@ -985,6 +985,7 @@ io.on("connection", async (socket) => {
 });
 
 const timerId = "";
+const currentStreamer = null;
 function startStreaming(data) {
   const userId = data["userId"];
   const roomId = data["roomId"];
