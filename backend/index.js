@@ -49,6 +49,7 @@ const onlineUsers = {};
 const clients = {};
 let log;
 const speakersQueue = {};
+const streamData = {};
 const ignoredUsers = new Set();
 const stoppedUsers = [];
 
@@ -486,23 +487,32 @@ io.on("connection", async (socket) => {
     }
   }
   // WEBRTC VER.
+
   socket.on("startBroadcast", function (room) {
     const roomId = room["roomId"];
     const userId = room["userId"];
-    const streamerName = room["speakerName"];
+    const streamerName = room["streamerName"];
 
     if (!speakersQueue[roomId]) speakersQueue[roomId] = [];
 
     const stoppedUser = stoppedUsers.find(
       (obj) => obj.device === room["device"]
     );
-
     if (
       !stoppedUser ||
       (stoppedUser &&
         stoppedUser.stop_type != "is_msg_stopped" &&
         stoppedUser.stop_type != "stop_all")
     ) {
+      const userIndex = speakersQueue[roomId].findIndex(
+        (user) => user.userId === userId
+      );
+
+      // User already in queue, remove completely
+      if (userIndex !== -1) {
+        speakersQueue[roomId].splice(userIndex, 1);
+      }
+
       speakersQueue[roomId].push({
         userId: userId,
         socketId: socket.id,
@@ -510,7 +520,7 @@ io.on("connection", async (socket) => {
         streamer_name: streamerName,
         count: speakersQueue[roomId].length + 1,
       });
-      handleQueueChanges(roomId);
+      handleQueueChanges(roomId); // Update queue order if needed
     } else {
       io.to(roomId).emit("notification", {
         sender: "system",
@@ -596,7 +606,6 @@ io.on("connection", async (socket) => {
 
     socket.to(candidate["peerId"]).emit("icecandidate", {
       candidate,
-      socket: socket.id,
       socket: socket.id,
       streamType: candidate["streamType"],
     });
@@ -975,11 +984,19 @@ io.on("connection", async (socket) => {
   });
 });
 
+const timerId = "";
 function startStreaming(data) {
   const userId = data["userId"];
   const roomId = data["roomId"];
   const streamer = data["streamer_name"];
   const socketId = data["socketId"];
+
+  // Check if user is already streaming
+  if (currentStreamer === socketId) {
+    endStreaming(data); // End existing stream if user tries to start again
+    return;
+  }
+
   const endTime = new Date(new Date().getTime() + 60 * 1000);
   const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
 
@@ -1001,14 +1018,29 @@ function startStreaming(data) {
     });
     io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
   }
+  currentStreamer = socketId; // Set current streamer
 
   const timeDifference = endTime.getTime() - new Date().getTime() + 1000;
-  setTimeout(() => {
+
+  timerId = setTimeout(() => {
     endStreaming(data);
   }, timeDifference);
+
+  if (!streamData[roomId]) streamData[roomId] = {};
+  streamData[roomId] = {
+    ...data,
+    timerId,
+  };
 }
 
 function endStreaming(data) {
+  const timerId = streamData[data["roomId"]]?.timerId; // Check if data exists for the room
+
+  if (timerId) {
+    console.log("timer will end");
+    clearTimeout(timerId);
+  }
+
   io.to(data["roomId"]).emit("endBroadcast", { socketId: data["socketId"] });
 
   updateOnlineUsersList(data["roomId"], data["socketId"], "mic_status", "none");
@@ -1023,6 +1055,8 @@ function endStreaming(data) {
       ...new Set(onlineUsers[data["roomId"]]),
     ]);
   }
+  currentStreamer = null; // Clear current streamer
+
   if (
     speakersQueue[data["roomId"]] &&
     speakersQueue[data["roomId"]].length > 0
