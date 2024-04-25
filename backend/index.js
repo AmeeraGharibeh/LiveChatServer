@@ -1024,6 +1024,7 @@ function startStreaming(data) {
     io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
   }
   currentStreamer = socketId; // Set current streamer
+  const endTime = new Date(new Date().getTime() + 60 * 1000);
 
   const timeDifference = endTime.getTime() - new Date().getTime() + 1000;
 
