@@ -1010,7 +1010,7 @@ function startStreaming(data) {
     socketId: socketId,
     streamerId: userId,
     streamer_name: streamer,
-    speakingTime: speakingEnds,
+    speakingEnds,
   };
   io.to(roomId).emit("broadcastStarted", data);
   io.to(roomId).emit("audioStreamData", data);
