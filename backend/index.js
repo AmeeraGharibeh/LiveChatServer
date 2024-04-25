@@ -88,7 +88,7 @@ io.on("connection", async (socket) => {
       color: 0xffc7f9cc,
       type: "notification",
     });
-    if (speakersQueue[user.room_id].length > 0) {
+    if (speakersQueue[user.room_id] && speakersQueue[user.room_id].length > 0) {
       var data = {
         roomId: user.room_id,
         socketId: speakersQueue[user.room_id][0].socketId,
