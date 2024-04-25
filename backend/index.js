@@ -94,6 +94,7 @@ io.on("connection", async (socket) => {
         socketId: speakersQueue[user.room_id][0].socketId,
       };
       joinBroadcast(data, socket);
+      io.to(socket.id).emit("audioStreamData", speakersQueue[user.room_id][0]);
     }
     ////TODO
     // update online users list and sent it to the room
@@ -520,13 +521,15 @@ io.on("connection", async (socket) => {
       if (userIndex !== -1) {
         speakersQueue[roomId].splice(userIndex, 1);
       }
-
+      const endTime = new Date(new Date().getTime() + 60 * 1000);
+      const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
       speakersQueue[roomId].push({
         userId: userId,
         socketId: socket.id,
         roomId: roomId,
         streamer_name: streamerName,
         count: speakersQueue[roomId].length + 1,
+        speakingEnds,
       });
       handleQueueChanges(roomId); // Update queue order if needed
     } else {
@@ -992,6 +995,7 @@ function startStreaming(data) {
   const roomId = data["roomId"];
   const streamer = data["streamer_name"];
   const socketId = data["socketId"];
+  const speakingEnds = data["speakingEnds"];
 
   // Check if user is already streaming
   if (currentStreamer === socketId) {
@@ -999,18 +1003,17 @@ function startStreaming(data) {
     return;
   }
 
-  const endTime = new Date(new Date().getTime() + 60 * 1000);
-  const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
-
   console.log("register as broadcaster for room", roomId);
 
-  io.to(roomId).emit("broadcastStarted", {
+  var data = {
     roomId: roomId,
     socketId: socketId,
     streamerId: userId,
     streamer_name: streamer,
     speakingTime: speakingEnds,
-  });
+  };
+  io.to(roomId).emit("broadcastStarted", data);
+  io.to(roomId).emit("audioStreamData", data);
   updateOnlineUsersList(roomId, socketId, "mic_status", "on_mic");
   if (onlineUsers[roomId]) {
     onlineUsers[roomId].forEach((user) => {
