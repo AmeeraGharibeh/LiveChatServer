@@ -94,7 +94,7 @@ io.on("connection", async (socket) => {
         socketId: speakersQueue[user.room_id][0].socketId,
       };
       joinBroadcast(data, socket);
-      io.to(socket.id).emit("audioStreamData", speakersQueue[user.room_id][0]);
+      socket.emit("audioStreamData", speakersQueue[user.room_id][0]);
     }
     ////TODO
     // update online users list and sent it to the room
