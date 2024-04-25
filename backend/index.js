@@ -78,7 +78,7 @@ io.on("connection", async (socket) => {
   socket.on("addUser", async (user) => {
     console.log("room id is " + user.room_id);
     socket.userId = user._id;
-    socket.emit("connected");
+    //socket.emit("connected");
 
     // send notification of user's joining the room
     socket.broadcast.to(user.room_id).emit("notification", {
@@ -88,7 +88,14 @@ io.on("connection", async (socket) => {
       color: 0xffc7f9cc,
       type: "notification",
     });
-
+    if (speakersQueue[user.room_id].length > 0) {
+      var data = {
+        roomId: user.room_id,
+        socketId: speakersQueue[user.room_id][0].socketId,
+      };
+      joinBroadcast(data, socket);
+    }
+    ////TODO
     // update online users list and sent it to the room
     if (!onlineUsers[user.room_id]) {
       onlineUsers[user.room_id] = [];
@@ -478,6 +485,8 @@ io.on("connection", async (socket) => {
     }
   });
   // AUDIO & VIDEO BROADCASTING
+  // WEBRTC VER.
+
   function handleQueueChanges(roomId) {
     if (speakersQueue[roomId].length === 1) {
       startStreaming(speakersQueue[roomId][0]);
@@ -486,7 +495,6 @@ io.on("connection", async (socket) => {
       io.to(roomId).emit("speakersQueue", speakersQueue[roomId]);
     }
   }
-  // WEBRTC VER.
 
   socket.on("startBroadcast", function (room) {
     const roomId = room["roomId"];
@@ -533,14 +541,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("joinBroadcast", function (data) {
-    console.log("register as viewer for room", data["roomId"]);
-    var viewerId = socket.id;
-    console.log("viewer" + viewerId);
-    io.to(data["socketId"]).emit("viewerJoined", {
-      viewerId,
-      roomId: data["roomId"],
-      streamerSocket: data["socketId"],
-    });
+    joinBroadcast(data, socket);
   });
 
   socket.on("stopAudioStream", (data) => {
@@ -1067,6 +1068,17 @@ function endStreaming(data) {
   if (speakersQueue[data["roomId"]].length > 0) {
     startStreaming(speakersQueue[data["roomId"]][0]);
   }
+}
+
+function joinBroadcast(data, socket) {
+  console.log("register as viewer for room", data["roomId"]);
+  var viewerId = socket.id;
+  console.log("viewer" + viewerId);
+  io.to(data["socketId"]).emit("viewerJoined", {
+    viewerId,
+    roomId: data["roomId"],
+    streamerSocket: data["socketId"],
+  });
 }
 
 function startVideoStreaming(data, socket) {
