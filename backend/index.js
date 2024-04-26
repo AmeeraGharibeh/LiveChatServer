@@ -95,6 +95,7 @@ io.on("connection", async (socket) => {
       };
       joinBroadcast(data, socket);
       io.to(socket.id).emit("audioStreamData", speakersQueue[user.room_id][0]);
+      updateOnlineUsersList(user.room_id, socket.id, "audio_status", "unmute");
     }
     ////TODO
     // update online users list and sent it to the room
@@ -1092,7 +1093,7 @@ function startVideoStreaming(data, socket) {
   io.to(roomId).emit("startVideoStream", {
     roomId: roomId,
     socketId: socket.id,
-    streamerId: userId,
+    userId: userId,
   });
   updateOnlineUsersList(roomId, socket.id, "cam_status", "on_cam");
 }
