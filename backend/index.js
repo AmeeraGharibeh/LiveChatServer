@@ -1015,7 +1015,7 @@ function startStreaming(data) {
   };
   io.to(roomId).emit("broadcastStarted", data);
   io.to(roomId).emit("audioStreamData", data);
-  // updateOnlineUsersList(roomId, socketId, "mic_status", "on_mic");
+  updateOnlineUsersList(roomId, socketId, "mic_status", "on_mic");
   // if (onlineUsers[roomId]) {
   //   onlineUsers[roomId].forEach((user) => {
   //     if (user.id !== socketId) {
