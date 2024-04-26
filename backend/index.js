@@ -1084,6 +1084,7 @@ function joinBroadcast(data, socket) {
     roomId: data["roomId"],
     streamerSocket: data["socketId"],
   });
+  updateOnlineUsersList(data["roomId"], socket.id, "audio_status", "unmute");
 }
 
 function startVideoStreaming(data, socket) {
