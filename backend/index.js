@@ -1008,7 +1008,7 @@ function startStreaming(data) {
   var data = {
     roomId: roomId,
     socketId: socketId,
-    streamerId: userId,
+    userId: userId,
     streamer_name: streamer,
     speakingEnds,
   };
