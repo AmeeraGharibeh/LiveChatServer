@@ -1016,14 +1016,6 @@ function startStreaming(data) {
   io.to(roomId).emit("broadcastStarted", data);
   io.to(roomId).emit("audioStreamData", data);
   updateOnlineUsersList(roomId, socketId, "mic_status", "on_mic");
-  // if (onlineUsers[roomId]) {
-  //   onlineUsers[roomId].forEach((user) => {
-  //     if (user.id !== socketId) {
-  //       user.user["audio_status"] = "unmute";
-  //     }
-  //   });
-  //   io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
-  // }
   currentStreamer = socketId; // Set current streamer
   const endTime = new Date(new Date().getTime() + 60 * 1000);
 
@@ -1049,7 +1041,6 @@ function endStreaming(data) {
   }
 
   io.to(data["roomId"]).emit("endBroadcast", { socketId: data["socketId"] });
-
   updateOnlineUsersList(data["roomId"], data["socketId"], "mic_status", "none");
 
   if (onlineUsers[data["roomId"]]) {

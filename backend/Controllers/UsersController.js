@@ -152,7 +152,7 @@ const createName = async (req, res) => {
       const newUser = new User({
         username: body.username,
         name_type: body.name_type,
-        user_type: "visitor",
+        user_type: body.name_type === "root" ? "root" : "visitor",
         name_password: hashedNamePass,
         name_end_date: time(endDate),
       });
