@@ -1,7 +1,7 @@
 import "./NewUser.css";
 import DropdownMenu from "../../../Components/DropdownMenu";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser } from "../../../Redux/Repositories/UsersRepo";
+import { addUser, addRoot } from "../../../Redux/Repositories/UsersRepo";
 import { useEffect, useState } from "react";
 import { resetUserState } from "../../../Redux/UsersRedux";
 import { useLocation } from "react-router-dom";
@@ -46,9 +46,9 @@ const handleDropdownDate = (value) => {
     };
 
 const handleSelectedOptionsChange = (newSelectedOptions) => {
-    setSelectedRooms(newSelectedOptions);
-    console.log(selectedRooms)
-  };
+  setSelectedRooms([...newSelectedOptions, newSelectedOptions]);
+  console.log(selectedRooms)
+};
   const handleChange = (e)=> {
     setInputs(prev => {
       return {...prev, [e.target.name]: e.target.value}
@@ -65,7 +65,7 @@ const handleSelectedOptionsChange = (newSelectedOptions) => {
     name_end_date: date['en']
   };
     console.log(userData)
-    addUser(userData, dispatch);
+    type === 'root' ? addRoot(userData, dispatch) : addUser(userData, dispatch);
 
   }
   return (

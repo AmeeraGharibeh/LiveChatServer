@@ -7,31 +7,27 @@ function MultiSelectDropdown(props) {
   useEffect(() => {
     props.onSelectedOptionsChange(selectedOptions);
   }, [selectedOptions]);
+
   const handleChange = (event) => {
     const selectedValueStrings = Array.from(
       event.target.selectedOptions,
       (option) => option.value
     );
 
-    const selectedObjects = props.options.filter((option) =>
-      selectedValueStrings.includes(option.room_name)
-    );
-
-    setSelectedValues([selectedValueStrings, ...selectedValues]); // Update selected values
-    setSelectedOptions(selectedObjects); // Update selected objects
+    setSelectedValues([...selectedValues, selectedValueStrings]); // Update selected values
+    props.onSelectedOptionsChange(selectedValues); // Pass selected values to parent component
   };
-
   const handleRemove = (index) => {
     const updatedSelectedValues = [...selectedValues];
     updatedSelectedValues.splice(index, 1);
 
     setSelectedValues(updatedSelectedValues);
 
-    const updatedSelectedObjects = selectedOptions.filter(
-      (option) => option.room_name !== selectedValues[index]
+    const updatedSelectedOptions = selectedOptions.filter(
+      (option) => option.room_name !== updatedSelectedValues[index]
     );
 
-    setSelectedOptions(updatedSelectedObjects);
+    setSelectedOptions(updatedSelectedOptions);
   };
 
   return (

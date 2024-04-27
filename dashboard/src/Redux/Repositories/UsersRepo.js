@@ -87,6 +87,19 @@ export const addUser = async (user, dispatch) => {
   }
 };
 
+export const addRoot = async (user, dispatch) => {
+  dispatch(addUserStart());
+  try {
+    initializeUserRequest().then(async (Request) => {
+      const val = await Request.post(`users/root/`, user);
+      console.log(val.data.user);
+      dispatch(addUserSuccess(val.data.user));
+    });
+  } catch (err) {
+    dispatch(addUserFailure({ msg: "فشلت اضافة المستخدم" }));
+  }
+};
+
 export const updateUser = async (id, user, dispatch) => {
   dispatch(updateUserStart());
   initializeUserRequest()
