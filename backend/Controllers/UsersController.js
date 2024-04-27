@@ -149,11 +149,10 @@ const createName = async (req, res) => {
     if (users.length > 0) {
       res.status(400).json({ msg: "هذا الاسم مستخدم بالفعل" });
     } else {
-      const type = body.name_type === "root" ? "root" : "visitor";
       const newUser = new User({
         username: body.username,
         name_type: body.name_type,
-        user_type: type,
+        user_type: "visitor",
         name_password: hashedNamePass,
         name_end_date: time(endDate),
       });
@@ -163,6 +162,33 @@ const createName = async (req, res) => {
     }
   } catch (err) {
     res.status(500).send({ msg: "something went wrong" });
+  }
+};
+
+const createRoot = async (req, res) => {
+  console.log(req.body);
+  const body = req.body.body;
+  try {
+    // Check if the username already exists in the root collection
+    const existingUser = await User.findOne({ username: body.username });
+    if (existingUser) {
+      return res.status(400).json({ msg: "اسم المستخدم موجود بالفعل" });
+    }
+
+    const hashedPass = await hashPassword(body.room_password);
+    const newUser = new User({
+      username: body.username,
+      room_password: hashedPass,
+      room_ids: body.room_ids, // Assuming room_ids is an array of room IDs
+      user_type: "root",
+      permissions: body.permissions,
+    });
+
+    const saved = await newUser.save();
+
+    res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
+  } catch (err) {
+    res.status(500).json({ msg: "حدث خطأ ما" });
   }
 };
 
@@ -920,6 +946,7 @@ const unblockUser = async (req, res) => {
 module.exports = {
   createUser,
   createName,
+  createRoot,
   login,
   memberLogin,
   visitorLogin,
