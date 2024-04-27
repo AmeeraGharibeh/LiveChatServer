@@ -149,10 +149,11 @@ const createName = async (req, res) => {
     if (users.length > 0) {
       res.status(400).json({ msg: "هذا الاسم مستخدم بالفعل" });
     } else {
+      const type = body.name_type === "root" ? "root" : "visitor";
       const newUser = new User({
         username: body.username,
         name_type: body.name_type,
-        user_type: body.name_type === "root" ? "root" : "visitor",
+        user_type: type,
         name_password: hashedNamePass,
         name_end_date: time(endDate),
       });
