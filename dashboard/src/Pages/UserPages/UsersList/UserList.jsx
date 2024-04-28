@@ -1,5 +1,4 @@
 import "./UserList.css";
-import { DataGrid } from '@mui/x-data-grid'
 import { DeleteOutline } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,10 +35,6 @@ export default function UserList() {
     }
   }
 
-  const getRoom = (id) => {
-    const room = rooms.find((c) => c._id === id);
-    return room.room_name;
-  };
 
   const columns = [
     { accessor: '_id', Header: 'ID', width: 120 },

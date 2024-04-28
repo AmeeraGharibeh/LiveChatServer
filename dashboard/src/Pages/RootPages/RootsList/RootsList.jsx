@@ -3,7 +3,7 @@ import { Link, useNavigate} from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DataTable from '../../../Components/DataTable/DataTable';
-import { getUserByType, deleteUser } from "../../../Redux/Repositories/UsersRepo";
+import { getUserByType, deleteNameUser } from "../../../Redux/Repositories/UsersRepo";
 import { DeleteOutline } from "@mui/icons-material";
 
 export default function RootsList() {
@@ -73,7 +73,7 @@ export default function RootsList() {
     function showAlert(id) {
   const result = window.confirm('هل أنت متأكد من حذف هذا العضو؟');
   if (result) {
-    deleteUser(id, dispatch);
+    deleteNameUser(id, dispatch);
   }
 }
 

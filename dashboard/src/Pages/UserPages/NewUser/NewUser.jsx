@@ -1,11 +1,11 @@
 import "./NewUser.css";
 import DropdownMenu from "../../../Components/DropdownMenu";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, addRoot } from "../../../Redux/Repositories/UsersRepo";
+import { addUser } from "../../../Redux/Repositories/UsersRepo";
 import { useEffect, useState } from "react";
 import { resetUserState } from "../../../Redux/UsersRedux";
 import { useLocation } from "react-router-dom";
-import MultiSelectDropdown from "../../../Components/MultiSelectDropdown";
+import MultiSelectDropdown from "../../../Components/SmallWidget/MultiSelectMenu/MultiSelectDropdown";
 
 
 export default function NewUser() {
@@ -18,7 +18,6 @@ export default function NewUser() {
   const [inputs, setInputs] = useState({});
     const location = useLocation();
   const type = location.pathname.split('/')[2];
-  const [rooms, setRooms] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [date, setDate] = useState(dates[0]);
   const allRooms = useSelector((state)=> state.room.rooms);
@@ -28,10 +27,10 @@ export default function NewUser() {
 
   const dispatch = useDispatch();
 
-  useEffect(()=>{
-    setRooms(allRooms);
-    console.log(type)
-  }, []);
+  // useEffect(()=>{
+  //   setRooms(allRooms);
+  //   console.log(type)
+  // }, []);
 
   useEffect(()=> {
     dispatch(resetUserState());
@@ -46,8 +45,8 @@ const handleDropdownDate = (value) => {
     };
 
 const handleSelectedOptionsChange = (newSelectedOptions) => {
-  setSelectedRooms([...newSelectedOptions, newSelectedOptions]);
-  console.log(selectedRooms)
+  setSelectedRooms(newSelectedOptions)
+  console.log(selectedRooms);
 };
   const handleChange = (e)=> {
     setInputs(prev => {
@@ -57,15 +56,15 @@ const handleSelectedOptionsChange = (newSelectedOptions) => {
  
   const handleClick = (e)=> {
     e.preventDefault();
- 
+       const selectedRoomIds = selectedRooms.map((option) => option._id);
   const userData = { 
       ...inputs,
+    room_ids: selectedRoomIds,
     name_type: type,
-    rooms: selectedRooms,
     name_end_date: date['en']
   };
     console.log(userData)
-    type === 'root' ? addRoot(userData, dispatch) : addUser(userData, dispatch);
+     addUser(userData, dispatch);
 
   }
   return (
@@ -84,11 +83,15 @@ const handleSelectedOptionsChange = (newSelectedOptions) => {
           <label>تاريخ الانتهاء</label>
           <DropdownMenu className="dropdown" options={dates} value = {'ar'} default = {date} onDropdownChange={handleDropdownDate}/>
         </div> 
-      {   type === 'root' ?  <div className="addUserItem">
+      { type === 'root' 
+      ?  <div className="addUserItem">
           <label> اضافة الروت إلى غرفة أو عدة غرف</label>
-          <MultiSelectDropdown className="dropdown" options={rooms} onSelectedOptionsChange={handleSelectedOptionsChange}
-/>
-        </div> : <div></div>}
+          <MultiSelectDropdown className="dropdown" options={allRooms} onSelectionChange={handleSelectedOptionsChange}
+          />
+        </div> 
+        : <div></div> }
+
+      
         </form>
         
       <div className="addUserItem">

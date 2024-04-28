@@ -1,11 +1,10 @@
-import "./EditUser.css";
 import DropdownMenu from "../../../Components/DropdownMenu";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, updateUser } from "../../../Redux/Repositories/UsersRepo";
 import { useEffect, useState } from "react";
 import { resetUserState } from "../../../Redux/UsersRedux";
 import { useLocation } from "react-router-dom";
-import MultiSelectDropdown from "../../../Components/MultiSelectDropdown";
+import MultiSelectDropdown from "../../../Components/SmallWidget/MultiSelectMenu/MultiSelectDropdown";
 
 
 export default function EditUser() {
