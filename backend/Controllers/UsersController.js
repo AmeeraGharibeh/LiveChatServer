@@ -155,6 +155,7 @@ const createName = async (req, res) => {
         user_type: "visitor",
         name_password: hashedNamePass,
         name_end_date: time(endDate),
+        rooms: body.room_ids,
       });
       const saved = await newUser.save();
 
@@ -165,32 +166,32 @@ const createName = async (req, res) => {
   }
 };
 
-const createRoot = async (req, res) => {
-  console.log(req.body);
-  const body = req.body.body;
-  try {
-    // Check if the username already exists in the root collection
-    const existingUser = await User.findOne({ username: body.username });
-    if (existingUser) {
-      return res.status(400).json({ msg: "اسم المستخدم موجود بالفعل" });
-    }
+// const createRoot = async (req, res) => {
+//   console.log(req.body);
+//   const body = req.body.body;
+//   try {
+//     // Check if the username already exists in the root collection
+//     const existingUser = await User.findOne({ username: body.username });
+//     if (existingUser) {
+//       return res.status(400).json({ msg: "اسم المستخدم موجود بالفعل" });
+//     }
 
-    const hashedPass = await hashPassword(body.name_password);
-    const newUser = new User({
-      username: body.username,
-      name_password: hashedPass,
-      rooms: body.room_ids,
-      user_type: "root",
-      name_end_date: body.name_end_date,
-    });
+//     const hashedPass = await hashPassword(body.name_password);
+//     const newUser = new User({
+//       username: body.username,
+//       name_password: hashedPass,
+//       rooms: body.room_ids,
+//       user_type: "root",
+//       name_end_date: body.name_end_date,
+//     });
 
-    const saved = await newUser.save();
+//     const saved = await newUser.save();
 
-    res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
-  } catch (err) {
-    res.status(500).json({ msg: "حدث خطأ ما" });
-  }
-};
+//     res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
+//   } catch (err) {
+//     res.status(500).json({ msg: "حدث خطأ ما" });
+//   }
+// };
 
 const login = async (req, res) => {
   let user;
@@ -946,7 +947,6 @@ const unblockUser = async (req, res) => {
 module.exports = {
   createUser,
   createName,
-  createRoot,
   login,
   memberLogin,
   visitorLogin,

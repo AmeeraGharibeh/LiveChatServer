@@ -7,7 +7,6 @@ const {
 const {
   createUser,
   createName,
-  createRoot,
   login,
   memberLogin,
   visitorLogin,
@@ -35,7 +34,7 @@ const { blockedMiddleware } = require("./BlockCheck");
 const { checkMembershipExpiration } = require("./StopCheck");
 
 router.post("/", verifyTokenAndAdmin, createUser);
-router.post("/root", verifyTokenAndAuthorization, createRoot);
+//router.post("/root", verifyTokenAndAuthorization, createRoot);
 router.post("/name", verifyTokenAndAuthorization, createName);
 router.post("/login", checkMembershipExpiration, blockedMiddleware, login);
 router.post("/login/member", blockedMiddleware, memberLogin);
