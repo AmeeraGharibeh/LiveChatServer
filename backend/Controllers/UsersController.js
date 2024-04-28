@@ -167,7 +167,7 @@ const createName = async (req, res) => {
 
 const createRoot = async (req, res) => {
   console.log(req.body);
-  const body = req.body.body;
+  const body = req.body;
   try {
     // Check if the username already exists in the root collection
     const existingUser = await User.findOne({ username: body.username });
