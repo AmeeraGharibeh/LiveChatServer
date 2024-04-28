@@ -181,7 +181,7 @@ const createRoot = async (req, res) => {
       name_password: hashedPass,
       rooms: body.room_ids,
       user_type: "root",
-      permissions: body.permissions,
+      name_end_date: body.name_end_date,
     });
 
     const saved = await newUser.save();
