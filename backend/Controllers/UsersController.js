@@ -175,7 +175,7 @@ const createRoot = async (req, res) => {
       return res.status(400).json({ msg: "اسم المستخدم موجود بالفعل" });
     }
 
-    const hashedPass = await hashPassword(body.room_password);
+    const hashedPass = await hashPassword(body.name_password);
     const newUser = new User({
       username: body.username,
       name_password: hashedPass,
