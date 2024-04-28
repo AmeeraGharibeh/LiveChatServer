@@ -179,7 +179,7 @@ const createRoot = async (req, res) => {
     const newUser = new User({
       username: body.username,
       room_password: hashedPass,
-      room_ids: body.room_ids, // Assuming room_ids is an array of room IDs
+      rooms: body.room_ids, // Assuming room_ids is an array of room IDs
       user_type: "root",
       permissions: body.permissions,
     });
