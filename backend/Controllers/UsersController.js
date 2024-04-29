@@ -35,6 +35,7 @@ const createUser = async (req, res) => {
     } else {
       const userType = body.user_type.toLowerCase();
       const limits = room.account_limits;
+      const rooms = [body.room_id];
 
       const typesCount = items.filter(
         (item) => item.user_type === userType
@@ -51,7 +52,7 @@ const createUser = async (req, res) => {
         const newUser = new User({
           username: body.username,
           room_password: hashedPass,
-          room_id: body.room_id,
+          rooms,
           user_type: userType, // Use the converted user type
           permissions: body.permissions,
         });
@@ -69,6 +70,51 @@ const createUser = async (req, res) => {
         await report.save();
         res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
       }
+    }
+  } catch (err) {
+    res.status(500).json({ msg: "حدث خطأ ما" });
+  }
+};
+
+const createRoot = async (req, res) => {
+  console.log(req.body);
+  const body = req.body.body;
+  try {
+    const hashedPass = await hashPassword(body.room_password);
+
+    // Fetch users based on multiple room IDs
+    const items = await User.find({ room_id: { $in: body.room_ids } });
+
+    // Check if the username exists in any of the rooms
+    const roomsWithUsername = items.filter(
+      (item) => item.username === body.username
+    );
+
+    if (roomsWithUsername.length > 0) {
+      // If the username exists in one or more rooms, fetch their names from the rooms collection
+      const roomIds = roomsWithUsername.map((item) => item.room_id);
+      const rooms = await Room.find({ _id: { $in: roomIds } });
+
+      // Extract room names
+      const roomNames = rooms.map((room) => room.room_name);
+
+      res.status(400).json({
+        msg: "اسم المستخدم موجود بالفعل في الغرفة" + roomNames.join(", "),
+      });
+    } else {
+      const userType = body.user_type.toLowerCase();
+
+      const newUser = new User({
+        username: body.username,
+        room_password: hashedPass,
+        room: body.room_ids,
+        user_type: userType,
+        permissions: body.permissions,
+      });
+
+      const saved = await newUser.save();
+
+      res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
     }
   } catch (err) {
     res.status(500).json({ msg: "حدث خطأ ما" });
@@ -155,7 +201,6 @@ const createName = async (req, res) => {
         user_type: "visitor",
         name_password: hashedNamePass,
         name_end_date: time(endDate),
-        rooms: body.room_ids,
       });
       const saved = await newUser.save();
 
@@ -165,33 +210,6 @@ const createName = async (req, res) => {
     res.status(500).send({ msg: "something went wrong" });
   }
 };
-
-// const createRoot = async (req, res) => {
-//   console.log(req.body);
-//   const body = req.body.body;
-//   try {
-//     // Check if the username already exists in the root collection
-//     const existingUser = await User.findOne({ username: body.username });
-//     if (existingUser) {
-//       return res.status(400).json({ msg: "اسم المستخدم موجود بالفعل" });
-//     }
-
-//     const hashedPass = await hashPassword(body.name_password);
-//     const newUser = new User({
-//       username: body.username,
-//       name_password: hashedPass,
-//       rooms: body.room_ids,
-//       user_type: "root",
-//       name_end_date: body.name_end_date,
-//     });
-
-//     const saved = await newUser.save();
-
-//     res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
-//   } catch (err) {
-//     res.status(500).json({ msg: "حدث خطأ ما" });
-//   }
-// };
 
 const login = async (req, res) => {
   let user;
@@ -283,7 +301,6 @@ const memberLogin = async (req, res) => {
   console.log("member login fired");
   let user;
   try {
-    // Require room password to be present
     if (!req.body.room_password) {
       return res
         .status(400)
@@ -292,7 +309,7 @@ const memberLogin = async (req, res) => {
 
     user = await User.findOne({
       username: req.body.username,
-      room_id: req.body.room_id,
+      rooms: { $in: [req.body.room_id] },
     });
 
     if (!user) {
@@ -946,6 +963,7 @@ const unblockUser = async (req, res) => {
 
 module.exports = {
   createUser,
+  createRoot,
   createName,
   login,
   memberLogin,
