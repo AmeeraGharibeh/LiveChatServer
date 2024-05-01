@@ -193,19 +193,18 @@ const resetRoom = async (req, res) => {
 const deleteRoom = async (req, res) => {
   try {
     await Rooms.findByIdAndDelete(req.params.id);
-    const users = await User.find({
-      room_id: req.params.id,
-    });
+    const users = await User.find({ rooms: { $in: req.params.id } });
 
-    if (users.length === 0) {
-      res.status(404).json({ msg: "no users found" });
-      return;
+    if (users.length > 0) {
+      const deletedCount = await User.deleteMany({
+        rooms: { $in: req.params.id },
+      });
+
+      res.status(200).json({
+        msg: `${deletedCount} users deleted`,
+      });
     }
-    const deletedCount = await User.deleteMany({ room_id: req.params.id });
 
-    res.status(200).json({
-      msg: `${deletedCount} users deleted`,
-    });
     res.status(200).json({ msg: "room has been deleted.. " });
   } catch (err) {
     res.status(500).send({ msg: err.message });
