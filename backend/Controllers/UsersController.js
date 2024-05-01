@@ -815,26 +815,36 @@ const getUsersByRoom = async (req, res) => {
 const getUsersByType = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
-  const types = req.query.type; // Modify to handle multiple types
-  const field = req.query.type[0] === "root" ? user_type : name_type;
-
-  // Convert the types to an array if it's a comma-separated string
+  const types = req.query.type;
   const typeArray = types ? types.split(",") : [];
-
+  const totalPages = 0;
+  const currentPage = 0;
+  const totalItems = 0;
+  const items = [];
   try {
-    // Use $in operator to match any of the specified types
-    const totalItems = await User.countDocuments({
-      field: { $in: typeArray },
-    });
-    const totalPages = Math.ceil(totalItems / limit);
-    const currentPage = Math.min(page, totalPages);
-    const skip = Math.max((currentPage - 1) * limit, 0);
+    if (types[0] === "root") {
+      totalItems = await User.countDocuments({
+        field: { $in: typeArray },
+      });
+      totalPages = Math.ceil(totalItems / limit);
+      currentPage = Math.min(page, totalPages);
+      const skip = Math.max((currentPage - 1) * limit, 0);
+      items = await User.find({ field: { $in: typeArray } })
+        .skip(skip)
+        .limit(limit);
+    } else {
+      totalItems = await User.countDocuments({
+        field: { $in: typeArray },
+      });
+      totalPages = Math.ceil(totalItems / limit);
+      currentPage = Math.min(page, totalPages);
+      const skip = Math.max((currentPage - 1) * limit, 0);
 
-    // Use $in operator to find users with any of the specified types
-    const items = await User.find({ field: { $in: typeArray } })
-      .skip(skip)
-      .limit(limit);
-
+      // Use $in operator to find users with any of the specified types
+      items = await User.find({ field: { $in: typeArray } })
+        .skip(skip)
+        .limit(limit);
+    }
     const response = {
       current_page: currentPage,
       per_page: limit,
