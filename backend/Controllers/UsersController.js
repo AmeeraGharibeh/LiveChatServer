@@ -816,7 +816,7 @@ const getUsersByType = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const types = req.query.type; // Modify to handle multiple types
-  const field = ["root"] ? "user_type" : "name_type";
+  const field = req.query.type[0] === "root" ? user_type : name_type;
 
   // Convert the types to an array if it's a comma-separated string
   const typeArray = types ? types.split(",") : [];
@@ -829,6 +829,7 @@ const getUsersByType = async (req, res) => {
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
+
     // Use $in operator to find users with any of the specified types
     const items = await User.find({ field: { $in: typeArray } })
       .skip(skip)
