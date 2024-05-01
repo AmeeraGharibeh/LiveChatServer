@@ -824,24 +824,24 @@ const getUsersByType = async (req, res) => {
   try {
     if (types[0] === "root") {
       totalItems = await User.countDocuments({
-        field: { $in: typeArray },
+        user_type: { $in: typeArray },
       });
       totalPages = Math.ceil(totalItems / limit);
       currentPage = Math.min(page, totalPages);
       const skip = Math.max((currentPage - 1) * limit, 0);
-      items = await User.find({ field: { $in: typeArray } })
+      items = await User.find({ user_type: { $in: typeArray } })
         .skip(skip)
         .limit(limit);
     } else {
       totalItems = await User.countDocuments({
-        field: { $in: typeArray },
+        name_type: { $in: typeArray },
       });
       totalPages = Math.ceil(totalItems / limit);
       currentPage = Math.min(page, totalPages);
       const skip = Math.max((currentPage - 1) * limit, 0);
 
       // Use $in operator to find users with any of the specified types
-      items = await User.find({ field: { $in: typeArray } })
+      items = await User.find({ name_type: { $in: typeArray } })
         .skip(skip)
         .limit(limit);
     }
