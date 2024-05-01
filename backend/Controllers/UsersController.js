@@ -81,7 +81,8 @@ const createRoot = async (req, res) => {
   const body = req.body.body;
   try {
     const hashedPass = await hashPassword(body.room_password);
-
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + parseInt(body.name_end_date));
     // Fetch users based on multiple room IDs
     const items = await User.find({ rooms: { $in: body.room_ids } });
 
@@ -92,7 +93,7 @@ const createRoot = async (req, res) => {
 
     if (roomsWithUsername.length > 0) {
       // If the username exists in one or more rooms, fetch their names from the rooms collection
-      const roomIds = roomsWithUsername.map((item) => item.room_id);
+      const roomIds = roomsWithUsername.map((item) => item._id);
       const rooms = await Room.find({ _id: { $in: roomIds } });
 
       // Extract room names
@@ -110,6 +111,7 @@ const createRoot = async (req, res) => {
         rooms: body.room_ids,
         user_type: userType,
         permissions: body.permissions,
+        name_end_date: time(endDate),
       });
 
       const saved = await newUser.save();
