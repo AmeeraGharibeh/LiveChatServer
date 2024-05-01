@@ -816,7 +816,7 @@ const getUsersByType = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const types = req.query.type; // Modify to handle multiple types
-  const field = ["root"] ? user_type : name_type;
+  const field = ["root"] ? "user_type" : "name_type";
 
   // Convert the types to an array if it's a comma-separated string
   const typeArray = types ? types.split(",") : [];
