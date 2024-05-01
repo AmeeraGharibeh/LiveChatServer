@@ -822,7 +822,7 @@ const getUsersByType = async (req, res) => {
   let totalItems = 0;
   let items = [];
   try {
-    if (types[0] === "root") {
+    if (types === "root") {
       totalItems = await User.countDocuments({
         user_type: { $in: typeArray },
       });
