@@ -817,10 +817,10 @@ const getUsersByType = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const types = req.query.type;
   const typeArray = types ? types.split(",") : [];
-  const totalPages = 0;
-  const currentPage = 0;
-  const totalItems = 0;
-  const items = [];
+  let totalPages = 0;
+  let currentPage = 0;
+  let totalItems = 0;
+  let items = [];
   try {
     if (types[0] === "root") {
       totalItems = await User.countDocuments({
