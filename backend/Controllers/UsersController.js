@@ -24,7 +24,7 @@ const createUser = async (req, res) => {
   try {
     const hashedPass = await hashPassword(body.room_password);
 
-    const items = await User.find({ room_id: body.room_id });
+    const items = await User.find({ rooms: body.room_id });
     const room = await Room.findById(body.room_id);
     const usernameExists = items.some(
       (item) => item.username === body.username
@@ -83,7 +83,7 @@ const createRoot = async (req, res) => {
     const hashedPass = await hashPassword(body.room_password);
 
     // Fetch users based on multiple room IDs
-    const items = await User.find({ room_id: { $in: body.room_ids } });
+    const items = await User.find({ rooms: { $in: body.room_ids } });
 
     // Check if the username exists in any of the rooms
     const roomsWithUsername = items.filter(
@@ -107,7 +107,7 @@ const createRoot = async (req, res) => {
       const newUser = new User({
         username: body.username,
         room_password: hashedPass,
-        room: body.room_ids,
+        rooms: body.room_ids,
         user_type: userType,
         permissions: body.permissions,
       });
