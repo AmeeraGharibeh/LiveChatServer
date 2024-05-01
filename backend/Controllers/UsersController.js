@@ -104,11 +104,13 @@ const createRoot = async (req, res) => {
       });
     } else {
       const userType = body.user_type.toLowerCase();
-
+      const rooms = body.room_ids.map(function (room) {
+        return room;
+      });
       const newUser = new User({
         username: body.username,
         room_password: hashedPass,
-        rooms: body.room_ids,
+        rooms: rooms,
         user_type: userType,
         permissions: body.permissions,
         name_end_date: time(endDate),
