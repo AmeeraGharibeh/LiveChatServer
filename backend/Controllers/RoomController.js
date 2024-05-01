@@ -22,10 +22,11 @@ const createRoom = async function (req, res) {
         console.log(val._id.toHexString());
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(password, salt);
+        const rooms = [val._id.toHexString()];
         const newUser = new User({
           username: "MASTER",
           room_password: hashedPass,
-          room_id: val._id.toHexString(),
+          rooms: rooms,
           user_type: "master",
           is_owner: true,
           permissions,
