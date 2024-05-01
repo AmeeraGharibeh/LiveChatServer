@@ -104,13 +104,10 @@ const createRoot = async (req, res) => {
       });
     } else {
       const userType = body.user_type.toLowerCase();
-      const rooms = body.room_ids.map(function (room) {
-        return room;
-      });
       const newUser = new User({
         username: body.username,
         room_password: hashedPass,
-        rooms: rooms,
+        rooms: body.room_ids,
         user_type: userType,
         permissions: body.permissions,
         name_end_date: time(endDate),
@@ -413,64 +410,6 @@ const NameLogin = async (req, res) => {
   }
 };
 
-// const NameLogin = async (req, res) => {
-//   try {
-//     let user;
-
-//     user = await User.findOne({
-//       username: req.body.username,
-//       room_id: req.body.room_id,
-//     });
-//     if (user) {
-//       const validRoomPassword = verifyPassword(
-//         req.body.room_password,
-//         user.room_password
-//       );
-//       if (!validRoomPassword) {
-//         return res.status(400).send({ msg: "Invalid room password" });
-//       }
-//       const validNamePassword = verifyPassword(
-//         req.body.name_password,
-//         user.name_password
-//       );
-//       if (!validNamePassword) {
-//         return res.status(400).send({ msg: "Invalid name password" });
-//       }
-
-//     } else {
-//       user = await User.findOne({ username: req.body.username });
-//       if (!user) {
-//         return res.status(404).send({ msg: "User not found!" });
-//       }
-
-//       const validNamePassword = verifyPassword(
-//         req.body.name_password,
-//         user.name_password
-//       );
-
-//       if (!validNamePassword) {
-//         return res.status(400).send({ msg: "Invalid name password" });
-//       }
-//     }
-//     const accessToken = jwt.sign(
-//       {
-//         id: user._id,
-//       },
-//       process.env.JWTSECRET,
-//       { expiresIn: "1h" }
-//     );
-
-//     const { room_password, name_password, ...others } = user._doc;
-
-//     return res.status(200).send({
-//       user: { ...others, icon: req.body.icon },
-//       accessToken: accessToken,
-//     });
-//   } catch (err) {
-//     return res.status(500).send({ msg: err.message });
-//   }
-// };
-
 const updateUser = async (req, res) => {
   console.log(req.body);
   const body = req.body.body;
@@ -494,7 +433,7 @@ const updateUser = async (req, res) => {
 
       const report = new Reports({
         master_name: req.body.master,
-        room_id: updated.room_id,
+        room_id: updated.rooms[0],
         action_user: updated.username,
         action_name_ar: "تعديل حساب",
         action_name_en: "Update user",
@@ -550,7 +489,7 @@ const deleteUser = async (req, res) => {
     const report = new Reports({
       master_name: req.body.master,
       action_user: req.body.username,
-      room_id: user.room_id,
+      room_id: user.rooms[0],
       action_name_ar: "حذف مستخدم",
       action_name_en: "Delete user",
     });
@@ -728,12 +667,16 @@ const getUsersByRoom = async (req, res) => {
   const roomId = req.params.id;
 
   try {
-    const totalItems = await User.countDocuments({ room_id: roomId });
+    const totalItems = await User.countDocuments({
+      rooms: { $in: roomId },
+    });
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
 
-    const items = await User.find({ room_id: roomId }).skip(skip).limit(limit);
+    const items = await User.find({ rooms: { $in: roomId } })
+      .skip(skip)
+      .limit(limit);
 
     const response = {
       current_page: currentPage,
