@@ -233,6 +233,7 @@ const login = async (req, res) => {
         room_id: req.body.room_id,
         _id: visitorId,
         user_type: "visitor",
+        name_type: "-",
         state: "Available",
         icon: req.body.icon,
       };
@@ -306,6 +307,7 @@ const visitorLogin = async (req, res) => {
       room_id: req.body.room_id,
       _id: visitorId,
       user_type: "visitor",
+      name_type: "-",
       state: "Available",
       icon: req.body.icon,
     };
@@ -408,6 +410,7 @@ const NameLogin = async (req, res) => {
       username: req.body.username,
       _id: visitorId,
       user_type: "visitor",
+      name_type: "-",
       state: "Available",
       icon: req.body.icon,
     };
