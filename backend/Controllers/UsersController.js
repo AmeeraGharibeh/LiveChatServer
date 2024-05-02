@@ -79,6 +79,23 @@ const createUser = async (req, res) => {
 const createRoot = async (req, res) => {
   console.log(req.body);
   const body = req.body.body;
+  const permissions = {
+    block_device: true,
+    kick_out: true,
+    stop: true,
+    mic: true,
+    public_msg: true,
+    remove_msgs: true,
+    remove_block: true,
+    logout_history: true,
+    users_control: true,
+    member_control: true,
+    admin_control: true,
+    super_admin: true,
+    master_control: true,
+    room_settings: true,
+    reports: true,
+  };
   try {
     const hashedPass = await hashPassword(body.room_password);
     const endDate = new Date();
@@ -109,7 +126,7 @@ const createRoot = async (req, res) => {
         room_password: hashedPass,
         rooms: body.room_ids,
         user_type: userType,
-        permissions: body.permissions,
+        permissions: permissions,
         name_end_date: time(endDate),
       });
 
@@ -669,12 +686,16 @@ const getUsersByRoom = async (req, res) => {
   try {
     const totalItems = await User.countDocuments({
       rooms: { $in: roomId },
+      user_type: { $ne: "root" },
     });
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
 
-    const items = await User.find({ rooms: { $in: roomId } })
+    const items = await User.find({
+      rooms: { $in: roomId },
+      user_type: { $ne: "root" },
+    })
       .skip(skip)
       .limit(limit);
 
