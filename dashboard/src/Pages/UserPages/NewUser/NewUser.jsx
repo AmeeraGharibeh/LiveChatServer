@@ -57,10 +57,13 @@ const handleSelectedOptionsChange = (newSelectedOptions) => {
   const handleClick = (e)=> {
     e.preventDefault();
        const selectedRoomIds = selectedRooms.map((option) => option._id);
+       const userType = type === 'root' ? 'root' : '-';
+       const nameType = type === 'root' ? '-' : type;
   const userData = { 
       ...inputs,
     room_ids: selectedRoomIds,
-    name_type: type,
+    user_type: userType,
+    name_type: nameType,
     name_end_date: date['en']
   };
     console.log(userData)
@@ -77,7 +80,7 @@ const handleSelectedOptionsChange = (newSelectedOptions) => {
         </div>
         <div className="addUserItem">
           <label>كلمة المرور</label>
-          <input name="name_password" type="password"  onChange={handleChange}/>
+          <input name={type === 'root' ? 'room_password' : 'name_password'} type="password"  onChange={handleChange}/>
         </div>
         <div className="addUserItem">
           <label>تاريخ الانتهاء</label>

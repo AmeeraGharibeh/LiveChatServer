@@ -74,11 +74,24 @@ export const deleteNameUser = async (id, dispatch) => {
       dispatch(deleteUserFailure(err.response.data.msg));
     });
 };
+export const addRoot = async (user, dispatch) => {
+  dispatch(addUserStart());
+  try {
+    initializeUserRequest().then(async (Request) => {
+      const val = await Request.post(`users/root/`, user);
+      console.log(val.data.user);
+      dispatch(addUserSuccess(val.data.user));
+    });
+  } catch (err) {
+    dispatch(addUserFailure({ msg: "فشلت اضافة المستخدم" }));
+  }
+};
 export const addUser = async (user, dispatch) => {
   dispatch(addUserStart());
   try {
     initializeUserRequest().then(async (Request) => {
-      const val = await Request.post(`users/name/`, user);
+      const url = user["user_type"] === "root" ? "users/root/" : "users/name";
+      const val = await Request.post(url, user);
       console.log(val.data.user);
       dispatch(addUserSuccess(val.data.user));
     });

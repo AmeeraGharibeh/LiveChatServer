@@ -10,7 +10,7 @@ const MultiSelectDropdown = (props) => {
     if (props.onSelectionChange) {
       props.onSelectionChange(selectedValues);
     }
-  }, [selectedValues]);
+  }, [selectedValues, props.onSelectionChange]);
 
   const handleSelectValue = (item) => {
     setSelectedValues([...selectedValues, item]);
@@ -33,18 +33,18 @@ const MultiSelectDropdown = (props) => {
         {selectedValues.map((item) => {
           return (
             <Pill
-              key={item._id}
               text={`${item.room_name}`}
               onClick={() => handleRemoveValue(item)}
+              key={item["_id"]}
             />
           );
         })}
 
         <div>
           <ul className="suggestions-list">
-            {props.options.map((item) => {
+            {props.options.map((item, i) => {
               return !selectedValueset.has(item._id) ? (
-                <li key={item._id} onClick={() => handleSelectValue(item)}>
+                <li onClick={() => handleSelectValue(item)} key={item["_id"]}>
                   <span>{item.room_name}</span>
                 </li>
               ) : (

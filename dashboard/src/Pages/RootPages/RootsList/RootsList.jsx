@@ -39,7 +39,7 @@ export default function RootsList() {
   },
   {
     Header: 'type',
-    accessor: 'name_type',
+    accessor: 'user_type',
   },
   {
       accessor: 'action',
