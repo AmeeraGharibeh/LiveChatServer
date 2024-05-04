@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
     const items = await User.find({ rooms: body.room_id });
     const room = await Room.findById(body.room_id);
     const usernameExists = items.some(
-      (item) => item.username === body.username
+      (item) => item.username === body.username.toLowerCase()
     );
 
     if (usernameExists) {
@@ -50,7 +50,7 @@ const createUser = async (req, res) => {
         });
       } else {
         const newUser = new User({
-          username: body.username,
+          username: body.username.toLowerCase(),
           room_password: hashedPass,
           rooms,
           user_type: userType, // Use the converted user type
@@ -105,7 +105,7 @@ const createRoot = async (req, res) => {
 
     // Check if the username exists in any of the rooms
     const roomsWithUsername = items.filter(
-      (item) => item.username === body.username
+      (item) => item.username.toLowerCase() === body.username.toLowerCase()
     );
 
     if (roomsWithUsername.length > 0) {
@@ -122,7 +122,7 @@ const createRoot = async (req, res) => {
     } else {
       const userType = body.user_type.toLowerCase();
       const newUser = new User({
-        username: body.username,
+        username: body.username.toLowerCase(),
         room_password: hashedPass,
         rooms: body.room_ids,
         user_type: userType,
@@ -147,12 +147,12 @@ const createName = async (req, res) => {
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + parseInt(body.name_end_date));
     console.log("end date is " + endDate);
-    const users = await User.find({ username: body.username });
+    const users = await User.find({ username: body.username.toLowerCase() });
     if (users.length > 0) {
       res.status(400).json({ msg: "هذا الاسم مستخدم بالفعل" });
     } else {
       const newUser = new User({
-        username: body.username,
+        username: body.username.toLowerCase(),
         name_type: body.name_type,
         user_type: "visitor",
         name_password: hashedNamePass,
@@ -170,7 +170,7 @@ const createName = async (req, res) => {
 const login = async (req, res) => {
   let user;
   if (req.body.room_password && req.body.name_password) {
-    user = await User.findOne({ username: req.body.username });
+    user = await User.findOne({ username: req.body.username.toLowerCase() });
     if (!user) {
       return res.status(404).send({ msg: "User not found!" });
     }
@@ -265,7 +265,7 @@ const memberLogin = async (req, res) => {
     }
 
     user = await User.findOne({
-      username: req.body.username,
+      username: req.body.username.toLowerCase(),
       rooms: { $in: [req.body.room_id] },
     });
 
@@ -336,7 +336,7 @@ const NameLogin = async (req, res) => {
     let member;
 
     // Step 1: Check if the user exists by username
-    user = await User.findOne({ username: req.body.username });
+    user = await User.findOne({ username: req.body.username.toLowerCase() });
 
     if (!user) {
       return res.status(404).send({ msg: "المستخدم غير موجود" });
@@ -354,7 +354,7 @@ const NameLogin = async (req, res) => {
 
       if (req.body.room_password) {
         member = await User.findOne({
-          username: req.body.username,
+          username: req.body.username.toLowerCase(),
           room_id: req.body.room_id,
         });
 
@@ -438,7 +438,7 @@ const updateUser = async (req, res) => {
     body.room_password = await bcrypt.hash(body.room_password, salt);
   }
   try {
-    if (body.username !== "master") {
+    if (body.username.toLowerCase() !== "master") {
       const updated = await User.findByIdAndUpdate(
         req.params.id,
         {
@@ -454,7 +454,7 @@ const updateUser = async (req, res) => {
       const report = new Reports({
         master_name: req.body.master,
         room_id: updated.rooms[0],
-        action_user: updated.username,
+        action_user: updated.username.toLowerCase(),
         action_name_ar: "تعديل حساب",
         action_name_en: "Update user",
       });
