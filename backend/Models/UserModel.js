@@ -135,8 +135,7 @@ const UserSchema = mongoose.Schema(
 
     pic: {
       type: String,
-      default:
-        "https://storage.googleapis.com/grocery-372908.appspot.com/user_acc.png",
+      default: null,
     },
 
     cover: {

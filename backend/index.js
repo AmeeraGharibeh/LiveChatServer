@@ -89,16 +89,9 @@ io.on("connection", async (socket) => {
       type: "notification",
     });
     if (speakersQueue[user.room_id] && speakersQueue[user.room_id].length > 0) {
-      var data = {
-        roomId: user.room_id,
-        socketId: speakersQueue[user.room_id][0].socketId,
-      };
-      //joinBroadcast(data, socket);
       io.to(socket.id).emit("audioStreamData", speakersQueue[user.room_id][0]);
       updateOnlineUsersList(user.room_id, socket.id, "audio_status", "unmute");
     }
-    ////TODO
-    // update online users list and sent it to the room
     if (!onlineUsers[user.room_id]) {
       onlineUsers[user.room_id] = [];
     }
