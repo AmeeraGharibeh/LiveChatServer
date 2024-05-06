@@ -92,16 +92,7 @@ io.on("connection", async (socket) => {
       io.to(socket.id).emit("audioStreamData", speakersQueue[user.room_id][0]);
       updateOnlineUsersList(user.room_id, socket.id, "audio_status", "unmute");
     }
-    if (!onlineUsers[user.room_id]) {
-      onlineUsers[user.room_id] = [];
-    }
-
-    if (!onlineUsers[user.room_id].includes(socket.id)) {
-      onlineUsers[user.room_id].push({ id: socket.id, user });
-      io.to(user.room_id).emit("onlineUsers", [
-        ...new Set(onlineUsers[user.room_id]),
-      ]);
-    }
+    addToOnlineUsers(user, socket);
     const isStopped = await checkStoppedUsers(user["device"]);
     if (isStopped) {
       console.log("finded" + isStopped);
@@ -141,18 +132,7 @@ io.on("connection", async (socket) => {
   socket.on("leaveRoom", async (user) => {
     socket.leave(user.room_id);
     //filter the list to remove left user
-    if (onlineUsers[user.room_id]) {
-      onlineUsers[user.room_id] = onlineUsers[user.room_id].filter(
-        (user) => user.id !== socket.id
-      );
-      console.log("user removed");
-    }
-    console.log(user.username + ` left room`);
-
-    // Emit the updated online users list to all users in the room
-    io.to(user.room_id).emit("onlineUsers", [
-      ...new Set(onlineUsers[user.room_id]),
-    ]);
+    removeFromOnlineUsers(data);
 
     socket.on("requestUpdateUsersList", (data) => {
       updateOnlineUsersList(
@@ -184,9 +164,7 @@ io.on("connection", async (socket) => {
       });
 
       // Emit updated online users list to all users in the room
-      io.to(data.room_id).emit("onlineUsers", [
-        ...new Set(onlineUsers[data.room_id]),
-      ]);
+      emitOnlineUsers(data);
     }
   });
 
@@ -351,14 +329,10 @@ io.on("connection", async (socket) => {
     const master_id = data.master_id;
     const username = data.username;
 
-    if (onlineUsers[room_id]) {
-      onlineUsers[room_id] = onlineUsers[room_id].filter(
-        (user) => user.id !== user_socket
-      );
-      console.log("user removed");
-    }
-
-    io.to(room_id).emit("onlineUsers", [...new Set(onlineUsers[room_id])]);
+    removeFromOnlineUsers({
+      room_id: onlineUsers[room_id],
+      socket,
+    });
 
     io.to(room_id).emit("notification", {
       sender: master,
@@ -1042,9 +1016,7 @@ function endStreaming(data) {
         user.user["audio_status"] = "none";
       }
     });
-    io.to(data["roomId"]).emit("onlineUsers", [
-      ...new Set(onlineUsers[data["roomId"]]),
-    ]);
+    emitOnlineUsers({ room_id: data["roomId"] });
   }
   currentStreamer = null; // Clear current streamer
 
@@ -1057,6 +1029,37 @@ function endStreaming(data) {
   if (speakersQueue[data["roomId"]].length > 0) {
     startStreaming(speakersQueue[data["roomId"]][0]);
   }
+}
+
+function addToOnlineUsers(data, socket) {
+  if (!onlineUsers[data.room_id]) {
+    onlineUsers[data.room_id] = [];
+  }
+
+  if (!onlineUsers[data.room_id].includes(socket.id)) {
+    onlineUsers[data.room_id].push({ id: socket.id, data });
+    emitOnlineUsers(data);
+  }
+}
+function removeFromOnlineUsers(data, socket) {
+  if (onlineUsers[data.room_id]) {
+    onlineUsers[data.room_id] = onlineUsers[data.room_id].filter(
+      (user) => user.id !== socket.id
+    );
+    console.log("user removed");
+  }
+  // Emit the updated online users list to all users in the room
+  emitOnlineUsers(data);
+}
+
+function emitOnlineUsers(data) {
+  if (!onlineUsers[data.room_id]) {
+    onlineUsers[data.room_id] = [];
+  }
+
+  io.to(data.room_id).emit("onlineUsers", [
+    ...new Set(onlineUsers[data.room_id]),
+  ]);
 }
 
 function joinBroadcast(data, socket) {
