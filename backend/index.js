@@ -162,8 +162,6 @@ io.on("connection", async (socket) => {
           user.user = data["user"];
         }
       });
-
-      // Emit updated online users list to all users in the room
       emitOnlineUsers(data);
     }
   });
@@ -1132,7 +1130,8 @@ function updateOnlineUsersList(roomId, socketId, field, val) {
     }
 
     console.log("value changed in " + field + " with " + val);
-    io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
+    emitOnlineUsers({ room_id: roomId });
+    //io.to(roomId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
   }
 }
 
