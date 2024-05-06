@@ -1037,7 +1037,7 @@ function addToOnlineUsers(data, socket) {
   }
 
   if (!onlineUsers[data.room_id].includes(socket.id)) {
-    onlineUsers[data.room_id].push({ id: socket.id, data });
+    onlineUsers[data.room_id].push({ id: socket.id, user: data });
     emitOnlineUsers({ room_id: data.room_id });
   }
 }
