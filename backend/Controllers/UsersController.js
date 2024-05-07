@@ -380,6 +380,7 @@ const NameLogin = async (req, res) => {
             user: {
               ...others,
               icon: req.body.icon,
+              pic: member.pic,
               user_type: member.user_type,
               permissions: member.permissions,
             },
