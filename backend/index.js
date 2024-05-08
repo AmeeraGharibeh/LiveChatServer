@@ -131,8 +131,9 @@ io.on("connection", async (socket) => {
 
   socket.on("leaveRoom", async (data) => {
     socket.leave(data.room_id);
+
     removeFromOnlineUsers({
-      room_id: onlineUsers[room_id],
+      room_id: onlineUsers[data.room_id],
       socket,
     });
 
@@ -488,7 +489,7 @@ io.on("connection", async (socket) => {
       });
       handleQueueChanges(roomId); // Update queue order if needed
     } else {
-      io.to(roomId).emit("notification", {
+      io.to(socket.id).emit("notification", {
         sender: "system",
         senderId: "system",
         message: "تم ايقافك عن المايك",
