@@ -407,7 +407,12 @@ io.on("connection", async (socket) => {
       io.to(data.room_id).emit("notification", {
         sender: data["master"],
         senderId: data["master_id"],
-        message: data["master"] + " قام بإيقاف العضو: " + data["username"],
+        message:
+          data["master"] +
+          " قام بإيقاف" +
+          data["stop_type"] +
+          "للعضو: " +
+          data["username"],
         color: 0xfffce9f1,
         type: "notification",
       });

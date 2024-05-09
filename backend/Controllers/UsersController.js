@@ -825,6 +825,18 @@ const blockUser = async (req, res) => {
       await blocked.save();
     }
 
+    const user = await User.findOne({ _id: userId });
+    if (user) {
+      await User.findByIdAndUpdate(
+        userId,
+        {
+          is_ip_blocked: body.is_ip_blocked,
+          is_device_blocked: body.is_device_blocked,
+        },
+        { new: true, upsert: true }
+      );
+    }
+
     const report = new Reports({
       master_name: req.body.master,
       action_user: body.username,
@@ -865,7 +877,17 @@ const unblockUser = async (req, res) => {
     } else {
       await Blocked.deleteOne(unblockConditions);
     }
-
+    const user = await User.findOne({ _id: userId });
+    if (user) {
+      await User.findByIdAndUpdate(
+        userId,
+        {
+          is_ip_blocked: body.is_ip_blocked,
+          is_device_blocked: body.is_device_blocked,
+        },
+        { new: true, upsert: true }
+      );
+    }
     const report = new Reports({
       master_name: req.body.master,
       action_user: body.username,
