@@ -843,24 +843,9 @@ const unblockUser = async (req, res) => {
   const body = req.body.body;
 
   try {
-    const unblockConditions = {
-      device: body.device,
-    };
     const existingBlocked = await Blocked.findOne({ device: body.device });
 
-    if (existingBlocked) {
-      unblockConditions.is_ip_blocked = body.is_ip_blocked;
-      await Blocked.findByIdAndUpdate(
-        existingBlocked._id,
-        {
-          is_ip_blocked: body.is_ip_blocked,
-          is_device_blocked: body.is_device_blocked,
-        },
-        { new: true, upsert: true }
-      );
-    } else {
-      await Blocked.deleteOne(unblockConditions);
-    }
+    await Blocked.deleteOne(existingBlocked);
 
     const report = new Reports({
       master_name: req.body.master,
@@ -871,7 +856,7 @@ const unblockUser = async (req, res) => {
     });
     await report.save();
 
-    res.status(200).json({ user_id: userId });
+    res.status(200).json({ device: body.device });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });

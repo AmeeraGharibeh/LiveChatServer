@@ -490,26 +490,12 @@ io.on("connection", async (socket) => {
 
   socket.on("unBlockUser", async (data) => {
     try {
-      const unblockConditions = {
-        device: data.device,
-      };
       const existingBlocked = await BlockedModel.findOne({
         device: data.device,
       });
 
-      if (existingBlocked) {
-        unblockConditions.is_ip_blocked = data.is_ip_blocked;
-        await BlockedModel.findByIdAndUpdate(
-          existingBlocked._id,
-          {
-            is_ip_blocked: data.is_ip_blocked,
-            is_device_blocked: data.is_device_blocked,
-          },
-          { new: true, upsert: true }
-        );
-      } else {
-        await BlockedModel.deleteOne(unblockConditions);
-      }
+      await BlockedModel.deleteOne(existingBlocked);
+
       const report = new ReportsModel({
         master_name: data.master,
         action_user: data.username,
