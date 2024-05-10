@@ -21,6 +21,8 @@ const socketIo = require("socket.io");
 const { time } = require("./Config/Helpers/time_helper");
 const Stopped = require("./Models/StopModel");
 const { checkStoppedUsers } = require("./Routes/StopCheck");
+const BlockedModel = require("./Models/BlockedModel");
+const ReportsModel = require("./Models/ReportsModel");
 
 ///////////////////////////////////////////////////////////
 
@@ -446,6 +448,89 @@ io.on("connection", async (socket) => {
       console.log("User is not blocked");
     }
   });
+
+  socket.on("blockUser", async (data) => {
+    try {
+      let blocked;
+
+      const existingBlocked = await BlockedModel.findOne({
+        user_id: data.userId,
+      });
+      if (existingBlocked) {
+        blocked = await BlockedModel.findByIdAndUpdate(
+          existingBlocked._id,
+          data,
+          { new: true, upsert: true }
+        );
+      } else {
+        blocked = new BlockedModel(data);
+        await blocked.save();
+      }
+
+      const report = new ReportsModel({
+        master_name: data.master,
+        action_user: data.username,
+        room_id: data.room_id,
+        action_name_ar: "حظر مستخدم",
+        action_name_en: "Block user",
+      });
+      await report.save();
+      updateOnlineUsersList(data.room_id, data.socket, "is_blocked", "true");
+      io.to(existingStopped.room_id).emit("notification", {
+        sender: data.master,
+        senderId: data.master_id,
+        message: data["master"] + " قام بحظر العضو: " + data["username"],
+        color: 0xfffce9f1,
+        type: "notification",
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  socket.on("unBlockUser", async (data) => {
+    try {
+      const unblockConditions = {
+        user_id: data.userId,
+      };
+      const existingBlocked = await BlockedModel.findOne({
+        user_id: data.userId,
+      });
+
+      if (existingBlocked) {
+        unblockConditions.is_ip_blocked = data.is_ip_blocked;
+        await BlockedModel.findByIdAndUpdate(
+          existingBlocked._id,
+          {
+            is_ip_blocked: data.is_ip_blocked,
+            is_device_blocked: data.is_device_blocked,
+          },
+          { new: true, upsert: true }
+        );
+      } else {
+        await BlockedModel.deleteOne(unblockConditions);
+      }
+      const report = new ReportsModel({
+        master_name: data.master,
+        action_user: data.username,
+        room_id: data.room_id,
+        action_name_ar: "إلغاء حظر مستخدم",
+        action_name_en: "Unblock user",
+      });
+      updateOnlineUsersList(data.room_id, data.socket, "is_blocked", "false");
+      io.to(existingStopped.room_id).emit("notification", {
+        sender: data.master,
+        senderId: data.master_id,
+        message: data["master"] + " قام بإلغاء حظر العضو: " + data["username"],
+        color: 0xfffce9f1,
+        type: "notification",
+      });
+      await report.save();
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
   // AUDIO & VIDEO BROADCASTING
   // WEBRTC VER.
 
