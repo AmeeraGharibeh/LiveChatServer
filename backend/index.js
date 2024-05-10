@@ -476,7 +476,7 @@ io.on("connection", async (socket) => {
       });
       await report.save();
       updateOnlineUsersList(data.room_id, data.socket, "is_blocked", "true");
-      io.to(existingStopped.room_id).emit("notification", {
+      io.to(data.room_id).emit("notification", {
         sender: data.master,
         senderId: data.master_id,
         message: data["master"] + " قام بحظر العضو: " + data["username"],
@@ -518,7 +518,7 @@ io.on("connection", async (socket) => {
         action_name_en: "Unblock user",
       });
       updateOnlineUsersList(data.room_id, data.socket, "is_blocked", "false");
-      io.to(existingStopped.room_id).emit("notification", {
+      io.to(existingBlocked.room_id).emit("notification", {
         sender: data.master,
         senderId: data.master_id,
         message: data["master"] + " قام بإلغاء حظر العضو: " + data["username"],
