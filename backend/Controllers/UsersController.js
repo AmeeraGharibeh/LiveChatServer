@@ -796,7 +796,6 @@ const blockUser = async (req, res) => {
   const body = req.body.body;
   const now = new Date();
   try {
-    const userId = req.params.id;
     let blocked;
     const blockedData = {
       username: body.username,
@@ -804,7 +803,6 @@ const blockUser = async (req, res) => {
       period: body.period,
       ip: body.ip,
       device: body.device,
-      user_id: userId,
       room_id: body.room_id,
       location: body.location,
       is_ip_blocked: body.is_ip_blocked,
@@ -812,7 +810,7 @@ const blockUser = async (req, res) => {
       date: time(now),
     };
 
-    const existingBlocked = await Blocked.findOne({ user_id: userId });
+    const existingBlocked = await Blocked.findOne({ device: body.device });
 
     if (existingBlocked) {
       blocked = await Blocked.findByIdAndUpdate(
@@ -845,12 +843,10 @@ const unblockUser = async (req, res) => {
   const body = req.body.body;
 
   try {
-    const userId = req.params.id;
-
     const unblockConditions = {
-      user_id: userId,
+      device: body.device,
     };
-    const existingBlocked = await Blocked.findOne({ user_id: userId });
+    const existingBlocked = await Blocked.findOne({ device: body.device });
 
     if (existingBlocked) {
       unblockConditions.is_ip_blocked = body.is_ip_blocked;

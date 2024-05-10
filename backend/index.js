@@ -454,7 +454,7 @@ io.on("connection", async (socket) => {
       let blocked;
 
       const existingBlocked = await BlockedModel.findOne({
-        user_id: data.userId,
+        device: data.device,
       });
       if (existingBlocked) {
         blocked = await BlockedModel.findByIdAndUpdate(
@@ -491,10 +491,10 @@ io.on("connection", async (socket) => {
   socket.on("unBlockUser", async (data) => {
     try {
       const unblockConditions = {
-        user_id: data.userId,
+        device: data.device,
       };
       const existingBlocked = await BlockedModel.findOne({
-        user_id: data.userId,
+        device: data.device,
       });
 
       if (existingBlocked) {
