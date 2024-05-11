@@ -839,13 +839,60 @@ const blockUser = async (req, res) => {
   }
 };
 
+// const unblockUser = async (req, res) => {
+//   const body = req.body.body;
+
+//   try {
+//     const existingBlocked = await Blocked.findOne({ device: body.device });
+
+//     await Blocked.deleteOne(existingBlocked);
+
+//     const report = new Reports({
+//       master_name: req.body.master,
+//       action_user: body.username,
+//       room_id: body.room_id,
+//       action_name_ar: "إلغاء حظر مستخدم",
+//       action_name_en: "Unblock user",
+//     });
+//     await report.save();
+
+//     res.status(200).json({ device: body.device });
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "Internal server error" });
+//   }
+// };
+
 const unblockUser = async (req, res) => {
   const body = req.body.body;
 
   try {
     const existingBlocked = await Blocked.findOne({ device: body.device });
 
-    await Blocked.deleteOne(existingBlocked);
+    // Check if there is a blocked user
+    if (!existingBlocked) {
+      return res
+        .status(404)
+        .json({ msg: "User not found in blocked collection" });
+    }
+
+    // Check the type of unblock request (IP or device)
+    if (
+      body.is_ip_blocked === false &&
+      existingBlocked.is_ip_blocked === true
+    ) {
+      existingBlocked.is_ip_blocked = false;
+    } else if (
+      body.is_device_blocked === false &&
+      existingBlocked.is_device_blocked === true
+    ) {
+      existingBlocked.is_device_blocked = false;
+    } else {
+      return res.status(400).json({ msg: "Invalid unblock request" });
+    }
+
+    // Save the updated blocked status
+    await existingBlocked.save();
 
     const report = new Reports({
       master_name: req.body.master,
@@ -856,7 +903,7 @@ const unblockUser = async (req, res) => {
     });
     await report.save();
 
-    res.status(200).json({ device: body.device });
+    res.status(200).json({ msg: "User unblocked successfully" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error" });
