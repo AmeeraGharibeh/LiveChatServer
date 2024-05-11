@@ -35,7 +35,7 @@ const rootReducer = combineReducers({
   emojie: emojieReducer,
 });
 
-const persistedReducer = persistReducer();
+const persistedReducer = persistReducer(persistConfig, rootReducer); // Pass persistConfig to persistReducer
 
 export const store = configureStore({
   reducer: persistedReducer,
