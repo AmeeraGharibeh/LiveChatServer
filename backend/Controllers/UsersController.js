@@ -891,8 +891,11 @@ const unblockUser = async (req, res) => {
       return res.status(400).json({ msg: "Invalid unblock request" });
     }
 
-    // Save the updated blocked status
-    await existingBlocked.save();
+    if (!existingBlocked.is_ip_blocked && !existingBlocked.is_device_blocked) {
+      await Blocked.deleteOne({ _id: existingBlocked._id });
+    } else {
+      await existingBlocked.save();
+    }
 
     const report = new Reports({
       master_name: req.body.master,
