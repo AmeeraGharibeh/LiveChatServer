@@ -62,7 +62,7 @@ router.get("/:id/users", getUsersByRoom);
 router.get("/type/", getUsersByType);
 router.get("/", getAllUsers);
 router.get("/stats", userStats);
-router.post("/:id/block", verifyTokenAndAction, blockUser);
-router.post("/:id/unblock", verifyTokenAndAction, unblockUser);
+router.post("/block", verifyTokenAndAction, blockUser);
+router.post("/unblock", verifyTokenAndAction, unblockUser);
 
 module.exports = router;
