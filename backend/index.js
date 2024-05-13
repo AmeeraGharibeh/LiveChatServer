@@ -1094,8 +1094,8 @@ function sendPrivateMessage(data) {
   const threadId = data.threadId ?? uuidv4();
 
   // Join both sockets to the private chat room
-  io.sockets.clients[data.toSocket].join(threadId);
-  io.sockets.clients[data.fromSocket].join(threadId);
+  io.clients[data.toSocket].join(threadId);
+  io.clients[data.fromSocket].join(threadId);
 
   io.to(threadId).emit("privateMessage", {
     threadId,
