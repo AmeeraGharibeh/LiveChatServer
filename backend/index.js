@@ -137,7 +137,7 @@ io.on("connection", async (socket) => {
       socket,
     });
 
-    io.to(user.room_id).emit("notification", {
+    io.to(data.room_id).emit("notification", {
       sender: data.username,
       senderId: data._id,
       message: data.username + " غادر الغرفة  ",
