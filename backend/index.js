@@ -21,8 +21,6 @@ const socketIo = require("socket.io");
 const { time } = require("./Config/Helpers/time_helper");
 const Stopped = require("./Models/StopModel");
 const { checkStoppedUsers } = require("./Routes/StopCheck");
-const BlockedModel = require("./Models/BlockedModel");
-const ReportsModel = require("./Models/ReportsModel");
 
 ///////////////////////////////////////////////////////////
 
@@ -267,9 +265,6 @@ io.on("connection", async (socket) => {
   const activeConversations = {};
 
   socket.on("sendPrivateMessage", (data) => {
-    const friendId = data.friendId;
-    const senderId = data.senderId;
-
     const stoppedUser = stoppedUsers.find(
       (obj) => obj.device === data["device"]
     );
@@ -279,7 +274,7 @@ io.on("connection", async (socket) => {
         stoppedUser.stop_type == "is_private_stopped" ||
         stoppedUser.stop_type == "stop_all"
       ) {
-        io.to(data["senderSocket"]).emit("notification", {
+        io.to(data["fromSocket"]).emit("notification", {
           sender: "system",
           senderId: "system",
           message: "تم ايقافك عن ارسال الرسائل الخاصة",
@@ -287,10 +282,10 @@ io.on("connection", async (socket) => {
           type: "notification",
         });
       } else {
-        sendPrivateMessage(senderId, friendId);
+        sendPrivateMessage(data);
       }
     } else {
-      sendPrivateMessage(senderId, friendId);
+      sendPrivateMessage(data);
     }
   });
 
@@ -1073,30 +1068,36 @@ function startVideoStreaming(data, socket) {
   updateOnlineUsersList(roomId, socket.id, "cam_status", "on_cam");
 }
 
-function sendPrivateMessage(senderId, friendId) {
-  const threadId = [senderId, friendId].sort().join("_");
-  console.log("thread is " + threadId);
+function sendPrivateMessage(data) {
+  // const threadId = [senderId, friendId].sort().join("_");
+  //console.log("thread is " + threadId);
   // Send the private message to the recipient socket
-  if (!activeConversations[threadId]) {
-    activeConversations[threadId] = [friendId, socket.id];
-  } else if (!activeConversations[threadId].includes(friendId)) {
-    activeConversations[threadId].push(friendId);
-  }
+  // if (!activeConversations[threadId]) {
+  //   activeConversations[threadId] = [friendId, socket.id];
+  // } else if (!activeConversations[threadId].includes(friendId)) {
+  //   activeConversations[threadId].push(friendId);
+  // }
 
-  activeConversations[threadId].forEach((socketId) => {
-    io.to(socketId).emit("privateMessage", {
-      threadId: threadId,
-      between: [
-        { sender: username, id: senderId },
-        { sender: friendName, id: friendId },
-      ],
-      message: message,
-      senderId: senderId,
-      sender: username,
-    });
+  // activeConversations[threadId].forEach((socketId) => {
+  //   io.to(socketId).emit("privateMessage", {
+  //     threadId: threadId,
+  //     between: [
+  //       { sender: username, id: senderId },
+  //       { sender: friendName, id: friendId },
+  //     ],
+  //     message: message,
+  //     senderId: senderId,
+  //     sender: username,
+  //   });
+  // });
+
+  const threadId = data.threadId ?? uuidv4();
+  io.to(data.toSocket).emit("privateMessage", {
+    threadId,
+    message: data.message,
+    senderId: data.fromSocket,
+    sender: data.username,
   });
-
-  console.log(`${message} sent from ${username} to ${friendId}`);
 }
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
