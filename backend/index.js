@@ -290,10 +290,10 @@ io.on("connection", async (socket) => {
           type: "notification",
         });
       } else {
-        sendPrivateMessage(data);
+        sendPrivateMessage(data, socket);
       }
     } else {
-      sendPrivateMessage(data);
+      sendPrivateMessage(data, socket);
     }
   });
 
@@ -1087,19 +1087,16 @@ function startVideoStreaming(data, socket) {
   updateOnlineUsersList(roomId, socket.id, "cam_status", "on_cam");
 }
 
-function sendPrivateMessage(data) {
+function sendPrivateMessage(data, socket) {
   const threadId = data.threadId ?? uuidv4();
 
   // Join both sockets to the private chat room
   const socketsInRoom = getSocketsInRoom(data.roomId);
 
   const toSocket = socketsInRoom.find((socket) => socket.id === data.toSocket);
-  const fromSocket = socketsInRoom.find(
-    (socket) => socket.id === data.fromSocket
-  );
-  if (toSocket && fromSocket) {
+  if (toSocket) {
     toSocket.join(threadId);
-    fromSocket.join(threadId);
+    socket.join(threadId);
 
     io.to(threadId).emit("privateMessage", {
       threadId,
