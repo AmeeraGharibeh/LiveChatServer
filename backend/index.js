@@ -1069,28 +1069,6 @@ function startVideoStreaming(data, socket) {
 }
 
 function sendPrivateMessage(data) {
-  // const threadId = [senderId, friendId].sort().join("_");
-  //console.log("thread is " + threadId);
-  // Send the private message to the recipient socket
-  // if (!activeConversations[threadId]) {
-  //   activeConversations[threadId] = [friendId, socket.id];
-  // } else if (!activeConversations[threadId].includes(friendId)) {
-  //   activeConversations[threadId].push(friendId);
-  // }
-
-  // activeConversations[threadId].forEach((socketId) => {
-  //   io.to(socketId).emit("privateMessage", {
-  //     threadId: threadId,
-  //     between: [
-  //       { sender: username, id: senderId },
-  //       { sender: friendName, id: friendId },
-  //     ],
-  //     message: message,
-  //     senderId: senderId,
-  //     sender: username,
-  //   });
-  // });
-
   const threadId = data.threadId ?? uuidv4();
 
   // Join both sockets to the private chat room
