@@ -29,6 +29,7 @@ const io = socketIo(server, {
   cors: {
     transports: ["websocket"],
     origin: "wss://syriachatserver.onrender.com/",
+    // origin: "http://192.168.137.1:8002/",
     methods: ["GET", "POST"],
   },
 });
@@ -52,6 +53,7 @@ const speakersQueue = {};
 const streamData = {};
 const ignoredUsers = new Set();
 const stoppedUsers = [];
+const roomSockets = {};
 
 io.on("connection", async (socket) => {
   console.log("A user connected");
@@ -71,6 +73,12 @@ io.on("connection", async (socket) => {
   // room joins to socket
   socket.on("joinRoom", (room) => {
     socket.join(room);
+    if (!roomSockets[room]) {
+      roomSockets[room] = [socket];
+    } else {
+      roomSockets[room].push(socket);
+    }
+
     socket.room = room;
     console.log(`User joined room: ${room}`);
   });
@@ -965,9 +973,20 @@ io.on("connection", async (socket) => {
 
   socket.on("disconnect", () => {
     delete clients[sessionId];
+    for (const room in roomSockets) {
+      const index = roomSockets[room].indexOf(socket);
+      if (index !== -1) {
+        roomSockets[room].splice(index, 1);
+        console.log(`User left room ${room}`);
+      }
+    }
     console.log("disconnect");
   });
 });
+
+function getSocketsInRoom(room) {
+  return roomSockets[room] || [];
+}
 
 let timerId = null;
 let currentStreamer = null;
@@ -1072,19 +1091,25 @@ function sendPrivateMessage(data) {
   const threadId = data.threadId ?? uuidv4();
 
   // Join both sockets to the private chat room
-  io.clients((error, clients) => {
-    if (error) throw error;
-    console.log(clients);
-    io.clients[data.toSocket].join(threadId);
-    io.clients[data.fromSocket].join(threadId);
-  });
+  const socketsInRoom = getSocketsInRoom(data.roomId);
 
-  io.to(threadId).emit("privateMessage", {
-    threadId,
-    message: data.message,
-    senderId: data.fromSocket,
-    username: data.username,
-  });
+  const toSocket = socketsInRoom.find((socket) => socket.id === data.toSocket);
+  const fromSocket = socketsInRoom.find(
+    (socket) => socket.id === data.fromSocket
+  );
+  if (toSocket && fromSocket) {
+    toSocket.join(threadId);
+    fromSocket.join(threadId);
+
+    io.to(threadId).emit("privateMessage", {
+      threadId,
+      message: data.message,
+      senderId: data.fromSocket,
+      username: data.username,
+    });
+  } else {
+    console.log("One or both sockets not found.");
+  }
 }
 
 function updateOnlineUsersList(roomId, socketId, field, val) {
