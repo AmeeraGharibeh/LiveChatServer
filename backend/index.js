@@ -1088,7 +1088,7 @@ function startVideoStreaming(data, socket) {
 }
 
 function sendPrivateMessage(data, socket) {
-  const threadId = data.threadId;
+  const threadId = data.threadId ?? uuidv4();
 
   // Join both sockets to the private chat room
   const socketsInRoom = getSocketsInRoom(data.roomId);
@@ -1105,6 +1105,9 @@ function sendPrivateMessage(data, socket) {
       username: data.username,
       friendName: data.friendName,
       toSocket: data.toSocket,
+    });
+    io.to(data.toSocket).emit("newPrivateMsg", {
+      threadId,
     });
   } else {
     console.log("One or both sockets not found.");
