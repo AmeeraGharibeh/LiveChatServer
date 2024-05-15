@@ -1088,7 +1088,7 @@ function startVideoStreaming(data, socket) {
 }
 
 function sendPrivateMessage(data, socket) {
-  const threadId = uuidv4();
+  const threadId = data.threadId ?? uuidv4();
 
   // Join both sockets to the private chat room
   const socketsInRoom = getSocketsInRoom(data.roomId);
