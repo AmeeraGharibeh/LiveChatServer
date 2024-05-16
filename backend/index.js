@@ -298,19 +298,10 @@ io.on("connection", async (socket) => {
   });
 
   // Handle reading the message
-  socket.on("messageReceived", (data) => {
-    const threadId = data.threadId;
-    io.to(socket.id).emit("messageUnread", { threadId: threadId });
-  });
 
-  socket.on("messageActive", (data) => {
+  socket.on("chatOpened", (data) => {
     const threadId = data.threadId;
-    // Check if the conversation exists
-    // if (activeConversations[threadId]) {
-    //   activeConversations[threadId].participants.forEach((socketId) => {
-    //   });
-    // }
-    io.to(socket.id).emit("messageRead", { threadId: threadId });
+    io.to(socket.id).emit("msgRead", { threadId: threadId });
   });
 
   // handle delete text
