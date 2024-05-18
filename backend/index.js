@@ -327,6 +327,10 @@ io.on("connection", async (socket) => {
     });
 
     io.to(user_socket).emit("logout", { msg: "تم طردك من الغرفة" });
+    removeFromOnlineUsers({
+      room_id: onlineUsers[data.room_id],
+      user_socket,
+    });
   });
 
   // Handle ignore user
