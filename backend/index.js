@@ -1091,6 +1091,7 @@ function sendPrivateMessage(data, socket) {
 
     io.to(threadId).emit("privateMessage", {
       threadId,
+      between: [data.fromSocket, data.toSocket],
       message: data.message,
       senderId: data.fromSocket,
       username: data.username,
