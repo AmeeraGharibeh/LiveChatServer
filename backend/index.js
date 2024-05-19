@@ -140,10 +140,12 @@ io.on("connection", async (socket) => {
   socket.on("leaveRoom", async (data) => {
     socket.leave(data.room_id);
 
-    removeFromOnlineUsers({
-      room_id: onlineUsers[data.room_id],
-      socket,
-    });
+    removeFromOnlineUsers(
+      {
+        room_id: onlineUsers[data.room_id],
+      },
+      socket
+    );
 
     io.to(data.room_id).emit("notification", {
       sender: data.username,
@@ -327,10 +329,12 @@ io.on("connection", async (socket) => {
     });
 
     io.to(user_socket).emit("logout", { msg: "تم طردك من الغرفة" });
-    removeFromOnlineUsers({
-      room_id: onlineUsers[data.room_id],
-      user_socket,
-    });
+    removeFromOnlineUsers(
+      {
+        room_id: onlineUsers[data.room_id],
+      },
+      user_socket
+    );
   });
 
   // Handle ignore user
@@ -456,6 +460,15 @@ io.on("connection", async (socket) => {
       color: 0xfffce9f1,
       type: "notification",
     });
+    io.to().emit("logout", {
+      msg: data["master"] + "تم حظرك من الغرفة من طرف: ",
+    });
+    removeFromOnlineUsers(
+      {
+        room_id: onlineUsers[data.room_id],
+      },
+      data["socket"]
+    );
   });
 
   socket.on("unBlockUser", async (data) => {
