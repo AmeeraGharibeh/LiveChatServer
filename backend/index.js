@@ -155,6 +155,8 @@ io.on("connection", async (socket) => {
       type: "notification",
     });
     //update room log on db
+    const log = await Logs.findOne({ user_id: data.user_id });
+
     await Logs.updateOne({ _id: log._id }, { time_out: time() });
     console.log("A user disconnected at " + time());
   });
