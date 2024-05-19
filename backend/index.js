@@ -460,7 +460,7 @@ io.on("connection", async (socket) => {
       color: 0xfffce9f1,
       type: "notification",
     });
-    io.to().emit("logout", {
+    io.to(data["socket"]).emit("logout", {
       msg: data["master"] + "تم حظرك من الغرفة من طرف: ",
     });
     removeFromOnlineUsers(
