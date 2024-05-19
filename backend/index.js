@@ -161,18 +161,6 @@ io.on("connection", async (socket) => {
     console.log("A user disconnected at " + time());
   });
 
-  // handle update online users list
-  socket.on("updateOnlineUsers", (data) => {
-    if (onlineUsers[data.room_id] && socket.id) {
-      onlineUsers[data.room_id].forEach((user) => {
-        if (user.id === socket.id) {
-          user.user = data["user"];
-        }
-      });
-      emitOnlineUsers(data);
-    }
-  });
-
   // send notification when master edits the room
   socket.on("updateRoom", (master) => {
     io.to(master.room_id).emit("notification", {
@@ -463,7 +451,7 @@ io.on("connection", async (socket) => {
       type: "notification",
     });
     io.to(data["socket"]).emit("logout", {
-      msg: data["master"] + "تم حظرك من الغرفة من طرف: ",
+      msg: "تم حظرك من الغرفة من طرف: " + data["master"],
     });
     removeFromOnlineUsers(
       {
@@ -1167,7 +1155,7 @@ function removeFromOnlineUsers(data, socket) {
     console.log("user removed");
   }
   // Emit the updated online users list to all users in the room
-  emitOnlineUsers(data);
+  emitOnlineUsers({ room_id: data.room_id });
 }
 
 function emitOnlineUsers(data) {
