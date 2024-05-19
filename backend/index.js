@@ -144,7 +144,7 @@ io.on("connection", async (socket) => {
       {
         room_id: onlineUsers[data.room_id],
       },
-      socket
+      socket.id
     );
 
     io.to(data.room_id).emit("notification", {
@@ -1162,7 +1162,7 @@ function addToOnlineUsers(data, socket) {
 function removeFromOnlineUsers(data, socket) {
   if (onlineUsers[data.room_id]) {
     onlineUsers[data.room_id] = onlineUsers[data.room_id].filter(
-      (user) => user.id !== socket.id
+      (user) => user.id !== socket
     );
     console.log("user removed");
   }
