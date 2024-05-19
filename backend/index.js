@@ -142,7 +142,7 @@ io.on("connection", async (socket) => {
 
     removeFromOnlineUsers(
       {
-        room_id: onlineUsers[data.room_id],
+        room_id: data.room_id,
       },
       socket.id
     );
