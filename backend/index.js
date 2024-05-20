@@ -262,8 +262,6 @@ io.on("connection", async (socket) => {
   });
 
   // Handle private messages
-  const activeConversations = {};
-
   socket.on("sendPrivateMessage", (data) => {
     const stoppedUser = stoppedUsers.find(
       (obj) => obj.device === data["device"]
@@ -401,12 +399,7 @@ io.on("connection", async (socket) => {
       io.to(data.room_id).emit("notification", {
         sender: data["master"],
         senderId: data["master_id"],
-        message:
-          data["master"] +
-          " قام بإيقاف" +
-          data["stop_type"] +
-          "للعضو: " +
-          data["username"],
+        message: data["master"] + " قام بإيقاف" + "العضو: " + data["username"],
         color: 0xfffce9f1,
         type: "notification",
       });
@@ -1095,12 +1088,19 @@ function sendPrivateMessage(data, socket) {
   if (toSocket) {
     toSocket.join(threadId);
     socket.join(threadId);
+    console.log("type is " + data.type);
+
+    var type = data.type;
+    var message = type == "emoji" ? data.emoji : data.message;
+    console.log("type is " + type);
+    console.log("msg is " + message);
 
     io.to(threadId).emit("privateMessage", {
       threadId,
       between: [data.fromSocket, data.toSocket],
-      message: data.message,
+      message,
       senderId: data.fromSocket,
+      type: data.type,
       username: data.username,
       friendName: data.friendName,
       toSocket: data.toSocket,
