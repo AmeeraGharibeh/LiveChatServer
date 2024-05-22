@@ -302,9 +302,10 @@ const memberLogin = async (req, res) => {
 const visitorLogin = async (req, res) => {
   try {
     const visitorId = uuidv4();
+    const rooms = [req.body.room_id];
     const user = {
       username: req.body.username,
-      room_id: req.body.room_id,
+      rooms,
       _id: visitorId,
       user_type: "visitor",
       name_type: "-",
@@ -339,7 +340,7 @@ const NameLogin = async (req, res) => {
     user = await User.findOne({ username: req.body.username.toLowerCase() });
 
     if (!user) {
-      return res.status(404).send({ msg: "المستخدم غير موجود" });
+      return res.status(404).send({ msg: "الاسم غير موجود" });
     }
 
     // Step 2: Verify the name password for the user
@@ -355,11 +356,11 @@ const NameLogin = async (req, res) => {
       if (req.body.room_password) {
         member = await User.findOne({
           username: req.body.username.toLowerCase(),
-          room_id: req.body.room_id,
+          rooms: { $in: [req.body.room_id] },
         });
 
         if (!member) {
-          return res.status(404).send({ msg: "المستخدم غير موجود" });
+          return res.status(404).send({ msg: "العضو غير موجود" });
         }
         const validRoomPassword = await verifyPassword(
           req.body.room_password,
