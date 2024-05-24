@@ -417,7 +417,7 @@ io.on("connection", async (socket) => {
       (obj) => obj.device === data["device"]
     );
     if (indexToDelete !== -1) {
-      list.splice(indexToDelete, 1);
+      stoppedUsers.splice(indexToDelete, 1);
       await Stopped.findByIdAndDelete(existingStopped._id);
       console.log("un stop user");
       console.log(stoppedUsers);
