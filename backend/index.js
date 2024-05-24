@@ -116,9 +116,11 @@ io.on("connection", async (socket) => {
         isStopped.stop_type
       );
     } else {
-      if (stoppedUsers[user["device"]]) {
-        stoppedUsers.filter((item) => item["device"] !== user["device"]);
-        // stoppedUsers.delete(user["device"]);
+      const indexToDelete = stoppedUsers.findIndex(
+        (obj) => obj.device === data["device"]
+      );
+      if (indexToDelete !== -1) {
+        stoppedUsers.splice(indexToDelete, 1);
         updateOnlineUsersList(user.room_id, socket.id, "stop_type", "none");
       }
       console.log(stoppedUsers);

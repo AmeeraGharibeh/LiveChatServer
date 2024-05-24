@@ -301,6 +301,12 @@ const memberLogin = async (req, res) => {
 
 const visitorLogin = async (req, res) => {
   try {
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "هذا الاسم مسجل بالفعل",
+      });
+    }
     const visitorId = uuidv4();
     const rooms = [req.body.room_id];
     const user = {
