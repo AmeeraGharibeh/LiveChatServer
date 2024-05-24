@@ -280,10 +280,10 @@ io.on("connection", async (socket) => {
           type: "notification",
         });
       } else {
-        sendPrivateMessage(data, socket);
+        sendPrivateMessage(data);
       }
     } else {
-      sendPrivateMessage(data, socket);
+      sendPrivateMessage(data);
     }
   });
 
@@ -399,7 +399,7 @@ io.on("connection", async (socket) => {
       io.to(data.room_id).emit("notification", {
         sender: data["master"],
         senderId: data["master_id"],
-        message: data["master"] + " قام بإيقاف" + "العضو: " + data["username"],
+        message: data["master"] + " قام بإيقاف" + " العضو: " + data["username"],
         color: 0xfffce9f1,
         type: "notification",
       });
@@ -1078,7 +1078,7 @@ function startVideoStreaming(data, socket) {
   updateOnlineUsersList(roomId, socket.id, "cam_status", "on_cam");
 }
 
-function sendPrivateMessage(data, socket) {
+function sendPrivateMessage(data) {
   const threadId = data.threadId ?? uuidv4();
 
   // Join both sockets to the private chat room
@@ -1086,16 +1086,10 @@ function sendPrivateMessage(data, socket) {
 
   const toSocket = socketsInRoom.find((socket) => socket.id === data.toSocket);
   if (toSocket) {
-    toSocket.join(threadId);
-    socket.join(threadId);
-    console.log("type is " + data.type);
-
     var type = data.type;
     var message = type == "emoji" ? data.emoji : data.message;
-    console.log("type is " + type);
-    console.log("msg is " + message);
 
-    io.to(threadId).emit("privateMessage", {
+    io.to(toSocket).emit("privateMessage", {
       threadId,
       between: [data.fromSocket, data.toSocket],
       message,
