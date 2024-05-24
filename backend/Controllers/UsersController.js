@@ -301,8 +301,12 @@ const memberLogin = async (req, res) => {
 
 const visitorLogin = async (req, res) => {
   try {
-    const existingUser = await User.findOne({ username: req.body.username });
-    if (existingUser) {
+    const user = await User.findOne({
+      username: req.body.username.toLowerCase(),
+    });
+
+    if (user) {
+      console.log("user is exist");
       return res.status(400).json({
         message: "هذا الاسم مسجل بالفعل",
       });
