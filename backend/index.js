@@ -413,18 +413,17 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("unStopUser", async (data) => {
-    const deviceId = data["device"];
-    const existingStopped = await Stopped.findOne({ device: deviceId });
-
+    const existingStopped = await Stopped.findOne({ device: data["device"] });
     if (existingStopped) {
       if (stoppedUsers[data["device"]]) {
-        stoppedUsers.filter((item) => item["device"] !== data["device"]);
-
-        //stoppedUsers.delete(data["device"]);
+        stoppedUsers = stoppedUsers.filter(
+          (item) => item["device"] !== data["device"]
+        );
+        await Stopped.findByIdAndDelete(existingStopped._id);
+        console.log("un stop user");
+        console.log(stoppedUsers);
       }
-      await Stopped.findByIdAndDelete(existingStopped._id);
-      console.log("un stop user");
-      console.log(stoppedUsers);
+
       updateOnlineUsersList(data.room_id, data.socket, "stop_type", "none");
       io.to(existingStopped.room_id).emit("notification", {
         sender: data["master"],
