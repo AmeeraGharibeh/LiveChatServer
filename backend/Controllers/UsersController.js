@@ -301,37 +301,38 @@ const memberLogin = async (req, res) => {
 
 const visitorLogin = async (req, res) => {
   try {
-    const existingUser = await User.findOne({ username });
+    const existingUser = await User.findOne({ username: req.body.username });
     if (existingUser) {
       return res.status(400).json({
         message: "هذا الاسم مسجل بالفعل",
       });
+    } else {
+      const visitorId = uuidv4();
+      const rooms = [req.body.room_id];
+      const user = {
+        username: req.body.username,
+        rooms,
+        _id: visitorId,
+        user_type: "visitor",
+        name_type: "-",
+        state: "Available",
+        icon: req.body.icon,
+      };
+
+      const accessToken = jwt.sign(
+        {
+          id: user._id,
+        },
+        process.env.JWTSECRET,
+        { expiresIn: "1h" }
+      );
+      const { room_password, name_password, ...others } = user;
+
+      return res.status(200).send({
+        user: { ...others, icon: req.body.icon },
+        accessToken: accessToken,
+      });
     }
-    const visitorId = uuidv4();
-    const rooms = [req.body.room_id];
-    const user = {
-      username: req.body.username,
-      rooms,
-      _id: visitorId,
-      user_type: "visitor",
-      name_type: "-",
-      state: "Available",
-      icon: req.body.icon,
-    };
-
-    const accessToken = jwt.sign(
-      {
-        id: user._id,
-      },
-      process.env.JWTSECRET,
-      { expiresIn: "1h" }
-    );
-    const { room_password, name_password, ...others } = user;
-
-    return res.status(200).send({
-      user: { ...others, icon: req.body.icon },
-      accessToken: accessToken,
-    });
   } catch (err) {
     return res.status(500).send({ msg: err.message });
   }
