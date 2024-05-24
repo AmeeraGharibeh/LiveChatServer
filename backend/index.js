@@ -117,7 +117,8 @@ io.on("connection", async (socket) => {
       );
     } else {
       if (stoppedUsers[user["device"]]) {
-        stoppedUsers.delete(user["device"]);
+        stoppedUsers.filter((item) => item["device"] !== user["device"]);
+        // stoppedUsers.delete(user["device"]);
         updateOnlineUsersList(user.room_id, socket.id, "stop_type", "none");
       }
       console.log(stoppedUsers);
@@ -418,7 +419,11 @@ io.on("connection", async (socket) => {
     if (existingStopped) {
       await Stopped.findByIdAndDelete(existingStopped._id);
       if (stoppedUsers[data["device"]]) {
-        stoppedUsers.delete(data["device"]);
+        stoppedUsers.filter((item) => item["device"] !== user["device"]);
+
+        //stoppedUsers.delete(data["device"]);
+        console.log("un stop user");
+        console.log(stoppedUsers);
       }
       updateOnlineUsersList(data.room_id, data.socket, "stop_type", "none");
       io.to(existingStopped.room_id).emit("notification", {
