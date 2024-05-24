@@ -413,6 +413,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("unStopUser", async (data) => {
+    const existingStopped = await Stopped.findOne({ device: data["device"] });
     if (existingStopped) {
       const indexToDelete = stoppedUsers.findIndex(
         (obj) => obj.device === data["device"]
