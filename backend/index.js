@@ -400,7 +400,7 @@ io.on("connection", async (socket) => {
       io.to(data.room_id).emit("notification", {
         sender: data["master"],
         senderId: data["master_id"],
-        message: " قام بإيقاف" + " العضو: " + data["master"] + data["username"],
+        message: data["username"] + " قام بإيقاف" + " العضو: " + data["master"],
         color: 0xfffce9f1,
         type: "notification",
       });
@@ -418,7 +418,7 @@ io.on("connection", async (socket) => {
 
     if (existingStopped) {
       if (stoppedUsers[data["device"]]) {
-        stoppedUsers.filter((item) => item["device"] !== user["device"]);
+        stoppedUsers.filter((item) => item["device"] !== data["device"]);
 
         //stoppedUsers.delete(data["device"]);
       }
