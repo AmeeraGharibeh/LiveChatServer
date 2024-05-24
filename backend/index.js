@@ -400,7 +400,7 @@ io.on("connection", async (socket) => {
       io.to(data.room_id).emit("notification", {
         sender: data["master"],
         senderId: data["master_id"],
-        message: data["master"] + " قام بإيقاف" + " العضو: " + data["username"],
+        message: " قام بإيقاف" + " العضو: " + data["master"] + data["username"],
         color: 0xfffce9f1,
         type: "notification",
       });
@@ -417,14 +417,14 @@ io.on("connection", async (socket) => {
     const existingStopped = await Stopped.findOne({ device: deviceId });
 
     if (existingStopped) {
-      await Stopped.findByIdAndDelete(existingStopped._id);
       if (stoppedUsers[data["device"]]) {
         stoppedUsers.filter((item) => item["device"] !== user["device"]);
 
         //stoppedUsers.delete(data["device"]);
-        console.log("un stop user");
-        console.log(stoppedUsers);
       }
+      await Stopped.findByIdAndDelete(existingStopped._id);
+      console.log("un stop user");
+      console.log(stoppedUsers);
       updateOnlineUsersList(data.room_id, data.socket, "stop_type", "none");
       io.to(existingStopped.room_id).emit("notification", {
         sender: data["master"],
