@@ -413,31 +413,29 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("unStopUser", async (data) => {
-    const indexToDelete = stoppedUsers.findIndex(
-      (obj) => obj.device === data["device"]
-    );
-    if (indexToDelete !== -1) {
-      stoppedUsers.splice(indexToDelete, 1);
-      await Stopped.findByIdAndDelete(existingStopped._id);
-      console.log("un stop user");
-      console.log(stoppedUsers);
+    if (existingStopped) {
+      const indexToDelete = stoppedUsers.findIndex(
+        (obj) => obj.device === data["device"]
+      );
+      if (indexToDelete !== -1) {
+        stoppedUsers.splice(indexToDelete, 1);
+        await Stopped.findByIdAndDelete(existingStopped._id);
+        console.log("un stop user");
+        console.log(stoppedUsers);
+      }
+
+      updateOnlineUsersList(data.room_id, data.socket, "stop_type", "none");
+      io.to(existingStopped.room_id).emit("notification", {
+        sender: data["master"],
+        senderId: data["master_id"],
+        message:
+          data["master"] + " قام بإلغاء إيقاف العضو: " + data["username"],
+        color: 0xfffce9f1,
+        type: "notification",
+      });
+    } else {
+      console.log("User is not blocked");
     }
-
-    // if (stoppedUsers[data["device"]]) {
-    //   stoppedUsers = stoppedUsers.filter(
-    //     (item) => item["device"] !== data["device"]
-    //   );
-
-    // }
-
-    updateOnlineUsersList(data.room_id, data.socket, "stop_type", "none");
-    io.to(existingStopped.room_id).emit("notification", {
-      sender: data["master"],
-      senderId: data["master_id"],
-      message: data["master"] + " قام بإلغاء إيقاف العضو: " + data["username"],
-      color: 0xfffce9f1,
-      type: "notification",
-    });
   });
 
   socket.on("blockUser", async (data) => {
