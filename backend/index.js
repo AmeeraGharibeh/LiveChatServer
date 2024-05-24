@@ -117,7 +117,7 @@ io.on("connection", async (socket) => {
       );
     } else {
       const indexToDelete = stoppedUsers.findIndex(
-        (obj) => obj.device === data["device"]
+        (obj) => obj.device === user["device"]
       );
       if (indexToDelete !== -1) {
         stoppedUsers.splice(indexToDelete, 1);

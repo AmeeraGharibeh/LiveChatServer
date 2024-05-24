@@ -306,9 +306,8 @@ const visitorLogin = async (req, res) => {
     });
 
     if (user) {
-      console.log("user is exist");
       return res.status(400).json({
-        message: "هذا الاسم مسجل بالفعل",
+        msg: "هذا الاسم مسجل بالفعل",
       });
     } else {
       const visitorId = uuidv4();
