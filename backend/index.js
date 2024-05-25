@@ -205,10 +205,10 @@ io.on("connection", async (socket) => {
           type: "notification",
         });
       } else {
-        io.to(data.room_id).emit("message", data);
+        socket.broadcast.to(data.room_id).emit("message", data);
       }
     } else {
-      io.to(data.room_id).emit("message", data);
+      socket.broadcast.to(data.room_id).emit("message", data);
     }
   });
 
