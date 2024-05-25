@@ -1098,7 +1098,7 @@ function sendPrivateMessage(data) {
 
     io.to(toSocket).emit("privateMessage", {
       threadId,
-      between: [data.fromSocket, data.toSocket],
+      between: data.between,
       message,
       senderId: data.fromSocket,
       type: data.type,
