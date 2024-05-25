@@ -48,7 +48,6 @@ mongoose
 //------------------SOCKET------------------------------//
 const onlineUsers = {};
 const clients = {};
-let log;
 const speakersQueue = {};
 const streamData = {};
 const ignoredUsers = new Set();
@@ -65,7 +64,7 @@ io.on("connection", async (socket) => {
 
   // Close the previous socket connection, if it exists
   if (clients[sessionId]) {
-    clients[sessionId].disconnect(true); // Close the previous connection forcefully
+    clients[sessionId].disconnect(true);
   }
 
   // Create a new socket session for the user
@@ -137,7 +136,7 @@ io.on("connection", async (socket) => {
       time_in: time(),
       icon: user.icon,
     });
-    log = await newLog.save();
+    await newLog.save();
   });
 
   socket.on("leaveRoom", async (data) => {
@@ -157,6 +156,7 @@ io.on("connection", async (socket) => {
       color: 0xfffad4d4,
       type: "notification",
     });
+
     //update room log on db
     const log = await Logs.findOne({ user_id: data.user_id });
 
@@ -320,12 +320,12 @@ io.on("connection", async (socket) => {
     });
 
     io.to(user_socket).emit("logout", { msg: "تم طردك من الغرفة" });
-    removeFromOnlineUsers(
-      {
-        room_id: onlineUsers[data.room_id],
-      },
-      user_socket
-    );
+    // removeFromOnlineUsers(
+    //   {
+    //     room_id: onlineUsers[data.room_id],
+    //   },
+    //   user_socket
+    // );
   });
 
   // Handle ignore user
@@ -453,12 +453,12 @@ io.on("connection", async (socket) => {
     io.to(data["socket"]).emit("logout", {
       msg: "تم حظرك من الغرفة من طرف: " + data["master"],
     });
-    removeFromOnlineUsers(
-      {
-        room_id: onlineUsers[data.room_id],
-      },
-      data["socket"]
-    );
+    // removeFromOnlineUsers(
+    //   {
+    //     room_id: onlineUsers[data.room_id],
+    //   },
+    //   data["socket"]
+    // );
   });
 
   socket.on("unBlockUser", async (data) => {

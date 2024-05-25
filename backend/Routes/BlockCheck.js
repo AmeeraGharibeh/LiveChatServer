@@ -3,6 +3,7 @@ const BlockedModel = require("../Models/BlockedModel");
 const blockedMiddleware = async (req, res, next) => {
   try {
     const blockedUser = await BlockedModel.findOne({
+      room_id: req.body.room_id,
       $or: [{ ip: req.body.ip }, { device: req.body.device }],
     });
 
