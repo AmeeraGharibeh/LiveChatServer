@@ -16,8 +16,7 @@ const checkStoppedUsers = async (device) => {
         if (currentDate > blockEndDate) {
           await StopModel.findByIdAndRemove(stoppedUser._id);
           console.log(`User unblocked: ${stoppedUser.username}`);
-        } else {
-          return stoppedUser;
+          return;
         }
       }
     }
