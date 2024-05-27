@@ -176,11 +176,11 @@ io.on("connection", async (socket) => {
   });
 
   // send notification when your profile has been visited
-  socket.on("profileVisit", (visitor) => {
-    io.to(socket.id).emit("notification", {
-      sender: visitor.username,
-      senderId: visitor._id,
-      message: visitor.username + "  قام بزيارة ملفك الشخصي  ",
+  socket.on("profileVisit", (data) => {
+    io.to(data.socket).emit("notification", {
+      sender: data.username,
+      senderId: data._id,
+      message: data.username + "  قام بزيارة ملفك الشخصي  ",
       color: 0xffffeebb,
       type: "notification",
     });
