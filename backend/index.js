@@ -200,10 +200,12 @@ io.on("connection", async (socket) => {
           type: "notification",
         });
       } else {
-        socket.broadcast.to(data.room_id).emit("message", data);
+        sendMessage(data, socket);
+        // socket.broadcast.to(data.room_id).emit("message", data);
       }
     } else {
-      socket.broadcast.to(data.room_id).emit("message", data);
+      sendMessage(data, socket);
+      //socket.broadcast.to(data.room_id).emit("message", data);
     }
   });
 
@@ -233,31 +235,31 @@ io.on("connection", async (socket) => {
     });
   });
 
-  // Handle send Emoji
-  socket.on("sendEmoji", (data) => {
-    const emoji = data.emoji;
-    const sender = data.sender;
-    const senderId = data.senderId;
-    const room_id = data.room_id;
-    const time = data.time;
-    const type = data.type;
-    const device = data.device;
-    const icon = data.icon;
-    const name_type = data.name_type;
-    const user_type = data.user_type;
+  // // Handle send Emoji
+  // socket.on("sendEmoji", (data) => {
+  //   const emoji = data.emoji;
+  //   const sender = data.sender;
+  //   const senderId = data.senderId;
+  //   const room_id = data.room_id;
+  //   const time = data.time;
+  //   const type = data.type;
+  //   const device = data.device;
+  //   const icon = data.icon;
+  //   const name_type = data.name_type;
+  //   const user_type = data.user_type;
 
-    io.to(room_id).emit("emojiReceived", {
-      message: emoji,
-      sender,
-      senderId,
-      type,
-      time,
-      device,
-      icon,
-      name_type,
-      user_type,
-    });
-  });
+  //   io.to(room_id).emit("emojiReceived", {
+  //     message: emoji,
+  //     sender,
+  //     senderId,
+  //     type,
+  //     time,
+  //     device,
+  //     icon,
+  //     name_type,
+  //     user_type,
+  //   });
+  // });
 
   // Handle private messages
   socket.on("sendPrivateMessage", (data) => {
@@ -1080,10 +1082,35 @@ function startVideoStreaming(data, socket) {
   updateOnlineUsersList(roomId, socket.id, "cam_status", "on_cam");
 }
 
-function sendPrivateMessage(data) {
-  //const threadId = data.threadId ?? uuidv4();
+function sendMessage(data, socket) {
+  var message = type == "emoji" ? data.emoji : data.message;
+  const sender = data.sender;
+  const senderId = data.senderId;
+  const senderSocket = data.senderSocket;
+  const room_id = data.room_id;
+  const time = data.time;
+  const type = data.type;
+  const device = data.device;
+  const font = data.font;
+  const icon = data.icon;
+  const name_type = data.name_type;
+  const user_type = data.user_type;
 
-  // Join both sockets to the private chat room
+  socket.broadcast.to(room_id).emit("emojiReceived", {
+    message,
+    sender,
+    senderId,
+    type,
+    time,
+    device,
+    icon,
+    name_type,
+    user_type,
+    font,
+    senderSocket,
+  });
+}
+function sendPrivateMessage(data) {
   const socketsInRoom = getSocketsInRoom(data.roomId);
 
   const toSocket = socketsInRoom.find((socket) => socket.id === data.toSocket);
