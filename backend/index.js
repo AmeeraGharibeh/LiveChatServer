@@ -1083,7 +1083,6 @@ function startVideoStreaming(data, socket) {
 }
 
 function sendMessage(data, socket) {
-  var message = type == "emoji" ? data.emoji : data.message;
   const sender = data.sender;
   const senderId = data.senderId;
   const senderSocket = data.senderSocket;
@@ -1095,6 +1094,7 @@ function sendMessage(data, socket) {
   const icon = data.icon;
   const name_type = data.name_type;
   const user_type = data.user_type;
+  var message = type == "emoji" ? data.emoji : data.message;
 
   socket.broadcast.to(room_id).emit("emojiReceived", {
     message,
