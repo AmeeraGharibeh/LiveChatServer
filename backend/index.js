@@ -1122,6 +1122,7 @@ function sendPrivateMessage(data) {
       //threadId,
       between: data.between,
       message,
+      icon: data.icon,
       senderId: data.fromSocket,
       type: data.type,
       username: data.username,
