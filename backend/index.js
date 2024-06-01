@@ -289,7 +289,7 @@ io.on("connection", async (socket) => {
 
   // Handle reading the message
 
-  socket.on("chatOpened", (data) => {
+  socket.on("messageActive", (data) => {
     const threadId = data.threadId;
     io.to(socket.id).emit("msgRead", { threadId: threadId });
   });
