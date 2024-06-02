@@ -1119,22 +1119,14 @@ function sendPrivateMessage(data) {
     var message = type == "emoji" ? data.emoji : data.message;
 
     io.to(data.toSocket).emit("privateMessage", {
-      //threadId,
       between: data.between,
       message,
-      //icon: data.icon,
-      senderId: data.fromSocket,
       type: data.type,
-      username: data.username,
-      //friendName: data.friendName,
-      toSocket: data.toSocket,
     });
     io.to(data.toSocket).emit("newPrivateMsg", {
       between: data.between,
       message,
-      toSocket: data.toSocket,
-      icon: data.icon,
-      friendName: data.friendName,
+      type: data.type,
     });
   } else {
     console.log("One or both sockets not found.");
