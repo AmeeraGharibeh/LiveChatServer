@@ -1127,6 +1127,7 @@ function sendPrivateMessage(data) {
       between: data.between,
       message,
       type: data.type,
+      icon: data.icon,
     });
   } else {
     console.log("One or both sockets not found.");
