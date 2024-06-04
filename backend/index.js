@@ -65,18 +65,15 @@ io.on("connection", async (socket) => {
     socket.join(room);
     if (!roomSockets[room]) {
       roomSockets[room] = [];
-    } else {
-      roomSockets[room].push(socket);
-      console.log("room user " + roomSockets[room]);
     }
+    roomSockets[room].push(socket);
+    console.log("room user " + roomSockets[room]);
 
     console.log(`User joined room: ${room}`);
   });
   // user joins the room
   socket.on("addUser", async (user) => {
-    console.log("room id is " + user.room_id);
     socket.userId = user._id;
-    //socket.emit("connected");
 
     // send notification of user's joining the room
     socket.broadcast.to(user.room_id).emit("notification", {
@@ -963,6 +960,7 @@ io.on("connection", async (socket) => {
       if (index !== -1) {
         roomSockets[room].splice(index, 1);
         console.log(`User left room ${room}`);
+        console.log("rooms socket " + roomSockets[room]);
       }
     }
     console.log("disconnect");
