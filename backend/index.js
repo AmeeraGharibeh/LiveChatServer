@@ -60,6 +60,9 @@ io.on("connection", async (socket) => {
   const device = socket.handshake.query.device;
   const location = socket.handshake.query.location;
 
+  socket.on("ping", () => {
+    socket.emit("pong");
+  });
   // room joins to socket
   socket.on("joinRoom", (room) => {
     socket.join(room);
@@ -223,32 +226,6 @@ io.on("connection", async (socket) => {
     });
   });
 
-  // // Handle send Emoji
-  // socket.on("sendEmoji", (data) => {
-  //   const emoji = data.emoji;
-  //   const sender = data.sender;
-  //   const senderId = data.senderId;
-  //   const room_id = data.room_id;
-  //   const time = data.time;
-  //   const type = data.type;
-  //   const device = data.device;
-  //   const icon = data.icon;
-  //   const name_type = data.name_type;
-  //   const user_type = data.user_type;
-
-  //   io.to(room_id).emit("emojiReceived", {
-  //     message: emoji,
-  //     sender,
-  //     senderId,
-  //     type,
-  //     time,
-  //     device,
-  //     icon,
-  //     name_type,
-  //     user_type,
-  //   });
-  // });
-
   // Handle private messages
   socket.on("sendPrivateMessage", (data) => {
     const stoppedUser = stoppedUsers.find(
@@ -305,12 +282,6 @@ io.on("connection", async (socket) => {
     });
 
     io.to(user_socket).emit("logout", { msg: "تم طردك من الغرفة" });
-    // removeFromOnlineUsers(
-    //   {
-    //     room_id: onlineUsers[data.room_id],
-    //   },
-    //   user_socket
-    // );
   });
 
   // Handle ignore user
@@ -438,12 +409,6 @@ io.on("connection", async (socket) => {
     io.to(data["socket"]).emit("logout", {
       msg: "تم حظرك من الغرفة من طرف: " + data["master"],
     });
-    // removeFromOnlineUsers(
-    //   {
-    //     room_id: onlineUsers[data.room_id],
-    //   },
-    //   data["socket"]
-    // );
   });
 
   socket.on("unBlockUser", async (data) => {
