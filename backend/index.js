@@ -60,25 +60,16 @@ io.on("connection", async (socket) => {
   const device = socket.handshake.query.device;
   const location = socket.handshake.query.location;
 
-  const sessionId = uuidv4();
-
-  // Close the previous socket connection, if it exists
-  if (clients[sessionId]) {
-    clients[sessionId].disconnect(true);
-  }
-
-  // Create a new socket session for the user
-  clients[sessionId] = socket;
   // room joins to socket
   socket.on("joinRoom", (room) => {
     socket.join(room);
     if (!roomSockets[room]) {
-      roomSockets[room] = [socket];
+      roomSockets[room] = [];
     } else {
       roomSockets[room].push(socket);
+      console.log("room user " + roomSockets[room]);
     }
 
-    socket.room = room;
     console.log(`User joined room: ${room}`);
   });
   // user joins the room
@@ -153,7 +144,7 @@ io.on("connection", async (socket) => {
     });
 
     //update room log on db
-    const log = await Logs.findOne({ user_id: data.user_id });
+    const log = await Logs.findOne({ user_id: data._id });
 
     await Logs.findByIdAndUpdate(log._id, { time_out: time() }, { new: true });
     console.log("A user disconnected at " + time());
@@ -967,7 +958,6 @@ io.on("connection", async (socket) => {
   // Handle disconnection event
 
   socket.on("disconnect", () => {
-    delete clients[sessionId];
     for (const room in roomSockets) {
       const index = roomSockets[room].indexOf(socket);
       if (index !== -1) {
