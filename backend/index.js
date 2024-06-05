@@ -15,7 +15,6 @@ const LogsRouter = require("./Routes/LogRoutes");
 const ImagesRouter = require("./Routes/ImagesRoutes");
 const EmojieRouter = require("./Routes/EmojieRoutes");
 const Logs = require("./Models/LogModel");
-const { v4: uuidv4 } = require("uuid");
 const http = require("http");
 const socketIo = require("socket.io");
 const { time } = require("./Config/Helpers/time_helper");
@@ -47,7 +46,6 @@ mongoose
 ///////////////////////////////////////////////////////////
 //------------------SOCKET------------------------------//
 const onlineUsers = {};
-const clients = {};
 const speakersQueue = {};
 const streamData = {};
 const ignoredUsers = new Set();
@@ -76,8 +74,6 @@ io.on("connection", async (socket) => {
   });
   // user joins the room
   socket.on("addUser", async (user) => {
-    socket.userId = user._id;
-
     // send notification of user's joining the room
     socket.broadcast.to(user.room_id).emit("notification", {
       sender: user.username,
@@ -86,6 +82,12 @@ io.on("connection", async (socket) => {
       color: 0xffc7f9cc,
       type: "notification",
     });
+    socket.emit("userJoined", {
+      userId: user._id,
+      username: user.username,
+      roomId: user.room_id,
+    });
+
     if (speakersQueue[user.room_id] && speakersQueue[user.room_id].length > 0) {
       io.to(socket.id).emit("audioStreamData", speakersQueue[user.room_id][0]);
       updateOnlineUsersList(user.room_id, socket.id, "audio_status", "unmute");
@@ -131,6 +133,8 @@ io.on("connection", async (socket) => {
     removeFromOnlineUsers(
       {
         room_id: data.room_id,
+        username: data.username,
+        userId: data._id,
       },
       socket.id
     );
@@ -1134,7 +1138,6 @@ function removeFromOnlineUsers(data, socket) {
     );
     console.log("user removed");
   }
-  // Emit the updated online users list to all users in the room
   emitOnlineUsers({ room_id: data.room_id });
 }
 
