@@ -133,8 +133,6 @@ io.on("connection", async (socket) => {
     removeFromOnlineUsers(
       {
         room_id: data.room_id,
-        username: data.username,
-        userId: data._id,
       },
       socket.id
     );
@@ -934,6 +932,12 @@ io.on("connection", async (socket) => {
         roomSockets[room].splice(index, 1);
         console.log(`User left room ${room}`);
         console.log("rooms socket " + roomSockets[room]);
+        removeFromOnlineUsers(
+          {
+            room_id: room,
+          },
+          socket.id
+        );
       }
     }
     console.log("disconnect");
