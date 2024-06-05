@@ -153,6 +153,10 @@ io.on("connection", async (socket) => {
     await Logs.findByIdAndUpdate(log._id, { time_out: time() }, { new: true });
     console.log("A user disconnected at " + time());
   });
+  socket.on("sessionTimeout", async (_) => {
+    socket.emit("sessionTimeout");
+    console.log("session time out");
+  });
 
   // send notification when master edits the room
   socket.on("updateRoom", (master) => {
