@@ -212,7 +212,6 @@ io.on("connection", async (socket) => {
     const sender = data.sender;
     const senderId = data.senderId;
     const room_id = data.room_id;
-    const time = time();
     const type = data.type;
     const device = data.device;
     const icon = data.icon;
@@ -224,7 +223,7 @@ io.on("connection", async (socket) => {
       sender,
       senderId,
       type,
-      time,
+      time: time(),
       device,
       icon,
       name_type,
@@ -1052,7 +1051,6 @@ function sendMessage(data, socket) {
   const senderId = data.senderId;
   const senderSocket = data.senderSocket;
   const room_id = data.room_id;
-  const time = time();
   const type = data.type;
   const device = data.device;
   const font = data.font;
@@ -1066,7 +1064,7 @@ function sendMessage(data, socket) {
     sender,
     senderId,
     type,
-    time,
+    time: time(),
     device,
     icon,
     name_type,
