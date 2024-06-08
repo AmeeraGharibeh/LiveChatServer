@@ -1060,7 +1060,7 @@ function sendMessage(data, socket) {
   const user_type = data.user_type;
   var message = type == "emoji" ? data.emoji : data.message;
   var sendTime = time();
-  socket.broadcast.to(room_id).emit("emojiReceived", {
+  socket.broadcast.to(room_id).emit("message", {
     message,
     sender,
     senderId,
