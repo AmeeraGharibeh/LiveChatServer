@@ -212,7 +212,7 @@ io.on("connection", async (socket) => {
     const sender = data.sender;
     const senderId = data.senderId;
     const room_id = data.room_id;
-    const time = data.time;
+    const time = time();
     const type = data.type;
     const device = data.device;
     const icon = data.icon;
@@ -1052,22 +1052,16 @@ function sendMessage(data, socket) {
   const senderId = data.senderId;
   const senderSocket = data.senderSocket;
   const room_id = data.room_id;
-  const time = data.time;
+  const time = time();
   const type = data.type;
   const device = data.device;
   const font = data.font;
   const icon = data.icon;
   const name_type = data.name_type;
   const user_type = data.user_type;
-  var message;
-  if (type === "emoji") {
-    message = data.emoji;
-  } else if (type === "img") {
-    message = data.img;
-  } else {
-    message = data.message;
-  }
-  socket.broadcast.to(room_id).emit("message", {
+  var message = type == "emoji" ? data.emoji : data.message;
+
+  socket.broadcast.to(room_id).emit("emojiReceived", {
     message,
     sender,
     senderId,
