@@ -1059,8 +1059,14 @@ function sendMessage(data, socket) {
   const icon = data.icon;
   const name_type = data.name_type;
   const user_type = data.user_type;
-  var message = type == "emoji" ? data.emoji : data.message;
-
+  var message;
+  if (type === "emoji") {
+    message = data.emoji;
+  } else if (type === "img") {
+    message = data.img;
+  } else {
+    message = data.message;
+  }
   socket.broadcast.to(room_id).emit("message", {
     message,
     sender,
