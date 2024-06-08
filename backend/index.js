@@ -217,13 +217,14 @@ io.on("connection", async (socket) => {
     const icon = data.icon;
     const name_type = data.name_type;
     const user_type = data.user_type;
+    var sendTime = time();
 
     io.to(room_id).emit("imageSaved", {
       message: img,
       sender,
       senderId,
       type,
-      time: time(),
+      time: sendTime,
       device,
       icon,
       name_type,
@@ -1058,13 +1059,13 @@ function sendMessage(data, socket) {
   const name_type = data.name_type;
   const user_type = data.user_type;
   var message = type == "emoji" ? data.emoji : data.message;
-
+  var sendTime = time();
   socket.broadcast.to(room_id).emit("emojiReceived", {
     message,
     sender,
     senderId,
     type,
-    time: time(),
+    time: sendTime,
     device,
     icon,
     name_type,
