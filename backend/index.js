@@ -273,7 +273,14 @@ io.on("connection", async (socket) => {
   // handle delete text
   socket.on("deleteAllMessages", (data) => {
     const roomId = data["roomId"];
-    io.to(roomId).emit("deleteMessages");
+    io.to(roomId).emit("deleteMessages", data);
+    io.to(data["roomId"]).emit("notification", {
+      sender: "system",
+      senderId: "system",
+      message: data["username"] + " قام بمسح النص",
+      color: 0xfffce9f1,
+      type: "notification",
+    });
   });
 
   // Handle kick user out
