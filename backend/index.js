@@ -1098,6 +1098,15 @@ function sendPrivateMessage(data) {
       between: data.between,
       message,
       type: data.type,
+      sender: data.sender,
+      senderId: data.senderId,
+      time: sendTime,
+      device: data.device,
+      name_type: data.name_type,
+      user_type: data.user_type,
+      font: data.font,
+      senderSocket: data.senderSocket,
+      icon: data.icon,
     });
     io.to(data.toSocket).emit("newPrivateMsg", {
       between: data.between,
