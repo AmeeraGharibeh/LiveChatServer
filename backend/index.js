@@ -1093,6 +1093,7 @@ function sendPrivateMessage(data) {
   if (toSocket) {
     var type = data.type;
     var message = type == "emoji" ? data.emoji : data.message;
+    var sendTime = time();
 
     io.to(data.toSocket).emit("privateMessage", {
       between: data.between,
