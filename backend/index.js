@@ -161,6 +161,9 @@ io.on("connection", async (socket) => {
     console.log("session time out");
   });
 
+  socket.on("requestOnlineUsers", (data) => {
+    emitOnlineUsers({ room_id: data.room_id });
+  });
   // send notification when master edits the room
   socket.on("updateRoom", (master) => {
     io.to(master.room_id).emit("notification", {
