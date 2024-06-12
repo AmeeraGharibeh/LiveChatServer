@@ -162,7 +162,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("requestOnlineUsers", (data) => {
-    emitOnlineUsers({ room_id: data.room_id });
+    io.to(socket).emit("onlineUsers", onlineUsers);
   });
   // send notification when master edits the room
   socket.on("updateRoom", (master) => {
