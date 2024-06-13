@@ -273,7 +273,15 @@ const memberLogin = async (req, res) => {
       return res.status(404).send({ msg: "المستخدم غير موجود" });
     }
 
-    // Verify room password before proceeding
+    if (user.device === "-") {
+      user.device = req.body.device;
+      await user.save();
+    } else if (user.lock_device && user.device !== req.body.device) {
+      return res
+        .status(400)
+        .send({ msg: "أنت تحاول تسجيل الدخول من جهاز مختلف" });
+    }
+
     const validRoomPassword = await bcrypt.compare(
       req.body.room_password,
       user.room_password
@@ -283,7 +291,6 @@ const memberLogin = async (req, res) => {
       return res.status(400).send({ msg: "كلمة مرور الغرفة غير صحيحة" });
     }
 
-    // Generate access token only after successful password verification
     const accessToken = jwt.sign({ id: user._id }, process.env.JWTSECRET, {
       expiresIn: "1h",
     });
@@ -292,6 +299,107 @@ const memberLogin = async (req, res) => {
 
     return res.status(200).send({
       user: { ...others, icon: req.body.icon },
+      accessToken: accessToken,
+    });
+  } catch (err) {
+    return res.status(500).send({ msg: err.message });
+  }
+};
+
+const NameLogin = async (req, res) => {
+  try {
+    let user;
+    let member;
+
+    user = await User.findOne({ username: req.body.username.toLowerCase() });
+
+    if (!user) {
+      return res.status(404).send({ msg: "الاسم غير موجود" });
+    }
+
+    if (user.device === "-") {
+      user.device = req.body.device;
+      await user.save();
+    } else if (user.lock_device && user.device !== req.body.device) {
+      return res
+        .status(400)
+        .send({ msg: "أنت تحاول تسجيل الدخول من جهاز مختلف" });
+    }
+
+    const validNamePassword = await bcrypt.compare(
+      req.body.name_password,
+      user.name_password
+    );
+
+    if (validNamePassword) {
+      if (req.body.room_password) {
+        member = await User.findOne({
+          username: req.body.username.toLowerCase(),
+          rooms: { $in: [req.body.room_id] },
+        });
+
+        if (!member) {
+          return res.status(404).send({ msg: "العضو غير موجود" });
+        }
+        const validRoomPassword = await bcrypt.compare(
+          req.body.room_password,
+          member.room_password
+        );
+
+        if (validRoomPassword) {
+          const accessToken = jwt.sign(
+            { id: user._id },
+            process.env.JWTSECRET,
+            { expiresIn: "1h" }
+          );
+
+          const { room_password, name_password, ...others } = user._doc;
+
+          return res.status(200).send({
+            user: {
+              ...others,
+              icon: req.body.icon,
+              pic: member.pic,
+              user_type: member.user_type,
+              permissions: member.permissions,
+            },
+            accessToken: accessToken,
+          });
+        } else {
+          return res.status(400).send({ msg: "كلمة مرور الغرفة غير صحيحة" });
+        }
+      } else {
+        const accessToken = jwt.sign({ id: user._id }, process.env.JWTSECRET, {
+          expiresIn: "1h",
+        });
+
+        const { room_password, name_password, ...others } = user._doc;
+
+        return res.status(200).send({
+          user: { ...others, icon: req.body.icon },
+          accessToken: accessToken,
+        });
+      }
+    }
+
+    const visitorId = uuidv4();
+    const visitorUser = {
+      username: req.body.username,
+      _id: visitorId,
+      user_type: "visitor",
+      name_type: "-",
+      state: "Available",
+      icon: req.body.icon,
+    };
+
+    const accessToken = jwt.sign(
+      { id: visitorUser._id },
+      process.env.JWTSECRET,
+      { expiresIn: "1h" }
+    );
+
+    return res.status(200).send({
+      user: { ...visitorUser, icon: req.body.icon },
       accessToken: accessToken,
     });
   } catch (err) {
@@ -340,108 +448,6 @@ const visitorLogin = async (req, res) => {
     return res.status(500).send({ msg: err.message });
   }
 };
-
-const NameLogin = async (req, res) => {
-  try {
-    let user;
-    let member;
-
-    // Step 1: Check if the user exists by username
-    user = await User.findOne({ username: req.body.username.toLowerCase() });
-
-    if (!user) {
-      return res.status(404).send({ msg: "الاسم غير موجود" });
-    }
-
-    // Step 2: Verify the name password for the user
-    const validNamePassword = await bcrypt.compare(
-      req.body.name_password,
-      user.name_password
-    );
-
-    // If name password is correct, check for room password
-    if (validNamePassword) {
-      // Step 3: If room password is provided, check if the user follows the room
-
-      if (req.body.room_password) {
-        member = await User.findOne({
-          username: req.body.username.toLowerCase(),
-          rooms: { $in: [req.body.room_id] },
-        });
-
-        if (!member) {
-          return res.status(404).send({ msg: "العضو غير موجود" });
-        }
-        const validRoomPassword = await verifyPassword(
-          req.body.room_password,
-          member.room_password
-        );
-
-        if (validRoomPassword) {
-          // Both name and room passwords are correct, return the member user
-          const accessToken = jwt.sign(
-            { id: user._id },
-            process.env.JWTSECRET,
-            { expiresIn: "1h" }
-          );
-
-          const { room_password, name_password, ...others } = user._doc;
-
-          return res.status(200).send({
-            user: {
-              ...others,
-              icon: req.body.icon,
-              pic: member.pic,
-              user_type: member.user_type,
-              permissions: member.permissions,
-            },
-            accessToken: accessToken,
-          });
-        } else {
-          // If the room password is incorrect, return an error
-          return res.status(400).send({ msg: "كلمة مرور الغرفة غير صحيحة" });
-        }
-      } else {
-        // Room password not provided, login as a name user only
-        const accessToken = jwt.sign({ id: user._id }, process.env.JWTSECRET, {
-          expiresIn: "1h",
-        });
-
-        const { room_password, name_password, ...others } = user._doc;
-
-        return res.status(200).send({
-          user: { ...others, icon: req.body.icon },
-          accessToken: accessToken,
-        });
-      }
-    }
-
-    // Step 4: If name password is incorrect and room password is not provided, login as a visitor
-    const visitorId = uuidv4();
-    const visitorUser = {
-      username: req.body.username,
-      _id: visitorId,
-      user_type: "visitor",
-      name_type: "-",
-      state: "Available",
-      icon: req.body.icon,
-    };
-
-    const accessToken = jwt.sign(
-      { id: visitorUser._id },
-      process.env.JWTSECRET,
-      { expiresIn: "1h" }
-    );
-
-    return res.status(200).send({
-      user: { ...visitorUser, icon: req.body.icon },
-      accessToken: accessToken,
-    });
-  } catch (err) {
-    return res.status(500).send({ msg: err.message });
-  }
-};
-
 const updateUser = async (req, res) => {
   console.log(req.body);
   const body = req.body.body;

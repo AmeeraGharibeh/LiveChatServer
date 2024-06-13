@@ -110,19 +110,11 @@ const UserSchema = mongoose.Schema(
       default: "-",
     },
 
-    ip: {
+    device: {
       type: String,
       default: "-",
     },
 
-    socket_id: {
-      type: String,
-      default: "-",
-    },
-    mic_status: {
-      type: String,
-      default: "none",
-    },
     stop_duration: {
       type: String,
       default: "-",
