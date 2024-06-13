@@ -256,30 +256,12 @@ const login = async (req, res) => {
 };
 const memberLogin = async (req, res) => {
   console.log("member login fired");
-  let user;
+  let user = req.user;
   try {
     if (!req.body.room_password) {
       return res
         .status(400)
         .send({ msg: "كلمة مرور الغرفة مطلوبة للأعضاء المسجلين في الغرفة" });
-    }
-
-    user = await User.findOne({
-      username: req.body.username.toLowerCase(),
-      rooms: { $in: [req.body.room_id] },
-    });
-
-    if (!user) {
-      return res.status(404).send({ msg: "المستخدم غير موجود" });
-    }
-
-    if (user.device === "-") {
-      user.device = req.body.device;
-      await user.save();
-    } else if (user.lock_device && user.device !== req.body.device) {
-      return res
-        .status(400)
-        .send({ msg: "أنت تحاول تسجيل الدخول من جهاز مختلف" });
     }
 
     const validRoomPassword = await bcrypt.compare(
@@ -308,23 +290,8 @@ const memberLogin = async (req, res) => {
 
 const NameLogin = async (req, res) => {
   try {
-    let user;
+    let user = req.user;
     let member;
-
-    user = await User.findOne({ username: req.body.username.toLowerCase() });
-
-    if (!user) {
-      return res.status(404).send({ msg: "الاسم غير موجود" });
-    }
-
-    if (user.device === "-") {
-      user.device = req.body.device;
-      await user.save();
-    } else if (user.lock_device && user.device !== req.body.device) {
-      return res
-        .status(400)
-        .send({ msg: "أنت تحاول تسجيل الدخول من جهاز مختلف" });
-    }
 
     const validNamePassword = await bcrypt.compare(
       req.body.name_password,
