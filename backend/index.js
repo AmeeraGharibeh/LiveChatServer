@@ -480,8 +480,8 @@ io.on("connection", async (socket) => {
       if (userIndex !== -1) {
         speakersQueue[roomId].splice(userIndex, 1);
       }
-      //const endTime = new Date(new Date().getTime() + 60 * 1000);
-      const endTime = new Date(time().getTime() + 60 * 1000);
+      const endTime = new Date(new Date().getTime() + 60 * 1000);
+      //const endTime = new Date(time().getTime() + 60 * 1000);
       const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
       speakersQueue[roomId].push({
         userId: userId,
