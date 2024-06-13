@@ -174,7 +174,7 @@ const UserSchema = mongoose.Schema(
         remove_msgs: false,
         remove_block: false,
         logout_history: false,
-        visitor: false,
+        users_control: false,
         member: false,
         admin: false,
         super_admin: false,

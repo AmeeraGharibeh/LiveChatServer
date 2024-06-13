@@ -88,7 +88,7 @@ const createRoot = async (req, res) => {
     remove_msgs: true,
     remove_block: true,
     logout_history: true,
-    visitor: true,
+    users_control: true,
     member: true,
     admin: true,
     super_admin: true,
