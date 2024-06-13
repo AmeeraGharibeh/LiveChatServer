@@ -1,6 +1,6 @@
 const time = () => {
   let now = new Date();
-  now.setUTCHours(now.getUTCHours() + 3);
+  now.setUTCHours(now.getUTCHours());
   const options = {
     year: "numeric",
     month: "2-digit",

@@ -10,7 +10,7 @@ const deviceCheck = async (req, res, next) => {
       return res.status(404).send({ msg: "المستخدم غير موجود" });
     }
 
-    if (user.device === "-") {
+    if (user.device === "-" || user.lock_device === false) {
       user.device = req.body.device;
       await user.save();
       req.user = user; // Save the user to the request object
