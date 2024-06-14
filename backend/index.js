@@ -975,7 +975,8 @@ function startStreaming(data) {
     endStreaming(data); // End existing stream if user tries to start again
     return;
   }
-  const endTime = new Date(new Date().getTime() + 60 * 1000); // 60  must change based on room settings
+  const currentTime = new Date();
+  const endTime = new Date(currentTime.getTime() + 60 * 1000);
   const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
   const serverTime = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
 
