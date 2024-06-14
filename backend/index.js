@@ -480,15 +480,13 @@ io.on("connection", async (socket) => {
       if (userIndex !== -1) {
         speakersQueue[roomId].splice(userIndex, 1);
       }
-      const endTime = new Date(new Date().getTime() + 60 * 1000);
-      const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
+
       speakersQueue[roomId].push({
         userId: userId,
         socketId: socket.id,
         roomId: roomId,
         streamer_name: streamerName,
         count: speakersQueue[roomId].length + 1,
-        speakingEnds,
       });
       handleQueueChanges(roomId); // Update queue order if needed
     } else {
@@ -971,13 +969,14 @@ function startStreaming(data) {
   const roomId = data["roomId"];
   const streamer = data["streamer_name"];
   const socketId = data["socketId"];
-  const speakingEnds = data["speakingEnds"];
 
   // Check if user is already streaming
   if (currentStreamer === socketId) {
     endStreaming(data); // End existing stream if user tries to start again
     return;
   }
+  const endTime = new Date(new Date().getTime() + 60 * 1000); // 60  must change based on room settings
+  const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
 
   console.log("register as broadcaster for room", roomId);
 
@@ -986,15 +985,15 @@ function startStreaming(data) {
     socketId: socketId,
     userId: userId,
     streamer_name: streamer,
+
     speakingEnds,
   };
   io.to(roomId).emit("broadcastStarted", data);
   io.to(roomId).emit("audioStreamData", data);
   updateOnlineUsersList(roomId, socketId, "mic_status", "on_mic");
   currentStreamer = socketId; // Set current streamer
-  const endTime = new Date(new Date().getTime() + 60 * 1000);
 
-  const timeDifference = endTime.getTime() - new Date().getTime() + 1000;
+  const timeDifference = endTime.getTime() - new Date().getTime();
 
   timerId = setTimeout(() => {
     endStreaming(data);
