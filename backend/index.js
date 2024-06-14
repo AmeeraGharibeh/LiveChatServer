@@ -977,6 +977,7 @@ function startStreaming(data) {
   }
   const endTime = new Date(new Date().getTime() + 60 * 1000); // 60  must change based on room settings
   const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
+  const serverTime = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
 
   console.log("register as broadcaster for room", roomId);
 
@@ -985,7 +986,7 @@ function startStreaming(data) {
     socketId: socketId,
     userId: userId,
     streamer_name: streamer,
-
+    serverTime,
     speakingEnds,
   };
   io.to(roomId).emit("broadcastStarted", data);
