@@ -163,7 +163,7 @@ io.on("connection", async (socket) => {
 
   socket.on("requestOnlineUsers", (data) => {
     console.log("requested " + onlineUsers);
-    socket.emit("onlineUsers", onlineUsers);
+    socket.emit("roomsOnlineUsers", onlineUsers);
   });
   // send notification when master edits the room
   socket.on("updateRoom", (master) => {
