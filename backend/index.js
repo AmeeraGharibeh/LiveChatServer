@@ -20,6 +20,9 @@ const socketIo = require("socket.io");
 const { time } = require("./Config/Helpers/time_helper");
 const Stopped = require("./Models/StopModel");
 const { checkStoppedUsers } = require("./Routes/StopCheck");
+const UserModel = require("./Models/UserModel");
+const CountryModel = require("./Models/CountryModel");
+const RoomModel = require("./Models/RoomModel");
 
 ///////////////////////////////////////////////////////////
 
@@ -165,6 +168,10 @@ io.on("connection", async (socket) => {
     console.log("requested " + onlineUsers);
     socket.emit("roomsOnlineUsers", onlineUsers);
   });
+
+  socket.on("getRoomsCount", (data) => {
+    getRoomsCount(socket);
+  });
   // send notification when master edits the room
   socket.on("updateRoom", (master) => {
     io.to(master.room_id).emit("notification", {
@@ -226,7 +233,7 @@ io.on("connection", async (socket) => {
     const icon = data.icon;
     const name_type = data.name_type;
     const user_type = data.user_type;
-    var sendTime = time();
+    var sendTime = data.time;
 
     io.to(room_id).emit("imageSaved", {
       message: img,
@@ -333,6 +340,10 @@ io.on("connection", async (socket) => {
     socket.emit("ignoredUsers", [...new Set(ignoredUsers)]);
   });
 
+  // Handle Mention User
+  socket.on("mention", (data) => {
+    io.to(data.toSocket).emit("mention", {});
+  });
   // Handle Updata online users list
   socket.on("updateUsersList", (data) => {
     updateOnlineUsersList(data.room_id, socket.id, data.field, data.value);
@@ -1076,7 +1087,7 @@ function sendMessage(data, socket) {
   const name_type = data.name_type;
   const user_type = data.user_type;
   var message = type == "emoji" ? data.emoji : data.message;
-  var sendTime = time();
+  var sendTime = data.time;
   socket.broadcast.to(room_id).emit("message", {
     message,
     sender,
@@ -1091,37 +1102,47 @@ function sendMessage(data, socket) {
     senderSocket,
   });
 }
-function sendPrivateMessage(data) {
-  const socketsInRoom = getSocketsInRoom(data.roomId);
+async function sendPrivateMessage(data) {
+  if (data.preventPrivateMsg === false) {
+    const socketsInRoom = getSocketsInRoom(data.roomId);
 
-  const toSocket = socketsInRoom.find((socket) => socket.id === data.toSocket);
-  if (toSocket) {
-    var type = data.type;
-    var message = type == "emoji" ? data.emoji : data.message;
-    var sendTime = time();
+    const toSocket = socketsInRoom.find(
+      (socket) => socket.id === data.toSocket
+    );
+    if (toSocket) {
+      var type = data.type;
+      var message = type == "emoji" ? data.emoji : data.message;
+      var sendTime = data.time;
 
-    io.to(data.toSocket).emit("privateMessage", {
-      between: data.between,
-      message,
-      type: data.type,
+      io.to(data.toSocket).emit("privateMessage", {
+        between: data.between,
+        message,
+        type: data.type,
+        sender: data.sender,
+        senderId: data.senderId,
+        time: sendTime,
+        device: data.device,
+        name_type: data.name_type,
+        user_type: data.user_type,
+        font: data.font,
+        senderSocket: data.senderSocket,
+        icon: data.icon,
+      });
+      io.to(data.toSocket).emit("newPrivateMsg", {
+        between: data.between,
+        message,
+        type: data.type,
+        icon: data.icon,
+      });
+    }
+  } else {
+    io.to(data.senderSocket).emit("privateNotification", {
       sender: data.sender,
       senderId: data.senderId,
-      time: sendTime,
-      device: data.device,
-      name_type: data.name_type,
-      user_type: data.user_type,
-      font: data.font,
-      senderSocket: data.senderSocket,
-      icon: data.icon,
+      message: "هذا العضو قام بإيقاف الرسائل الخاصة",
+      color: 0xfffce9f1,
+      type: "notification",
     });
-    io.to(data.toSocket).emit("newPrivateMsg", {
-      between: data.between,
-      message,
-      type: data.type,
-      icon: data.icon,
-    });
-  } else {
-    console.log("One or both sockets not found.");
   }
 }
 
@@ -1189,6 +1210,28 @@ function updateOnlineUsersAfterIgnore(roomId, ignoredId, socketId, field, val) {
     io.to(socketId).emit("onlineUsers", [...new Set(onlineUsers[roomId])]);
   }
 }
+
+async function getRoomsCount(socket) {
+  try {
+    // Fetch all countries
+    const countries = await CountryModel.find();
+
+    // Create a map to hold the room counts
+    const roomCountsMap = {};
+
+    // Iterate over each country and count rooms
+    for (const country of countries) {
+      const roomCount = await Room.countDocuments({ country: country._id });
+      roomCountsMap[country._id] = roomCount;
+    }
+
+    // Emit the result to the client
+    socket.emit("roomCounts", roomCountsMap);
+  } catch (error) {
+    console.error("Error fetching room counts:", error);
+  }
+}
+
 ///////////////////////////////////////////////////
 app.use(cors());
 app.use(express.json());
