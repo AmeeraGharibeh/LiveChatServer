@@ -1221,10 +1221,15 @@ async function getRoomsCount(socket) {
     const roomCounts = {};
     const totalUsersinCountry = {};
 
+    // Variables to store the total counts
+    let totalRooms = 0;
+    let totalUsers = 0;
+
     // Iterate over each country and count rooms and users
     for (const country of countries) {
       const rooms = await RoomModel.find({ room_country: country._id });
-      roomCounts[country._id] = rooms.length;
+      const roomCount = rooms.length;
+      roomCounts[country._id] = roomCount;
 
       let usersCount = 0;
       for (const room of rooms) {
@@ -1233,10 +1238,19 @@ async function getRoomsCount(socket) {
         }
       }
       totalUsersinCountry[country._id] = usersCount;
+
+      // Accumulate total rooms and users
+      totalRooms += roomCount;
+      totalUsers += usersCount;
     }
 
     // Emit the result to the client
-    socket.emit("roomCounts", { roomCounts, totalUsersinCountry });
+    socket.emit("roomCounts", {
+      roomCounts,
+      totalUsersinCountry,
+      totalRooms,
+      totalUsers,
+    });
   } catch (error) {
     console.error("Error fetching room counts:", error);
   }
