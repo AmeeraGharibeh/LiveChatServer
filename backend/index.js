@@ -49,6 +49,7 @@ mongoose
 ///////////////////////////////////////////////////////////
 //------------------SOCKET------------------------------//
 const onlineUsers = {};
+const onlineUsersCount = {};
 const speakersQueue = {};
 const streamData = {};
 const ignoredUsers = new Set();
@@ -1217,18 +1218,21 @@ async function getRoomsCount(socket) {
     const countries = await CountryModel.find();
 
     // Create a map to hold the room counts
-    const roomCountsMap = {};
+    const roomCounts = {};
 
     // Iterate over each country and count rooms
     for (const country of countries) {
-      const roomCount = await RoomModel.countDocuments({
+      const rooms = await RoomModel.find({
         room_country: country._id,
       });
-      roomCountsMap[country._id] = roomCount;
+      roomCounts[country._id] = rooms.length;
+      for (const room of rooms) {
+        onlineUsersCount[room._id] = onlineUsers[room_id].length;
+      }
     }
 
     // Emit the result to the client
-    socket.emit("roomCounts", roomCountsMap);
+    socket.emit("roomCounts", { roomCounts, onlineUsersCount });
   } catch (error) {
     console.error("Error fetching room counts:", error);
   }
