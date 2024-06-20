@@ -1216,7 +1216,6 @@ async function getRoomsCount(socket) {
   try {
     // Fetch all countries
     const countries = await CountryModel.find();
-    let roomCount = 0;
     let usersCount = 0;
     // Create a map to hold the room counts
     const roomCounts = {};
@@ -1226,7 +1225,8 @@ async function getRoomsCount(socket) {
       const rooms = await RoomModel.find({
         room_country: country._id,
       });
-      roomCount = roomCount + rooms.length;
+      roomCounts[country._id] = rooms.length;
+      console.log("room count " + roomCounts);
       for (const room of rooms) {
         usersCount = usersCount + onlineUsers[room._id].length;
       }
