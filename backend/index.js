@@ -1221,7 +1221,9 @@ async function getRoomsCount(socket) {
 
     // Iterate over each country and count rooms
     for (const country of countries) {
-      const roomCount = await Room.countDocuments({ country: country._id });
+      const roomCount = await RoomModel.countDocuments({
+        country: country._id,
+      });
       roomCountsMap[country._id] = roomCount;
     }
 
