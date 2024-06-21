@@ -553,6 +553,9 @@ io.on("connection", async (socket) => {
   //     console.log("User not found in the speakersQueue");
   //   }
   // });
+  socket.on("stream", (data) => {
+    socket.broadcast.to(data.roomId).emit("stream", data.stream);
+  });
 
   socket.on("offer", (offer) => {
     console.log("offer event emitted " + offer);
