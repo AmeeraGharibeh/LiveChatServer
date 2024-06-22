@@ -40,9 +40,6 @@ const createUser = async (req, res) => {
       const typesCount = items.filter(
         (item) => item.user_type === userType
       ).length;
-      console.log("count is " + typesCount);
-      console.log("limit is " + limits[userType]);
-      console.log("condition is " + parseInt(limits[userType]) <= typesCount);
 
       if (parseInt(limits[userType]) <= typesCount) {
         res.status(400).json({
@@ -418,12 +415,45 @@ const visitorLogin = async (req, res) => {
 const updateUser = async (req, res) => {
   console.log(req.body);
   const body = req.body.body;
+
   if (body.room_password) {
     const salt = await bcrypt.genSalt(10);
     body.room_password = await bcrypt.hash(body.room_password, salt);
   }
+
   try {
-    if (body.username.toLowerCase() !== "master") {
+    // Find the user to be updated
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    // Ensure that the username is not "master"
+    if (user.username.toLowerCase() !== "master") {
+      const currentType = user.user_type;
+      const newType = body.user_type
+        ? body.user_type.toLowerCase()
+        : currentType;
+
+      // Check if the user type is being updated
+      if (newType !== currentType) {
+        const room = await Room.findById(user.rooms[0]);
+        const items = await User.find({ rooms: user.rooms[0] });
+
+        const typesCount = items.filter(
+          (item) => item.user_type === newType
+        ).length;
+
+        const limits = room.account_limits;
+
+        if (parseInt(limits[newType]) <= typesCount) {
+          return res.status(400).json({
+            msg: "تم الوصول إلى الحد الأقصى لعدد المسؤولين في الغرفة",
+          });
+        }
+      }
+
+      // Proceed with the update
       const updated = await User.findByIdAndUpdate(
         req.params.id,
         {
