@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-const User = require("./models/User"); // Adjust the path as needed
+const UserModel = require("../Models/UserModel");
 
 const createMasterUser = async (req, res, next) => {
   const { password, permissions, roomId } = req.body;
@@ -8,7 +8,7 @@ const createMasterUser = async (req, res, next) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(password, salt);
     const rooms = [roomId];
-    const newUser = new User({
+    const newUser = new UserModel({
       username: "MASTER",
       room_password: hashedPass,
       rooms: rooms,
