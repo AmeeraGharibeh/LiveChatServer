@@ -8,7 +8,7 @@ const {
   time,
 } = require("../Config/Helpers/time_helper");
 
-const createRoom = async function (req, res) {
+const createRoom = async (req, res) => {
   console.log(req.body);
   let roomData = req.body.body;
   const password = req.body.body.room_password;
@@ -16,26 +16,13 @@ const createRoom = async function (req, res) {
   roomData.end_date = time(calculateDateAfterDays(roomData.room_duration));
   const newRoom = new Rooms(roomData);
   try {
-    await newRoom.save().then(async (val) => {
-      try {
-        console.log("first" + password);
-        console.log(val._id.toHexString());
-        const salt = await bcrypt.genSalt(10);
-        const hashedPass = await bcrypt.hash(password, salt);
-        const rooms = [val._id.toHexString()];
-        const newUser = new User({
-          username: "MASTER",
-          room_password: hashedPass,
-          rooms: rooms,
-          user_type: "master",
-          is_owner: true,
-          permissions,
-        });
-        await newUser.save();
-        res.status(200).json(val);
-      } catch (err) {
-        res.status(500).send({ msg: "something went wrong" });
-      }
+    await newRoom.save().then((val) => {
+      req.body.password = password;
+      req.body.permissions = permissions;
+      req.body.roomId = val._id.toHexString();
+
+      // Response will be handled in the middleware chain
+      res.status(200).json(val);
     });
   } catch (err) {
     res.status(500).send({ msg: err.message });
