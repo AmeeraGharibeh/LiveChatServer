@@ -16,7 +16,7 @@ const {
 } = require("../Controllers/RoomController");
 const { createMasterUser } = require("./CreateMaster");
 
-router.post("/", verifyTokenAndAuthorization, createRoom);
+//router.post("/", verifyTokenAndAuthorization, createRoom);
 router.post("/", verifyTokenAndAuthorization, createRoom, createMasterUser);
 router.get("/search", searchRoom);
 router.get("/", getAllRooms);

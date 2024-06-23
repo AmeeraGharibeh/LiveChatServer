@@ -1,8 +1,6 @@
-const bcrypt = require("bcrypt");
-const Rooms = require("./models/Rooms"); // Adjust the path as needed
+const bcrypt = require("bcryptjs");
 const User = require("./models/User"); // Adjust the path as needed
 
-// Middleware to create a master user
 const createMasterUser = async (req, res, next) => {
   const { password, permissions, roomId } = req.body;
 
