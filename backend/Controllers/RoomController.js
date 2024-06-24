@@ -143,6 +143,18 @@ const updateRoom = async (req, res) => {
   console.log(req.body);
 
   try {
+    // Find the room to be updated
+    const room = await Rooms.findById(req.params.id);
+    if (!room) {
+      return res.status(404).json({ msg: "Room not found" });
+    }
+
+    // Check if updating room settings is allowed
+    if (!room.change_room_settings) {
+      return res.status(400).json({ msg: "تعديل إعدادات الغرفة غير مسموح" });
+    }
+
+    // Proceed with the update
     const updated = await Rooms.findByIdAndUpdate(
       req.params.id,
       {
@@ -152,6 +164,7 @@ const updateRoom = async (req, res) => {
         new: true,
       }
     );
+
     res.status(200).json({ msg: "تم تعديل الغرفة بنجاح!", room: updated });
   } catch (err) {
     res.status(500).send({ msg: err.message });
