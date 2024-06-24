@@ -472,6 +472,7 @@ io.on("connection", async (socket) => {
     const roomId = room["roomId"];
     const userId = room["userId"];
     const streamerName = room["streamerName"];
+    const speakTime = room["speakTime"];
 
     if (!speakersQueue[roomId]) speakersQueue[roomId] = [];
 
@@ -498,6 +499,7 @@ io.on("connection", async (socket) => {
         socketId: socket.id,
         roomId: roomId,
         streamer_name: streamerName,
+        speakTime: speakTime,
         count: speakersQueue[roomId].length + 1,
       });
       handleQueueChanges(roomId); // Update queue order if needed
@@ -984,6 +986,7 @@ function startStreaming(data) {
   const roomId = data["roomId"];
   const streamer = data["streamer_name"];
   const socketId = data["socketId"];
+  const speakTime = data["speakTime"];
 
   // Check if user is already streaming
   if (currentStreamer === socketId) {
@@ -991,7 +994,7 @@ function startStreaming(data) {
     return;
   }
   const currentTime = new Date();
-  const endTime = new Date(currentTime.getTime() + 60 * 1000);
+  const endTime = new Date(currentTime.getTime() + speakTime * 1000);
   const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
   const serverTime = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
 
