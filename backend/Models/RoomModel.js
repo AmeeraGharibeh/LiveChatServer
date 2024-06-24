@@ -73,6 +73,36 @@ const RoomSchema = mongoose.Schema({
     type: Number,
     default: 0xff9bb1ba,
   },
+  who_can_talk: {
+    type: String,
+    default: "all",
+  },
+  speak_duration: {
+    type: {},
+    default: {
+      visitor: 300,
+      member: 300,
+      admin: 300,
+      super_admin: 300,
+      master: 300,
+    },
+  },
+  who_can_cam: {
+    type: String,
+    default: "all",
+  },
+  who_can_send_private: {
+    type: String,
+    default: "all",
+  },
+  add_master: {
+    type: Boolean,
+    default: true,
+  },
+  change_room_settings: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 module.exports = mongoose.model("Room", RoomSchema);
