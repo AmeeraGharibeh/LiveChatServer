@@ -31,43 +31,49 @@ const createUser = async (req, res) => {
     );
 
     if (usernameExists) {
-      res.status(400).json({ msg: "اسم المستخدم موجود بالفعل في الغرفة" });
-    } else {
-      const userType = body.user_type.toLowerCase();
-      const limits = room.account_limits;
-      const rooms = [body.room_id];
-
-      const typesCount = items.filter(
-        (item) => item.user_type === userType
-      ).length;
-
-      if (parseInt(limits[userType]) <= typesCount) {
-        res.status(400).json({
-          msg: "تم الوصول إلى الحد الأقصى لعدد المسؤولين في الغرفة",
-        });
-      } else {
-        const newUser = new User({
-          username: body.username.toLowerCase(),
-          room_password: hashedPass,
-          rooms,
-          user_type: userType, // Use the converted user type
-          permissions: body.permissions,
-        });
-
-        const saved = await newUser.save();
-
-        const report = new Reports({
-          master_name: req.body.master,
-          room_id: body.room_id,
-          action_user: body.username,
-          action_name_ar: "اضافة مستخدم",
-          action_name_en: "Add user",
-        });
-
-        await report.save();
-        res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
-      }
+      return res
+        .status(400)
+        .json({ msg: "اسم المستخدم موجود بالفعل في الغرفة" });
     }
+
+    const userType = body.user_type.toLowerCase();
+    const limits = room.account_limits;
+    const rooms = [body.room_id];
+
+    if (userType === "master" && !room.add_master) {
+      return res.status(400).json({ msg: "الغرفة لا تسمح بإضافة مسؤوليين" });
+    }
+
+    const typesCount = items.filter(
+      (item) => item.user_type === userType
+    ).length;
+
+    if (parseInt(limits[userType]) <= typesCount) {
+      return res.status(400).json({
+        msg: "تم الوصول إلى الحد الأقصى لعدد المسؤولين في الغرفة",
+      });
+    }
+
+    const newUser = new User({
+      username: body.username.toLowerCase(),
+      room_password: hashedPass,
+      rooms,
+      user_type: userType, // Use the converted user type
+      permissions: body.permissions,
+    });
+
+    const saved = await newUser.save();
+
+    const report = new Reports({
+      master_name: req.body.master,
+      room_id: body.room_id,
+      action_user: body.username,
+      action_name_ar: "اضافة مستخدم",
+      action_name_en: "Add user",
+    });
+
+    await report.save();
+    res.status(200).json({ msg: "تمت اضافة المستخدم بنجاح!", user: saved });
   } catch (err) {
     res.status(500).json({ msg: "حدث خطأ ما" });
   }
@@ -439,6 +445,12 @@ const updateUser = async (req, res) => {
       if (newType !== currentType) {
         const room = await Room.findById(user.rooms[0]);
         const items = await User.find({ rooms: user.rooms[0] });
+
+        if (newType === "master" && !room.add_master) {
+          return res
+            .status(400)
+            .json({ msg: "الغرفة لا تسمح بإضافة مسؤوليين" });
+        }
 
         const typesCount = items.filter(
           (item) => item.user_type === newType
