@@ -258,7 +258,6 @@ const login = async (req, res) => {
   }
 };
 const memberLogin = async (req, res) => {
-  console.log("member login fired");
   let user = req.user;
   try {
     if (!req.body.room_password) {

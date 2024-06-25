@@ -42,19 +42,19 @@ router.post("/name", verifyTokenAndAuthorization, createName);
 //router.post("/login", checkMembershipExpiration, blockedMiddleware, login);
 router.post(
   "/login/member",
-  checkRoomStatus,
   blockedMiddleware,
   deviceCheck,
-  memberLogin
+  memberLogin,
+  checkRoomStatus
 );
-router.post("/login/visitor", checkRoomStatus, blockedMiddleware, visitorLogin);
+router.post("/login/visitor", blockedMiddleware, visitorLogin, checkRoomStatus);
 router.post(
   "/login/name",
-  checkRoomStatus,
   checkMembershipExpiration,
   deviceCheck,
   blockedMiddleware,
-  nameLogin
+  nameLogin,
+  checkRoomStatus
 );
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.put("/name/:id", verifyTokenAndAuthorization, updateNameUser);
