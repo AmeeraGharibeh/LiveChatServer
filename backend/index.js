@@ -49,12 +49,12 @@ mongoose
 ///////////////////////////////////////////////////////////
 //------------------SOCKET------------------------------//
 const onlineUsers = {};
-const totalUsersinCountry = {};
 const speakersQueue = {};
 const streamData = {};
 const ignoredUsers = new Set();
 const stoppedUsers = [];
 const roomSockets = {};
+const now = new Date();
 
 io.on("connection", async (socket) => {
   console.log("A user connected");
@@ -130,7 +130,7 @@ io.on("connection", async (socket) => {
       ip,
       device,
       location,
-      time_in: time(),
+      time_in: time(now),
       icon: user.icon,
     });
     await newLog.save();
@@ -157,8 +157,12 @@ io.on("connection", async (socket) => {
     //update room log on db
     const log = await Logs.findOne({ user_id: data._id });
 
-    await Logs.findByIdAndUpdate(log._id, { time_out: time() }, { new: true });
-    console.log("A user disconnected at " + time());
+    await Logs.findByIdAndUpdate(
+      log._id,
+      { time_out: time(now) },
+      { new: true }
+    );
+    console.log("A user disconnected at " + time(now));
   });
   socket.on("sessionTimeout", async (_) => {
     socket.emit("sessionTimeout");
