@@ -19,7 +19,7 @@ const checkRoomStatus = async (req, res, next) => {
         next();
       } else {
         return res.status(403).send({
-          msg: "Room is locked",
+          msg: "locked",
           lock_reason: room.lock_reason,
         });
       }
