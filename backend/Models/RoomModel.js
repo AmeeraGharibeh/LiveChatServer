@@ -62,7 +62,7 @@ const RoomSchema = mongoose.Schema({
     type: {},
   },
 
-  room_open: {
+  room_lock_status: {
     type: String,
     default: "open",
   },

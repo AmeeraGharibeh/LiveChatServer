@@ -291,7 +291,7 @@ const memberLogin = async (req, res) => {
   }
 };
 
-const NameLogin = async (req, res) => {
+const nameLogin = async (req, res) => {
   try {
     let user = req.user;
     let member;
@@ -946,7 +946,7 @@ module.exports = {
   login,
   memberLogin,
   visitorLogin,
-  NameLogin,
+  nameLogin,
   updateUser,
   updateNameUser,
   updateUserProfile,

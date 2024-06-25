@@ -11,7 +11,7 @@ const {
   login,
   memberLogin,
   visitorLogin,
-  NameLogin,
+  nameLogin,
   updateUser,
   updateUserProfile,
   addPhotoToAlbum,
@@ -34,19 +34,27 @@ const {
 const { blockedMiddleware } = require("./BlockCheck");
 const { checkMembershipExpiration } = require("./StopCheck");
 const { deviceCheck } = require("./DeviceCheck");
+const checkRoomStatus = require("./roomLockCheck");
 
 router.post("/", verifyTokenAndAdmin, createUser);
 router.post("/root", verifyTokenAndAuthorization, createRoot);
 router.post("/name", verifyTokenAndAuthorization, createName);
 //router.post("/login", checkMembershipExpiration, blockedMiddleware, login);
-router.post("/login/member", blockedMiddleware, deviceCheck, memberLogin);
-router.post("/login/visitor", blockedMiddleware, visitorLogin);
+router.post(
+  "/login/member",
+  checkRoomStatus,
+  blockedMiddleware,
+  deviceCheck,
+  memberLogin
+);
+router.post("/login/visitor", checkRoomStatus, blockedMiddleware, visitorLogin);
 router.post(
   "/login/name",
+  checkRoomStatus,
   checkMembershipExpiration,
   deviceCheck,
   blockedMiddleware,
-  NameLogin
+  nameLogin
 );
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.put("/name/:id", verifyTokenAndAuthorization, updateNameUser);
