@@ -44,17 +44,17 @@ router.post(
   "/login/member",
   blockedMiddleware,
   deviceCheck,
-  memberLogin,
-  checkRoomStatus
+  checkRoomStatus,
+  memberLogin
 );
-router.post("/login/visitor", blockedMiddleware, visitorLogin, checkRoomStatus);
+router.post("/login/visitor", blockedMiddleware, checkRoomStatus, visitorLogin);
 router.post(
   "/login/name",
   checkMembershipExpiration,
   deviceCheck,
   blockedMiddleware,
-  nameLogin,
-  checkRoomStatus
+  checkRoomStatus,
+  nameLogin
 );
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.put("/name/:id", verifyTokenAndAuthorization, updateNameUser);

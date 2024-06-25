@@ -13,6 +13,7 @@ const checkRoomStatus = async (req, res, next) => {
     } else if (room.room_lock_status === "limit") {
       const allowedUserTypes = ["master", "member", "admin", "super_admin"];
       const userType = req.user ? req.user.user_type : req.body.user_type;
+      console.log("user type is " + userType);
 
       if (allowedUserTypes.includes(userType)) {
         next();
