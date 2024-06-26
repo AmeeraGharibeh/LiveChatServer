@@ -148,7 +148,7 @@ const updateRoom = async (req, res) => {
       return res.status(404).json({ msg: "Room not found" });
     }
 
-    const user = await User.findById(req.body.userId);
+    const user = await User.findById(req.body.body.userId);
     if (!user) {
       return res.status(404).json({ msg: "User not found" });
     }
