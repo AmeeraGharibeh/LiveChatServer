@@ -103,6 +103,10 @@ const RoomSchema = mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  lock_reason: {
+    type: String,
+    default: "-",
+  },
 });
 
 module.exports = mongoose.model("Room", RoomSchema);
