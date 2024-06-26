@@ -143,15 +143,18 @@ const updateRoom = async (req, res) => {
   console.log(req.body);
 
   try {
-    // Find the room to be updated
     const room = await Rooms.findById(req.params.id);
     if (!room) {
       return res.status(404).json({ msg: "Room not found" });
     }
 
-    // Check if updating room settings is allowed
-    if (!room.change_room_settings) {
-      return res.status(400).json({ msg: "تعديل إعدادات الغرفة غير مسموح" });
+    const user = await User.findById(req.body.userId);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    if (!room.change_room_settings && !user.is_owner) {
+      return res.status(400).json({ msg: "غير مسموح بتعديل إعدادات الغرفة" });
     }
 
     // Proceed with the update
