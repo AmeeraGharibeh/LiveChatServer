@@ -1264,41 +1264,20 @@ async function getRoomsCount(socket) {
 }
 async function getSpecialRoomsCount(socket) {
   try {
-    const countries = await CountryModel.find();
-
-    const specialRoomCounts = {};
-    const totalUsersInSpecialRooms = {};
-
-    let totalSpecialRooms = 0;
-    let totalSpecialUsers = 0;
-
-    for (const country of countries) {
-      const specialRooms = await RoomModel.find({
-        room_country: country._id,
-        room_type: "gold",
-      });
-      const specialRoomCount = specialRooms.length;
-      specialRoomCounts[country._id] = specialRoomCount;
-
-      let specialUsersCount = 0;
-      for (const room of specialRooms) {
-        if (onlineUsers[room._id]) {
-          specialUsersCount += onlineUsers[room._id];
-        }
+    const specialRooms = await RoomModel.find({
+      room_type: "gold",
+    });
+    const specialRoomCount = specialRooms.length;
+    let specialUsersCount = 0;
+    for (const room of specialRooms) {
+      if (onlineUsers[room._id]) {
+        specialUsersCount += onlineUsers[room._id];
       }
-      totalUsersInSpecialRooms[country._id] = specialUsersCount;
-
-      // Accumulate total special rooms and users
-      totalSpecialRooms += specialRoomCount;
-      totalSpecialUsers += specialUsersCount;
     }
 
-    // Emit the result to the client
     socket.emit("specialRoomCounts", {
-      specialRoomCounts,
-      totalUsersInSpecialRooms,
-      totalSpecialRooms,
-      totalSpecialUsers,
+      specialRoomCount,
+      specialUsersCount,
     });
   } catch (error) {
     console.error("Error fetching special room counts:", error);
