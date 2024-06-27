@@ -1271,7 +1271,7 @@ async function getSpecialRoomsCount(socket) {
     let specialUsersCount = 0;
     for (const room of specialRooms) {
       if (onlineUsers[room._id]) {
-        specialUsersCount += onlineUsers[room._id];
+        specialUsersCount += onlineUsers[room._id].length;
       }
     }
 
