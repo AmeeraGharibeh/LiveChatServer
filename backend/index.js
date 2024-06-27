@@ -176,6 +176,7 @@ io.on("connection", async (socket) => {
 
   socket.on("getRoomsCount", (data) => {
     getRoomsCount(socket);
+    getSpecialRoomsCount(socket);
   });
   // send notification when master edits the room
   socket.on("updateRoom", (master) => {
@@ -1224,18 +1225,14 @@ function updateOnlineUsersAfterIgnore(roomId, ignoredId, socketId, field, val) {
 
 async function getRoomsCount(socket) {
   try {
-    // Fetch all countries
     const countries = await CountryModel.find();
 
-    // Create a map to hold the room counts and user counts
     const roomCounts = {};
     const totalUsersinCountry = {};
 
-    // Variables to store the total counts
     let totalRooms = 0;
     let totalUsers = 0;
 
-    // Iterate over each country and count rooms and users
     for (const country of countries) {
       const rooms = await RoomModel.find({ room_country: country._id });
       const roomCount = rooms.length;
@@ -1263,6 +1260,48 @@ async function getRoomsCount(socket) {
     });
   } catch (error) {
     console.error("Error fetching room counts:", error);
+  }
+}
+async function getSpecialRoomsCount(socket) {
+  try {
+    const countries = await Country.find();
+
+    const specialRoomCounts = {};
+    const totalUsersInSpecialRooms = {};
+
+    let totalSpecialRooms = 0;
+    let totalSpecialUsers = 0;
+
+    for (const country of countries) {
+      const specialRooms = await Room.find({
+        country: country._id,
+        room_type: "special",
+      });
+      const specialRoomCount = specialRooms.length;
+      specialRoomCounts[country._id] = specialRoomCount;
+
+      let specialUsersCount = 0;
+      for (const room of specialRooms) {
+        if (onlineUsers[room._id]) {
+          specialUsersCount += onlineUsers[room._id];
+        }
+      }
+      totalUsersInSpecialRooms[country._id] = specialUsersCount;
+
+      // Accumulate total special rooms and users
+      totalSpecialRooms += specialRoomCount;
+      totalSpecialUsers += specialUsersCount;
+    }
+
+    // Emit the result to the client
+    socket.emit("specialRoomCounts", {
+      specialRoomCounts,
+      totalUsersInSpecialRooms,
+      totalSpecialRooms,
+      totalSpecialUsers,
+    });
+  } catch (error) {
+    console.error("Error fetching special room counts:", error);
   }
 }
 
