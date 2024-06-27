@@ -1272,7 +1272,7 @@ async function getSpecialRoomsCount(socket) {
     for (const country of countries) {
       const specialRooms = await RoomModel.find({
         country: country._id,
-        room_type: "special",
+        room_type: "gold",
       });
       const specialRoomCount = specialRooms.length;
       specialRoomCounts[country._id] = specialRoomCount;
