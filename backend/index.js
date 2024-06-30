@@ -176,7 +176,6 @@ io.on("connection", async (socket) => {
     socket.emit("roomsOnlineUsers", onlineUsers);
   });
 
-  socket.on("getRoomsCount", (data) => {});
   // send notification when master edits the room
   socket.on("updateRoom", (master) => {
     io.to(master.room_id).emit("notification", {
@@ -1264,7 +1263,7 @@ async function getRoomsCount(socket) {
 async function getSpecialRoomsCount(socket) {
   try {
     const specialRooms = await RoomModel.find({
-      room_type: "special",
+      room_type: { $in: ["special", "gold"] },
     });
     const specialRoomCount = specialRooms.length;
     let specialUsersCount = 0;
