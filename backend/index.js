@@ -1224,30 +1224,42 @@ function updateOnlineUsersAfterIgnore(roomId, ignoredId, socketId, field, val) {
 async function getRoomsCount(socket) {
   try {
     const countries = await CountryModel.find();
+    const countryIds = countries.map((country) => country._id);
+
+    const rooms = await RoomModel.find({ room_country: { $in: countryIds } });
 
     const roomCounts = {};
     const totalUsersinCountry = {};
+    const roomsByCountry = {};
+
+    // Group rooms by country
+    rooms.forEach((room) => {
+      if (!roomsByCountry[room.room_country]) {
+        roomsByCountry[room.room_country] = [];
+      }
+      roomsByCountry[room.room_country].push(room);
+    });
 
     let totalRooms = 0;
     let totalUsers = 0;
 
-    for (const country of countries) {
-      const rooms = await RoomModel.find({ room_country: country._id });
-      const roomCount = rooms.length;
+    countries.forEach((country) => {
+      const countryRooms = roomsByCountry[country._id] || [];
+      const roomCount = countryRooms.length;
       roomCounts[country._id] = roomCount;
 
       let usersCount = 0;
-      for (const room of rooms) {
+      countryRooms.forEach((room) => {
         if (onlineUsers[room._id]) {
           usersCount += onlineUsers[room._id].length;
         }
-      }
+      });
       totalUsersinCountry[country._id] = usersCount;
 
       // Accumulate total rooms and users
       totalRooms += roomCount;
       totalUsers += usersCount;
-    }
+    });
 
     // Emit the result to the client
     socket.emit("roomCounts", {
@@ -1260,6 +1272,7 @@ async function getRoomsCount(socket) {
     console.error("Error fetching room counts:", error);
   }
 }
+
 async function getSpecialRoomsCount(socket) {
   try {
     const specialRooms = await RoomModel.find({
