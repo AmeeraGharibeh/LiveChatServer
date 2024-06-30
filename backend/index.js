@@ -62,6 +62,8 @@ io.on("connection", async (socket) => {
   const device = socket.handshake.query.device;
   const location = socket.handshake.query.location;
 
+  getRoomsCount(socket);
+  getSpecialRoomsCount(socket);
   socket.on("ping", () => {
     socket.emit("pong");
   });
@@ -174,10 +176,7 @@ io.on("connection", async (socket) => {
     socket.emit("roomsOnlineUsers", onlineUsers);
   });
 
-  socket.on("getRoomsCount", (data) => {
-    getRoomsCount(socket);
-    getSpecialRoomsCount(socket);
-  });
+  socket.on("getRoomsCount", (data) => {});
   // send notification when master edits the room
   socket.on("updateRoom", (master) => {
     io.to(master.room_id).emit("notification", {
