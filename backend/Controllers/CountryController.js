@@ -14,7 +14,7 @@ const createCountry = async (req, res) => {
 
 const getAllCountries = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  const limit = parseInt(req.query.limit) || 20;
 
   try {
     const totalItems = await Country.countDocuments();
