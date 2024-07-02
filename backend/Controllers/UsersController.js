@@ -36,17 +36,14 @@ const createUser = async (req, res) => {
         .json({ msg: "اسم المستخدم موجود بالفعل في الغرفة" });
     }
 
-    const userType = body.user_type.toLowerCase();
+    let userType = body.user_type.toLowerCase();
     if (userType === "master_girl") {
       userType = "master";
     }
     const limits = room.account_limits;
     const rooms = [body.room_id];
 
-    if (
-      (userType === "master" && !room.add_master) ||
-      (userType === "master_girl" && !room.add_master)
-    ) {
+    if (userType === "master" && !room.add_master) {
       return res.status(400).json({ msg: "الغرفة لا تسمح بإضافة مسؤوليين" });
     }
 
