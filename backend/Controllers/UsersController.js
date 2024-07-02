@@ -36,10 +36,11 @@ const createUser = async (req, res) => {
         .json({ msg: "اسم المستخدم موجود بالفعل في الغرفة" });
     }
 
-    let userType = body.user_type.toLowerCase();
-    if (userType === "master_girl") {
-      userType = "master";
-    }
+    let userType =
+      body.user_type.toLowerCase() === "master_girl"
+        ? "master"
+        : body.user_type.toLowerCase();
+
     const limits = room.account_limits;
     const rooms = [body.room_id];
 
