@@ -37,10 +37,16 @@ const createUser = async (req, res) => {
     }
 
     const userType = body.user_type.toLowerCase();
+    if (userType === "master_girl") {
+      userType = "master";
+    }
     const limits = room.account_limits;
     const rooms = [body.room_id];
 
-    if (userType === "master" && !room.add_master) {
+    if (
+      (userType === "master" && !room.add_master) ||
+      (userType === "master_girl" && !room.add_master)
+    ) {
       return res.status(400).json({ msg: "الغرفة لا تسمح بإضافة مسؤوليين" });
     }
 
@@ -58,7 +64,7 @@ const createUser = async (req, res) => {
       username: body.username.toLowerCase(),
       room_password: hashedPass,
       rooms,
-      user_type: userType, // Use the converted user type
+      user_type: body.user_type.toLowerCase(),
       permissions: body.permissions,
     });
 
@@ -439,6 +445,9 @@ const updateUser = async (req, res) => {
       const newType = body.user_type
         ? body.user_type.toLowerCase()
         : currentType;
+      if (newType === "master_girl") {
+        newType = "master";
+      }
 
       // Check if the user type is being updated
       if (newType !== currentType) {
