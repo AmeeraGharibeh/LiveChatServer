@@ -19,12 +19,12 @@ const checkRoomStatus = async (req, res, next) => {
         next();
       } else {
         return res.status(403).send({
-          msg: room.lock_reason,
+          msg: "الغرفة مغلقة",
         });
       }
     } else {
       return res.status(403).send({
-        msg: "Room is locked",
+        msg: "الغرفة مغلقة",
         lock_reason: room.lock_reason,
       });
     }
