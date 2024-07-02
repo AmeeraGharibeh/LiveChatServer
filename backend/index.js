@@ -87,6 +87,7 @@ io.on("connection", async (socket) => {
       message: user.username + " انضمّ إلى الغرفة",
       color: 0xffc7f9cc,
       type: "notification",
+      notificationType: "in/out",
     });
     socket.emit("userJoined", {
       userId: user._id,
@@ -154,6 +155,7 @@ io.on("connection", async (socket) => {
       message: data.username + " غادر الغرفة  ",
       color: 0xfffad4d4,
       type: "notification",
+      notificationType: "in/out",
     });
 
     //update room log on db
@@ -218,11 +220,9 @@ io.on("connection", async (socket) => {
         });
       } else {
         sendMessage(data, socket);
-        // socket.broadcast.to(data.room_id).emit("message", data);
       }
     } else {
       sendMessage(data, socket);
-      //socket.broadcast.to(data.room_id).emit("message", data);
     }
   });
 
@@ -297,6 +297,15 @@ io.on("connection", async (socket) => {
       type: "notification",
     });
   });
+  socket.on("preventPrivate", (data) => {
+    io.to(data.senderSocket).emit("privateNotification", {
+      sender: data.senderSocket,
+      senderId: data.senderSocket,
+      message: "هذا العضو قام بإيقاف الرسائل الخاصة",
+      color: 0xfffce9f1,
+      type: "notification",
+    });
+  });
 
   // Handle kick user out
   socket.on("kickUser", async (data) => {
@@ -344,10 +353,6 @@ io.on("connection", async (socket) => {
     socket.emit("ignoredUsers", [...new Set(ignoredUsers)]);
   });
 
-  // Handle Mention User
-  socket.on("mention", (data) => {
-    io.to(data.toSocket).emit("mention", {});
-  });
   // Handle Updata online users list
   socket.on("updateUsersList", (data) => {
     updateOnlineUsersList(data.room_id, socket.id, data.field, data.value);
@@ -1113,45 +1118,33 @@ function sendMessage(data, socket) {
   });
 }
 async function sendPrivateMessage(data) {
-  if (data.preventPrivateMsg === false) {
-    const socketsInRoom = getSocketsInRoom(data.roomId);
+  const socketsInRoom = getSocketsInRoom(data.roomId);
 
-    const toSocket = socketsInRoom.find(
-      (socket) => socket.id === data.toSocket
-    );
-    if (toSocket) {
-      var type = data.type;
-      var message = type == "emoji" ? data.emoji : data.message;
-      var sendTime = data.time;
+  const toSocket = socketsInRoom.find((socket) => socket.id === data.toSocket);
+  if (toSocket) {
+    var type = data.type;
+    var message = type == "emoji" ? data.emoji : data.message;
+    var sendTime = data.time;
 
-      io.to(data.toSocket).emit("privateMessage", {
-        between: data.between,
-        message,
-        type: data.type,
-        sender: data.sender,
-        senderId: data.senderId,
-        time: sendTime,
-        device: data.device,
-        name_type: data.name_type,
-        user_type: data.user_type,
-        font: data.font,
-        senderSocket: data.senderSocket,
-        icon: data.icon,
-      });
-      io.to(data.toSocket).emit("newPrivateMsg", {
-        between: data.between,
-        message,
-        type: data.type,
-        icon: data.icon,
-      });
-    }
-  } else {
-    io.to(data.senderSocket).emit("privateNotification", {
+    io.to(data.toSocket).emit("privateMessage", {
+      between: data.between,
+      message,
+      type: data.type,
       sender: data.sender,
       senderId: data.senderId,
-      message: "هذا العضو قام بإيقاف الرسائل الخاصة",
-      color: 0xfffce9f1,
-      type: "notification",
+      time: sendTime,
+      device: data.device,
+      name_type: data.name_type,
+      user_type: data.user_type,
+      font: data.font,
+      senderSocket: data.senderSocket,
+      icon: data.icon,
+    });
+    io.to(data.toSocket).emit("newPrivateMsg", {
+      between: data.between,
+      message,
+      type: data.type,
+      icon: data.icon,
     });
   }
 }
