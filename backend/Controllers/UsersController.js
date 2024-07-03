@@ -36,20 +36,17 @@ const createUser = async (req, res) => {
         .json({ msg: "اسم المستخدم موجود بالفعل في الغرفة" });
     }
 
-    let userType =
-      body.user_type.toLowerCase() === "master_girl"
-        ? "master"
-        : body.user_type.toLowerCase();
+    const userType = body.user_type.toLowerCase();
 
     const limits = room.account_limits;
     const rooms = [body.room_id];
 
-    if (userType === "master" && !room.add_master) {
+    if (userType.includes("master") && !room.add_master) {
       return res.status(400).json({ msg: "الغرفة لا تسمح بإضافة مسؤوليين" });
     }
 
-    const typesCount = items.filter(
-      (item) => item.user_type === userType
+    const typesCount = items.filter((item) =>
+      item.user_type.includes(userType)
     ).length;
 
     if (parseInt(limits[userType]) <= typesCount) {
