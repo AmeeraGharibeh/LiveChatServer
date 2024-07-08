@@ -63,7 +63,7 @@ const checkMembershipExpiration = async (req, res, next) => {
         });
       }
 
-      //  const { room_password, name_password, ...others } = user._doc;
+      const { ...others } = name._doc;
       (req.user = {
         ...others,
         name_password: name.name_password,
