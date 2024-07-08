@@ -31,7 +31,6 @@ const checkMembershipExpiration = async (req, res, next) => {
   try {
     const query = { username: req.body.username, user_type: { $ne: "-" } };
     const result = await Users.find(query);
-    let user = req.user;
 
     if (result && result.length > 0) {
       const name = result[0];
@@ -63,16 +62,8 @@ const checkMembershipExpiration = async (req, res, next) => {
         });
       }
 
-      const { ...others } = user;
-      (req.user = {
-        ...others,
-        name_password: name.name_password,
-      }),
-        // req.user = user;
-        console.log(
-          "CheckMembershipExpiration: User set in req.user:",
-          req.user
-        );
+      req.user = name;
+      console.log("CheckMembershipExpiration: User set in req.user:", req.user);
       return next();
     }
     next();

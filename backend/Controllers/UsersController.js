@@ -344,7 +344,7 @@ const nameLogin = async (req, res) => {
             { expiresIn: "1h" }
           );
 
-          const { room_password, name_password, ...others } = user._doc;
+          const { name_password, ...others } = user._doc;
 
           return res.status(200).send({
             user: {
