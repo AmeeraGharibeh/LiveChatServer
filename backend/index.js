@@ -56,14 +56,6 @@ const stoppedUsers = [];
 const roomSockets = {};
 const now = new Date();
 
-const onlineUsers = {};
-const speakersQueue = {};
-const streamData = {};
-const ignoredUsers = new Set();
-const stoppedUsers = [];
-const roomSockets = {};
-const now = new Date();
-
 io.on("connection", async (socket) => {
   console.log("A user connected");
   const ip = socket.handshake.query.ip;
