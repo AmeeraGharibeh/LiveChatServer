@@ -20,7 +20,6 @@ const createRoom = async (req, res) => {
       req.body.permissions = permissions;
       req.body.roomId = val._id.toHexString();
 
-      // Response will be handled in the middleware chain
       res.status(200).json(val);
     });
   } catch (err) {
