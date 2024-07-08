@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const UserModel = require("../Models/UserModel");
 const createMasterUser = async (req, res) => {
-  const { room_password, permissions, roomId } = req.body.body;
+  const { room_password, permissions, roomId } = req.body;
   console.log("password from create master is " + room_password);
   console.log(
     "body from create master is " + JSON.stringify(req.body, null, 2)
