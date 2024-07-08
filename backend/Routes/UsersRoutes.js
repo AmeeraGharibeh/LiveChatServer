@@ -8,7 +8,6 @@ const {
   createUser,
   createName,
   createRoot,
-  login,
   memberLogin,
   visitorLogin,
   nameLogin,
@@ -42,17 +41,17 @@ router.post("/name", verifyTokenAndAuthorization, createName);
 //router.post("/login", checkMembershipExpiration, blockedMiddleware, login);
 router.post(
   "/login/member",
-  blockedMiddleware,
   deviceCheck,
+  blockedMiddleware,
   checkRoomStatus,
   memberLogin
 );
 router.post("/login/visitor", blockedMiddleware, checkRoomStatus, visitorLogin);
 router.post(
   "/login/name",
-  checkMembershipExpiration,
   deviceCheck,
   blockedMiddleware,
+  checkMembershipExpiration,
   checkRoomStatus,
   nameLogin
 );

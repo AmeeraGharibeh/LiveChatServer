@@ -23,7 +23,7 @@ const deviceCheck = async (req, res, next) => {
         .send({ msg: "أنت تحاول تسجيل الدخول من جهاز مختلف" });
     }
 
-    req.user = user; // Save the user to the request object
+   // req.user = user; // Save the user to the request object
     next();
   } catch (err) {
     return res.status(500).send({ msg: err.message });

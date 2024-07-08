@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
     const items = await User.find({ rooms: body.room_id });
     const room = await Room.findById(body.room_id);
     const usernameExists = items.some(
-      (item) => item.username === body.username.toLowerCase()
+      (item) => item.username === body.username
     );
 
     if (usernameExists) {
@@ -60,7 +60,7 @@ const createUser = async (req, res) => {
     }
 
     const newUser = new User({
-      username: body.username.toLowerCase(),
+      username: body.username,
       room_password: hashedPass,
       rooms,
       user_type: body.user_type.toLowerCase(),
@@ -113,7 +113,7 @@ const createRoot = async (req, res) => {
 
     // Check if the username exists in any of the rooms
     const roomsWithUsername = items.filter(
-      (item) => item.username.toLowerCase() === body.username.toLowerCase()
+      (item) => item.username === body.username
     );
 
     if (roomsWithUsername.length > 0) {
@@ -130,7 +130,7 @@ const createRoot = async (req, res) => {
     } else {
       const userType = body.user_type.toLowerCase();
       const newUser = new User({
-        username: body.username.toLowerCase(),
+        username: body.username,
         room_password: hashedPass,
         rooms: body.room_ids,
         user_type: userType,
@@ -155,12 +155,12 @@ const createName = async (req, res) => {
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + parseInt(body.name_end_date));
     console.log("end date is " + endDate);
-    const users = await User.find({ username: body.username.toLowerCase() });
+    const users = await User.find({ username: body.username });
     if (users.length > 0) {
       res.status(400).json({ msg: "هذا الاسم مستخدم بالفعل" });
     } else {
       const newUser = new User({
-        username: body.username.toLowerCase(),
+        username: body.username,
         name_type: body.name_type,
         user_type: "visitor",
         name_password: hashedNamePass,
@@ -178,7 +178,7 @@ const createName = async (req, res) => {
 const login = async (req, res) => {
   let user;
   if (req.body.room_password && req.body.name_password) {
-    user = await User.findOne({ username: req.body.username.toLowerCase() });
+    user = await User.findOne({ username: req.body.username });
     if (!user) {
       return res.status(404).send({ msg: "User not found!" });
     }
@@ -271,6 +271,17 @@ const memberLogin = async (req, res) => {
         .send({ msg: "كلمة مرور الغرفة مطلوبة للأعضاء المسجلين في الغرفة" });
     }
 
+    // Check if user.room_password is defined
+    if (!user.room_password) {
+      return res
+        .status(400)
+        .send({ msg: "لم يتم العثور على كلمة مرور الغرفة للمستخدم" });
+    }
+
+    // Log the values for debugging purposes
+    console.log("Room password from request:", req.body.room_password);
+    console.log("Room password from user:", user.room_password);
+
     const validRoomPassword = await bcrypt.compare(
       req.body.room_password,
       user.room_password
@@ -291,15 +302,14 @@ const memberLogin = async (req, res) => {
       accessToken: accessToken,
     });
   } catch (err) {
+    console.log("error from member " + err.message);
     return res.status(500).send({ msg: err.message });
   }
 };
-
 const nameLogin = async (req, res) => {
   try {
     let user = req.user;
     let member;
-
     const validNamePassword = await bcrypt.compare(
       req.body.name_password,
       user.name_password
@@ -308,7 +318,7 @@ const nameLogin = async (req, res) => {
     if (validNamePassword) {
       if (req.body.room_password) {
         member = await User.findOne({
-          username: req.body.username.toLowerCase(),
+          username: req.body.username,
           rooms: { $in: [req.body.room_id] },
         });
 
@@ -319,6 +329,7 @@ const nameLogin = async (req, res) => {
           req.body.room_password,
           member.room_password
         );
+        console.log("password *4 " + member.room_password);
 
         if (validRoomPassword) {
           const accessToken = jwt.sign(
@@ -384,7 +395,7 @@ const nameLogin = async (req, res) => {
 const visitorLogin = async (req, res) => {
   try {
     const user = await User.findOne({
-      username: req.body.username.toLowerCase(),
+      username: req.body.username,
     });
 
     if (user) {
@@ -483,7 +494,7 @@ const updateUser = async (req, res) => {
       const report = new Reports({
         master_name: req.body.master,
         room_id: updated.rooms[0],
-        action_user: updated.username.toLowerCase(),
+        action_user: updated.username,
         action_name_ar: "تعديل حساب",
         action_name_en: "Update user",
       });
