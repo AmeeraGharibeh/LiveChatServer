@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "https://audio-video-chat-backend.onrender.com/";
+const BASE_URL = "https://syriachatserver.onrender.com/";
 
 // Define a function to retrieve the token from local storage.
 const getTokenFromLocalStorage = () => {
