@@ -19,8 +19,7 @@ const createRoom = async (req, res) => {
       req.body.password = password;
       req.body.permissions = permissions;
       req.body.roomId = val._id.toHexString();
-
-      res.status(200).json(val);
+      next();
     });
   } catch (err) {
     res.status(500).send({ msg: err.message });
