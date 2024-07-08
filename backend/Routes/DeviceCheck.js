@@ -4,6 +4,7 @@ const deviceCheck = async (req, res, next) => {
   try {
     const user = await UserModel.findOne({
       username: req.body.username,
+      rooms: { $in: [req.body.room_id] },
     });
 
     if (!user) {
