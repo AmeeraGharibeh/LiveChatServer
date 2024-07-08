@@ -7,18 +7,22 @@ const {
   time,
 } = require("../Config/Helpers/time_helper");
 
-const createRoom = async (req, res) => {
+const createRoom = async (req, res, next) => {
   console.log(req.body);
   let roomData = req.body.body;
+
   const password = req.body.body.room_password;
   const permissions = req.body.body.permissions;
   roomData.end_date = time(calculateDateAfterDays(roomData.room_duration));
   const newRoom = new Rooms(roomData);
+  console.log("password from create room is " + password);
+
   try {
     await newRoom.save().then((val) => {
       req.body.password = password;
       req.body.permissions = permissions;
       req.body.roomId = val._id.toHexString();
+
       next();
     });
   } catch (err) {
