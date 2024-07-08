@@ -2,6 +2,7 @@ const RoomModel = require("../Models/RoomModel");
 
 const checkRoomStatus = async (req, res, next) => {
   try {
+    console.log("CheckRoomStatus: req.user before processing:", req.user);
     const room = await RoomModel.findById(req.body.room_id);
 
     if (!room) {
@@ -11,9 +12,15 @@ const checkRoomStatus = async (req, res, next) => {
     if (room.room_lock_status === "open") {
       next();
     } else if (room.room_lock_status === "limit") {
-      const allowedUserTypes = ["master", "member", "admin", "super_admin"];
+      const allowedUserTypes = [
+        "master",
+        "member",
+        "admin",
+        "super_admin",
+        "root",
+      ];
       const userType = req.user ? req.user.user_type : req.body.user_type;
-      console.log("user type is " + userType);
+      console.log("CheckRoomStatus: user type is " + userType);
 
       if (allowedUserTypes.includes(userType)) {
         next();
@@ -28,9 +35,10 @@ const checkRoomStatus = async (req, res, next) => {
         lock_reason: room.lock_reason,
       });
     }
+
+    console.log("CheckRoomStatus: req.user after processing:", req.user);
   } catch (err) {
     return res.status(500).send({ msg: err.message });
   }
 };
-
 module.exports = checkRoomStatus;

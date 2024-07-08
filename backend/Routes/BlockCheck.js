@@ -2,6 +2,7 @@ const BlockedModel = require("../Models/BlockedModel");
 
 const blockedMiddleware = async (req, res, next) => {
   try {
+    console.log("BlockedMiddleware: req.user before processing:", req.user);
     const blockedUser = await BlockedModel.findOne({
       room_id: req.body.room_id,
       $or: [{ ip: req.body.ip }, { device: req.body.device }],
@@ -27,6 +28,7 @@ const blockedMiddleware = async (req, res, next) => {
       }
     }
 
+    console.log("BlockedMiddleware: req.user after processing:", req.user);
     next();
   } catch (error) {
     console.error(error);

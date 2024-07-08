@@ -15,6 +15,7 @@ const deviceCheck = async (req, res, next) => {
       user.device = req.body.device;
       await user.save();
       req.user = user; // Save the user to the request object
+      console.log("DeviceCheck: User set in req.user:", req.user);
       return next();
     }
 
@@ -24,7 +25,8 @@ const deviceCheck = async (req, res, next) => {
         .send({ msg: "أنت تحاول تسجيل الدخول من جهاز مختلف" });
     }
 
-    // req.user = user; // Save the user to the request object
+    req.user = user; // Save the user to the request object
+    console.log("DeviceCheck: User set in req.user:", req.user);
     next();
   } catch (err) {
     return res.status(500).send({ msg: err.message });
