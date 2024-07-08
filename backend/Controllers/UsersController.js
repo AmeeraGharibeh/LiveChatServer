@@ -264,6 +264,7 @@ const login = async (req, res) => {
 };
 const memberLogin = async (req, res) => {
   let user = req.user;
+  console.log(JSON.stringify(user, null, 2));
   try {
     if (!req.body.room_password) {
       return res
