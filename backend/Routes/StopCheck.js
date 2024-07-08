@@ -60,8 +60,9 @@ const checkMembershipExpiration = async (req, res, next) => {
         msg: `نأسف لقد انتهت صلاحية عضويتك، يمكنك التجديد خلال ${remainingDays} أيام أو سيتم حذف العضوية.`,
       });
     }
+    req.user = user;
+    return next();
   }
-
   next();
 };
 
