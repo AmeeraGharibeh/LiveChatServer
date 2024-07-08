@@ -7,29 +7,27 @@ const {
   time,
 } = require("../Config/Helpers/time_helper");
 
-const createRoom = async (req, res, next) => {
+const createRoom = async (req, res) => {
   console.log(req.body);
   let roomData = req.body.body;
-
   const password = req.body.body.room_password;
   const permissions = req.body.body.permissions;
   roomData.end_date = time(calculateDateAfterDays(roomData.room_duration));
   const newRoom = new Rooms(roomData);
-  console.log("password from create room is " + password);
-
   try {
     await newRoom.save().then((val) => {
       req.body.password = password;
       req.body.permissions = permissions;
       req.body.roomId = val._id.toHexString();
 
-      // Call next() to pass control to the next middleware
-      next();
+      // Response will be handled in the middleware chain
+      res.status(200).json(val);
     });
   } catch (err) {
     res.status(500).send({ msg: err.message });
   }
 };
+
 const getAllRooms = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;

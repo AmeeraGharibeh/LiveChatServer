@@ -27,5 +27,3 @@ const createMasterUser = async (req, res) => {
 };
 
 module.exports = { createMasterUser };
-
-module.exports = { createMasterUser };
