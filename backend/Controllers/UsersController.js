@@ -441,12 +441,7 @@ const updateUser = async (req, res) => {
     // Ensure that the username is not "master"
     if (user.username.toLowerCase() !== "master") {
       const currentType = user.user_type;
-      const newType = body.user_type
-        ? body.user_type.toLowerCase()
-        : currentType;
-      if (newType === "master_girl") {
-        newType = "master";
-      }
+      const newType = body.user_type === 'master_girl' ? 'master': body.user_type;
 
       // Check if the user type is being updated
       if (newType !== currentType) {
