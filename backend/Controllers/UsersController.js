@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
     const items = await User.find({ rooms: body.room_id });
     const room = await Room.findById(body.room_id);
     const usernameExists = items.some(
-      (item) => item.username === body.username.toLowerCase()
+      (item) => item.username === body.username
     );
 
     if (usernameExists) {
@@ -60,7 +60,7 @@ const createUser = async (req, res) => {
     }
 
     const newUser = new User({
-      username: body.username.toLowerCase(),
+      username: body.username,
       room_password: hashedPass,
       rooms,
       user_type: body.user_type.toLowerCase(),
@@ -113,7 +113,7 @@ const createRoot = async (req, res) => {
 
     // Check if the username exists in any of the rooms
     const roomsWithUsername = items.filter(
-      (item) => item.username.toLowerCase() === body.username.toLowerCase()
+      (item) => item.username === body.username
     );
 
     if (roomsWithUsername.length > 0) {
@@ -130,7 +130,7 @@ const createRoot = async (req, res) => {
     } else {
       const userType = body.user_type.toLowerCase();
       const newUser = new User({
-        username: body.username.toLowerCase(),
+        username: body.username,
         room_password: hashedPass,
         rooms: body.room_ids,
         user_type: userType,
@@ -155,12 +155,12 @@ const createName = async (req, res) => {
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + parseInt(body.name_end_date));
     console.log("end date is " + endDate);
-    const users = await User.find({ username: body.username.toLowerCase() });
+    const users = await User.find({ username: body.username });
     if (users.length > 0) {
       res.status(400).json({ msg: "هذا الاسم مستخدم بالفعل" });
     } else {
       const newUser = new User({
-        username: body.username.toLowerCase(),
+        username: body.username,
         name_type: body.name_type,
         user_type: "visitor",
         name_password: hashedNamePass,
@@ -178,7 +178,7 @@ const createName = async (req, res) => {
 const login = async (req, res) => {
   let user;
   if (req.body.room_password && req.body.name_password) {
-    user = await User.findOne({ username: req.body.username.toLowerCase() });
+    user = await User.findOne({ username: req.body.username });
     if (!user) {
       return res.status(404).send({ msg: "User not found!" });
     }
@@ -318,7 +318,7 @@ const nameLogin = async (req, res) => {
     if (validNamePassword) {
       if (req.body.room_password) {
         member = await User.findOne({
-          username: req.body.username.toLowerCase(),
+          username: req.body.username,
           rooms: { $in: [req.body.room_id] },
         });
 
@@ -395,7 +395,7 @@ const nameLogin = async (req, res) => {
 const visitorLogin = async (req, res) => {
   try {
     const user = await User.findOne({
-      username: req.body.username.toLowerCase(),
+      username: req.body.username,
     });
 
     if (user) {
@@ -499,7 +499,7 @@ const updateUser = async (req, res) => {
       const report = new Reports({
         master_name: req.body.master,
         room_id: updated.rooms[0],
-        action_user: updated.username.toLowerCase(),
+        action_user: updated.username,
         action_name_ar: "تعديل حساب",
         action_name_en: "Update user",
       });
@@ -546,7 +546,6 @@ const updateNameUser = async (req, res) => {
     res.status(500).json({ msg: err.message });
   }
 };
-
 
 const deleteUser = async (req, res) => {
   console.log(req.body);
