@@ -9,7 +9,7 @@ const createMasterUser = async (req, res) => {
 
   try {
     const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(password, salt);
+    const hashedPass = await bcrypt.hash(room_password, salt);
     const rooms = [roomId];
     const newUser = new UserModel({
       username: "MASTER",

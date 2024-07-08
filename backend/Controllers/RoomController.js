@@ -15,11 +15,10 @@ const createRoom = async (req, res, next) => {
   const permissions = req.body.body.permissions;
   roomData.end_date = time(calculateDateAfterDays(roomData.room_duration));
   const newRoom = new Rooms(roomData);
-  console.log("password from create room is " + password);
 
   try {
     await newRoom.save().then((val) => {
-      req.body.password = password;
+      req.body.room_password = password;
       req.body.permissions = permissions;
       req.body.roomId = val._id.toHexString();
 
