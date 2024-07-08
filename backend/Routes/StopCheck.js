@@ -31,10 +31,11 @@ const checkMembershipExpiration = async (req, res, next) => {
   try {
     const query = { username: req.body.username, user_type: { $ne: "-" } };
     const result = await Users.find(query);
+    let user = req.user;
 
     if (result && result.length > 0) {
-      const user = result[0];
-      const parts = user.name_end_date.split(/[\s,\/:]+/); // Split by spaces, commas, slashes, and colons
+      const name = result[0];
+      const parts = name.name_end_date.split(/[\s,\/:]+/); // Split by spaces, commas, slashes, and colons
       const month = parseInt(parts[0], 10) - 1; // Months are zero-based in JavaScript Dates
       const day = parseInt(parts[1], 10);
       const year = parseInt(parts[2], 10);
@@ -46,7 +47,7 @@ const checkMembershipExpiration = async (req, res, next) => {
       const afterWeek = new Date(formatted.getTime() + 7 * 24 * 60 * 60 * 1000);
 
       if (new Date() > afterWeek) {
-        await UserModel.findByIdAndDelete(user._id);
+        await UserModel.findByIdAndDelete(name._id);
         console.log("User deleted from the database");
 
         return res.status(401).json({
@@ -61,6 +62,15 @@ const checkMembershipExpiration = async (req, res, next) => {
           msg: `نأسف لقد انتهت صلاحية عضويتك، يمكنك التجديد خلال ${remainingDays} أيام أو سيتم حذف العضوية.`,
         });
       }
+
+      //  const { room_password, name_password, ...others } = user._doc;
+      //  req.user = {
+      //           ...others,
+      //           icon: req.body.icon,
+      //           pic: member.pic,
+      //           user_type: member.user_type,
+      //           permissions: member.permissions,
+      //         },
 
       req.user = user;
       console.log("CheckMembershipExpiration: User set in req.user:", req.user);
