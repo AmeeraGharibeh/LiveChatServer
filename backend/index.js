@@ -56,6 +56,14 @@ const stoppedUsers = [];
 const roomSockets = {};
 const now = new Date();
 
+const onlineUsers = {};
+const speakersQueue = {};
+const streamData = {};
+const ignoredUsers = new Set();
+const stoppedUsers = [];
+const roomSockets = {};
+const now = new Date();
+
 io.on("connection", async (socket) => {
   console.log("A user connected");
   const ip = socket.handshake.query.ip;
@@ -87,7 +95,7 @@ io.on("connection", async (socket) => {
       message: user.username + " انضمّ إلى الغرفة",
       color: 0xffc7f9cc,
       type: "notification",
-      notificationType: "in/out",
+      notificationType: "in",
     });
     socket.emit("userJoined", {
       userId: user._id,
@@ -155,7 +163,7 @@ io.on("connection", async (socket) => {
       message: data.username + " غادر الغرفة  ",
       color: 0xfffad4d4,
       type: "notification",
-      notificationType: "in/out",
+      notificationType: "out",
     });
 
     //update room log on db
@@ -174,7 +182,6 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("requestOnlineUsers", (data) => {
-    console.log("requested " + onlineUsers);
     socket.emit("roomsOnlineUsers", onlineUsers);
   });
 
@@ -263,7 +270,7 @@ io.on("connection", async (socket) => {
         stoppedUser.stop_type == "is_private_stopped" ||
         stoppedUser.stop_type == "stop_all"
       ) {
-        io.to(data["fromSocket"]).emit("notification", {
+        io.to(data["senderSocket"]).emit("notification", {
           sender: "system",
           senderId: "system",
           message: "تم ايقافك عن ارسال الرسائل الخاصة",
@@ -271,10 +278,10 @@ io.on("connection", async (socket) => {
           type: "notification",
         });
       } else {
-        sendPrivateMessage(data);
+        sendPrivateMessage(data, socket);
       }
     } else {
-      sendPrivateMessage(data);
+      sendPrivateMessage(data, socket);
     }
   });
 
@@ -297,15 +304,7 @@ io.on("connection", async (socket) => {
       type: "notification",
     });
   });
-  socket.on("preventPrivate", (data) => {
-    io.to(data.senderSocket).emit("privateNotification", {
-      sender: data.senderSocket,
-      senderId: data.senderSocket,
-      message: "هذا العضو قام بإيقاف الرسائل الخاصة",
-      color: 0xfffce9f1,
-      type: "notification",
-    });
-  });
+  socket.on("preventPrivate", (data) => {});
 
   // Handle kick user out
   socket.on("kickUser", async (data) => {
@@ -1117,35 +1116,61 @@ function sendMessage(data, socket) {
     senderSocket,
   });
 }
-async function sendPrivateMessage(data) {
+async function sendPrivateMessage(data, socket1) {
   const socketsInRoom = getSocketsInRoom(data.roomId);
+  const types = ["admin", "super_admin", "member", "master", "master_girl"];
 
   const toSocket = socketsInRoom.find((socket) => socket.id === data.toSocket);
   if (toSocket) {
-    var type = data.type;
-    var message = type == "emoji" ? data.emoji : data.message;
-    var sendTime = data.time;
+    const user = onlineUsers[data.roomId].find(
+      (id) => id["id"] === data.toSocket
+    );
+    console.log("user is " + JSON.stringify(user, null, 2));
+    if (
+      user["user"]["preventPrivateMsg"] === "all" ||
+      (user["user"]["preventPrivateMsg"] === "limit" &&
+        types.includes(data.user_type))
+    ) {
+      var type = data.type;
+      var message = type == "emoji" ? data.emoji : data.message;
+      var sendTime = data.time;
 
-    io.to(data.toSocket).emit("privateMessage", {
-      between: data.between,
-      message,
-      type: data.type,
-      sender: data.sender,
-      senderId: data.senderId,
-      time: sendTime,
-      device: data.device,
-      name_type: data.name_type,
-      user_type: data.user_type,
-      font: data.font,
-      senderSocket: data.senderSocket,
-      icon: data.icon,
-    });
-    io.to(data.toSocket).emit("newPrivateMsg", {
-      between: data.between,
-      message,
-      type: data.type,
-      icon: data.icon,
-    });
+      io.to(data.toSocket).emit("privateMessage", {
+        between: data.between,
+        message,
+        type: data.type,
+        sender: data.sender,
+        senderId: data.senderId,
+        time: sendTime,
+        device: data.device,
+        name_type: data.name_type,
+        user_type: data.user_type,
+        font: data.font,
+        senderSocket: data.senderSocket,
+        icon: data.icon,
+      });
+      io.to(data.toSocket).emit("newPrivateMsg", {
+        between: data.between,
+        message,
+        type: data.type,
+        icon: data.icon,
+      });
+    } else if (
+      user["user"]["preventPrivateMsg"] === "none" ||
+      (user["user"]["preventPrivateMsg"] === "limit" &&
+        !types.includes(data.user_type))
+    ) {
+      console.log("emitted");
+
+      socket1.emit("privateNotification", {
+        sender: "system",
+        senderId: "system",
+        message: "هذا العضو قام بإيقاف الرسائل الخاصة",
+        color: 0xfffce9f1,
+        type: "notification",
+        notificationType: "prevent",
+      });
+    }
   }
 }
 
