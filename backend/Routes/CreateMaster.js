@@ -1,8 +1,12 @@
 const bcrypt = require("bcryptjs");
 const UserModel = require("../Models/UserModel");
 
-const createMasterUser = async (req, res, next) => {
-  const { password, permissions, roomId } = req.body;
+const createMasterUser = async (req, res) => {
+  const { room_password, permissions, roomId } = req.body;
+  console.log("password from create master is " + room_password);
+  console.log(
+    "body from create master is " + JSON.stringify(req.body, null, 2)
+  );
 
   try {
     const salt = await bcrypt.genSalt(10);
@@ -17,9 +21,10 @@ const createMasterUser = async (req, res, next) => {
       permissions,
     });
     await newUser.save();
-    next();
+    res.status(200).json({ msg: "Master user created successfully" });
   } catch (err) {
     res.status(500).send({ msg: "Error creating master user" });
   }
 };
+
 module.exports = { createMasterUser };
