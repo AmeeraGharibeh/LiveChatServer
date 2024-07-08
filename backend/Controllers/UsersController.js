@@ -271,13 +271,6 @@ const memberLogin = async (req, res) => {
         .send({ msg: "كلمة مرور الغرفة مطلوبة للأعضاء المسجلين في الغرفة" });
     }
 
-    // Check if user.room_password is defined
-    if (!user.room_password) {
-      return res
-        .status(400)
-        .send({ msg: "لم يتم العثور على كلمة مرور الغرفة للمستخدم" });
-    }
-
     // Log the values for debugging purposes
     console.log("Room password from request:", req.body.room_password);
     console.log("Room password from user:", user.room_password);
@@ -452,7 +445,8 @@ const updateUser = async (req, res) => {
     // Ensure that the username is not "master"
     if (user.username.toLowerCase() !== "master") {
       const currentType = user.user_type;
-      const newType = body.user_type === 'master_girl' ? 'master': body.user_type;
+      const newType =
+        body.user_type === "master_girl" ? "master" : body.user_type;
 
       // Check if the user type is being updated
       if (newType !== currentType) {

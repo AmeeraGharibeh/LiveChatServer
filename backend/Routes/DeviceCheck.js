@@ -3,7 +3,7 @@ const UserModel = require("../Models/UserModel");
 const deviceCheck = async (req, res, next) => {
   try {
     const user = await UserModel.findOne({
-      username: req.body.username.toLowerCase(),
+      username: req.body.username,
     });
 
     if (!user) {
@@ -23,7 +23,7 @@ const deviceCheck = async (req, res, next) => {
         .send({ msg: "أنت تحاول تسجيل الدخول من جهاز مختلف" });
     }
 
-   // req.user = user; // Save the user to the request object
+    // req.user = user; // Save the user to the request object
     next();
   } catch (err) {
     return res.status(500).send({ msg: err.message });
