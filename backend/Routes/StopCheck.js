@@ -28,42 +28,48 @@ const checkStoppedUsers = async (device) => {
 };
 
 const checkMembershipExpiration = async (req, res, next) => {
-  const query = { username: req.body.username, user_type: { $ne: "-" } };
-  const result = await Users.find(query);
+  try {
+    const query = { username: req.body.username, user_type: { $ne: "-" } };
+    const result = await UserModel.find(query);
 
-  if (result && result.length > 0) {
-    const user = result[0];
-    const parts = user.name_end_date.split(/[\s,\/:]+/); // Split by spaces, commas, slashes, and colons
-    const month = parseInt(parts[0], 10) - 1; // Months are zero-based in JavaScript Dates
-    const day = parseInt(parts[1], 10);
-    const year = parseInt(parts[2], 10);
-    const hours = parseInt(parts[3], 10) + (parts[6] === "PM" ? 12 : 0); // Adjust for PM
-    const minutes = parseInt(parts[4], 10);
-    const seconds = parseInt(parts[5], 10);
-    const formatted = new Date(year, month, day, hours, minutes, seconds);
+    if (result && result.length > 0) {
+      const user = result[0];
+      const parts = user.name_end_date.split(/[\s,\/:]+/); // Split by spaces, commas, slashes, and colons
+      const month = parseInt(parts[0], 10) - 1; // Months are zero-based in JavaScript Dates
+      const day = parseInt(parts[1], 10);
+      const year = parseInt(parts[2], 10);
+      const hours = parseInt(parts[3], 10) + (parts[6] === "PM" ? 12 : 0); // Adjust for PM
+      const minutes = parseInt(parts[4], 10);
+      const seconds = parseInt(parts[5], 10);
+      const formatted = new Date(year, month, day, hours, minutes, seconds);
 
-    const afterWeek = new Date(formatted.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const afterWeek = new Date(formatted.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-    if (new Date() > afterWeek) {
-      await Users.findByIdAndDelete(user._id);
-      console.log("User deleted from the database");
+      if (new Date() > afterWeek) {
+        await UserModel.findByIdAndDelete(user._id);
+        console.log("User deleted from the database");
 
-      return res.status(401).json({
-        msg: `نأسف لقد انتهت صلاحية عضويتك، وتم حذف العضوية بنجاح.`,
-      });
-    } else if (time(formatted) < time(new Date())) {
-      const remainingDays = Math.ceil(
-        (afterWeek - new Date()) / (1000 * 60 * 60 * 24)
-      );
+        return res.status(401).json({
+          msg: `نأسف لقد انتهت صلاحية عضويتك، وتم حذف العضوية بنجاح.`,
+        });
+      } else if (new Date() > formatted) {
+        const remainingDays = Math.ceil(
+          (afterWeek - new Date()) / (1000 * 60 * 60 * 24)
+        );
 
-      return res.status(401).json({
-        msg: `نأسف لقد انتهت صلاحية عضويتك، يمكنك التجديد خلال ${remainingDays} أيام أو سيتم حذف العضوية.`,
-      });
+        return res.status(401).json({
+          msg: `نأسف لقد انتهت صلاحية عضويتك، يمكنك التجديد خلال ${remainingDays} أيام أو سيتم حذف العضوية.`,
+        });
+      }
+
+      req.user = user;
+      console.log("CheckMembershipExpiration: User set in req.user:", req.user);
+      return next();
     }
-    req.user = user;
-    return next();
+    next();
+  } catch (err) {
+    return res.status(500).send({ msg: err.message });
   }
-  next();
 };
 
 module.exports = { checkStoppedUsers, checkMembershipExpiration };

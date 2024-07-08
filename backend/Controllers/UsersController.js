@@ -323,7 +323,7 @@ const nameLogin = async (req, res) => {
 
     if (validNamePassword) {
       if (req.body.room_password) {
-        member = await User.findOne({
+        member = await UserModel.findOne({
           username: req.body.username,
           rooms: { $in: [req.body.room_id] },
         });
