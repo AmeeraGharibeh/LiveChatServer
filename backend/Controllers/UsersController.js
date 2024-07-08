@@ -269,6 +269,17 @@ const memberLogin = async (req, res) => {
       return res
         .status(400)
         .send({ msg: "كلمة مرور الغرفة مطلوبة للأعضاء المسجلين في الغرفة" });
+      //TODO login as visitor
+    }
+
+    // Check if user.rooms[0] is equal to req.body.roomId
+    if (!user.rooms || user.rooms[0] !== req.body.room_id) {
+      return res.status(400).send({ msg: "المستخدم غير موجود" });
+    }
+
+    // Check if user.room_password is defined
+    if (!user.room_password) {
+      return res.status(400).send({ msg: "كلمة المرور غير صحيحة" });
     }
 
     // Log the values for debugging purposes
@@ -299,6 +310,7 @@ const memberLogin = async (req, res) => {
     return res.status(500).send({ msg: err.message });
   }
 };
+
 const nameLogin = async (req, res) => {
   try {
     let user = req.user;
