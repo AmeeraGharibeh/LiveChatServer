@@ -64,16 +64,15 @@ const checkMembershipExpiration = async (req, res, next) => {
       }
 
       //  const { room_password, name_password, ...others } = user._doc;
-      //  req.user = {
-      //           ...others,
-      //           icon: req.body.icon,
-      //           pic: member.pic,
-      //           user_type: member.user_type,
-      //           permissions: member.permissions,
-      //         },
-
-      req.user = user;
-      console.log("CheckMembershipExpiration: User set in req.user:", req.user);
+      (req.user = {
+        ...others,
+        name_password: name.name_password,
+      }),
+        // req.user = user;
+        console.log(
+          "CheckMembershipExpiration: User set in req.user:",
+          req.user
+        );
       return next();
     }
     next();
