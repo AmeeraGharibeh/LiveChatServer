@@ -10,7 +10,7 @@ const {
   deleteAllLogs,
 } = require("../Controllers/LogController");
 
-router.post("/:id", verifyTokenAndAction, getLogsByRoom);
+router.post("/:id", getLogsByRoom);
 router.get("/:id", getLogsByUserID);
 router.get("/", verifyTokenAndAuthorization, getAllLogs);
 router.delete("/:id", deleteAllLogs);
