@@ -271,6 +271,17 @@ const memberLogin = async (req, res) => {
         .send({ msg: "كلمة مرور الغرفة مطلوبة للأعضاء المسجلين في الغرفة" });
     }
 
+    // Check if user.room_password is defined
+    if (!user.room_password) {
+      return res
+        .status(400)
+        .send({ msg: "لم يتم العثور على كلمة مرور الغرفة للمستخدم" });
+    }
+
+    // Log the values for debugging purposes
+    console.log("Room password from request:", req.body.room_password);
+    console.log("Room password from user:", user.room_password);
+
     const validRoomPassword = await bcrypt.compare(
       req.body.room_password,
       user.room_password
@@ -291,15 +302,14 @@ const memberLogin = async (req, res) => {
       accessToken: accessToken,
     });
   } catch (err) {
+    console.log("error from member " + err.message);
     return res.status(500).send({ msg: err.message });
   }
 };
-
 const nameLogin = async (req, res) => {
   try {
     let user = req.user;
     let member;
-
     const validNamePassword = await bcrypt.compare(
       req.body.name_password,
       user.name_password
@@ -319,6 +329,7 @@ const nameLogin = async (req, res) => {
           req.body.room_password,
           member.room_password
         );
+        console.log("password *4 " + member.room_password);
 
         if (validRoomPassword) {
           const accessToken = jwt.sign(
@@ -535,6 +546,7 @@ const updateNameUser = async (req, res) => {
     res.status(500).json({ msg: err.message });
   }
 };
+
 
 const deleteUser = async (req, res) => {
   console.log(req.body);
