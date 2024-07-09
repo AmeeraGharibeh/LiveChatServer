@@ -187,7 +187,9 @@ io.on("connection", async (socket) => {
       type: "notification",
     });
   });
-
+  socket.on("changeRoomColor", (data) => {
+    io.to(data.roomId).emit("changeRoomColor", { color: data.color });
+  });
   // send notification when your profile has been visited
   socket.on("profileVisit", (data) => {
     io.to(data.socket).emit("notification", {
