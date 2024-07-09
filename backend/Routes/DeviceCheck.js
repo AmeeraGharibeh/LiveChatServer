@@ -1,16 +1,15 @@
 const UserModel = require("../Models/UserModel");
 
 const deviceCheck = async (req, res, next) => {
+  if (!req.body.room_password) {
+    return next();
+  }
+
   try {
-    const username = req.body.username;
-    const room_id = req.body.room_id;
-
-    let query = { username };
-    if (room_id) {
-      query.rooms = { $in: [room_id] };
-    }
-
-    const user = await UserModel.findOne(query);
+    const user = await UserModel.findOne({
+      username: req.body.username,
+      rooms: { $in: [req.body.room_id] },
+    });
 
     if (!user) {
       return res.status(404).send({ msg: "المستخدم غير موجود" });
@@ -20,6 +19,7 @@ const deviceCheck = async (req, res, next) => {
       user.device = req.body.device;
       await user.save();
       req.user = user;
+      console.log("DeviceCheck: User set in req.user:", req.user);
       return next();
     }
 
@@ -29,7 +29,8 @@ const deviceCheck = async (req, res, next) => {
         .send({ msg: "أنت تحاول تسجيل الدخول من جهاز مختلف" });
     }
 
-    //req.user = user;
+    req.user = user;
+    console.log("DeviceCheck: User set in req.user:", req.user);
     next();
   } catch (err) {
     return res.status(500).send({ msg: err.message });
