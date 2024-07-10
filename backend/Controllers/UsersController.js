@@ -521,26 +521,26 @@ const changeMasterPassword = async (req, res) => {
   const { roomId, old_password, newPassword, roomCode } = req.body;
   const userId = req.params.id;
   try {
-    const user = await User.findOne({ id: userId });
+    const user = await User.findOne({ _id: userId });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ msg: "User not found" });
     }
-    const room = await Room.findOne({ id: roomId });
+    const room = await Room.findOne({ _id: roomId });
     if (!room) {
-      return res.status(404).json({ message: "Room not found" });
+      return res.status(404).json({ msg: "Room not found" });
     }
 
     if (!user.isOwner) {
-      return res.status(403).json({ message: "مسموح فقط للماستر العام" });
+      return res.status(403).json({ msg: "مسموح فقط للماستر العام" });
     }
 
     const isPasswordMatch = verifyPassword(old_password, user.room_password);
     if (!isPasswordMatch) {
-      return res.status(400).json({ message: "كلمة المرور السابقة غير صحيحة" });
+      return res.status(400).json({ msg: "كلمة المرور السابقة غير صحيحة" });
     }
 
     if (roomCode !== room.roomCode) {
-      return res.status(400).json({ message: "رمز الغرفة غير صحيح" });
+      return res.status(400).json({ msg: "رمز الغرفة غير صحيح" });
     }
 
     const hashedPassword = hashPassword(newPassword);
