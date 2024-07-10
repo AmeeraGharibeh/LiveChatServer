@@ -12,6 +12,7 @@ const {
   visitorLogin,
   nameLogin,
   updateUser,
+  changeMasterPassword,
   updateUserProfile,
   addPhotoToAlbum,
   updateUserAlbum,
@@ -58,6 +59,7 @@ router.post(
 router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.put("/name/:id", verifyTokenAndAuthorization, updateNameUser);
 router.put("/update/:id", updateUserProfile);
+router.put("/updatepass/:id", changeMasterPassword);
 router.post("/album/", addPhotoToAlbum);
 router.put("/album/:id", updateUserAlbum);
 router.get("/album/:id", getUserAlbum);

@@ -517,7 +517,44 @@ const updateUser = async (req, res) => {
     res.status(500).send({ msg: err.message });
   }
 };
+const changeMasterPassword = async (req, res) => {
+  const { roomId, old_password, newPassword, roomCode } = req.body;
+  const userId = req.params.id;
+  try {
+    const user = await User.findOne({ id: userId });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const room = await Room.findOne({ id: roomId });
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
 
+    if (!user.isOwner) {
+      return res.status(403).json({ message: "مسموح فقط للماستر العام" });
+    }
+
+    const isPasswordMatch = verifyPassword(old_password, user.room_password);
+    if (!isPasswordMatch) {
+      return res.status(400).json({ message: "كلمة المرور السابقة غير صحيحة" });
+    }
+
+    if (roomCode !== room.roomCode) {
+      return res.status(400).json({ message: "رمز الغرفة غير صحيح" });
+    }
+
+    const hashedPassword = hashPassword(newPassword);
+
+    user.room_password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ msg: "تم تحديث المستخدم بنجاح" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
 const updateNameUser = async (req, res) => {
   try {
     const existingUser = await User.findById(req.params.id);
@@ -968,6 +1005,7 @@ module.exports = {
   visitorLogin,
   nameLogin,
   updateUser,
+  changeMasterPassword,
   updateNameUser,
   updateUserProfile,
   addPhotoToAlbum,
