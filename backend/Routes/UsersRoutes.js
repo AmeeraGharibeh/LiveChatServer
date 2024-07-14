@@ -13,6 +13,7 @@ const {
   nameLogin,
   updateUser,
   changeMasterPassword,
+  changeNamePassword,
   updateUserProfile,
   addPhotoToAlbum,
   updateUserAlbum,
@@ -60,6 +61,7 @@ router.put("/:id", verifyTokenAndAdmin, updateUser);
 router.put("/name/:id", verifyTokenAndAuthorization, updateNameUser);
 router.put("/update/:id", updateUserProfile);
 router.put("/updatepass/:id", changeMasterPassword);
+router.put("/namepass/:id", changeNamePassword);
 router.post("/album/", addPhotoToAlbum);
 router.put("/album/:id", updateUserAlbum);
 router.get("/album/:id", getUserAlbum);

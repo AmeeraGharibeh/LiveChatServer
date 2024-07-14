@@ -14,13 +14,13 @@ const BlockedRouter = require("./Routes/BlockedRoutes");
 const LogsRouter = require("./Routes/LogRoutes");
 const ImagesRouter = require("./Routes/ImagesRoutes");
 const EmojieRouter = require("./Routes/EmojieRoutes");
+const NoticeRouter = require("./Routes/NoticeRoutes");
 const Logs = require("./Models/LogModel");
 const http = require("http");
 const socketIo = require("socket.io");
 const { time } = require("./Config/Helpers/time_helper");
 const Stopped = require("./Models/StopModel");
 const { checkStoppedUsers } = require("./Routes/StopCheck");
-const UserModel = require("./Models/UserModel");
 const CountryModel = require("./Models/CountryModel");
 const RoomModel = require("./Models/RoomModel");
 
@@ -30,7 +30,7 @@ const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     transports: ["websocket"],
-    origin: "wss://syriachatserver.onrender.com/",
+    origin: "wss://audio-video-chat-backend.onrender.com/",
     // origin: "http://192.168.137.1:8002/",
     methods: ["GET", "POST"],
   },
@@ -97,7 +97,7 @@ io.on("connection", async (socket) => {
 
     if (speakersQueue[user.room_id] && speakersQueue[user.room_id].length > 0) {
       io.to(socket.id).emit("audioStreamData", speakersQueue[user.room_id][0]);
-      updateOnlineUsersList(user.room_id, socket.id, "audio_status", "unmute");
+      updateOnlineUsersList(user.room_id, socket.id, "audio_status", "none");
     }
     addToOnlineUsers(user, socket);
     const isStopped = await checkStoppedUsers(user["device"]);
@@ -183,6 +183,15 @@ io.on("connection", async (socket) => {
       sender: master.username,
       senderId: master._id,
       message: master.username + "  قام بتغيير اعدادات الغرفة  ",
+      color: 0xfffce9f1,
+      type: "notification",
+    });
+  });
+  socket.on("addNewUser", (master) => {
+    io.to(master.room_id).emit("notification", {
+      sender: master.username,
+      senderId: master._id,
+      message: master.username + `قام بإضافة عضو جديد - ${master.newUser} -`,
       color: 0xfffce9f1,
       type: "notification",
     });
@@ -529,7 +538,7 @@ io.on("connection", async (socket) => {
 
   socket.on("unmuteAudio", function (data) {
     const roomId = data.roomId;
-    updateOnlineUsersList(roomId, socket.id, "audio_status", "unmute");
+    updateOnlineUsersList(roomId, socket.id, "audio_status", "none");
   });
 
   // // Admin stops a user's audio stream
@@ -610,9 +619,9 @@ io.on("connection", async (socket) => {
       } else {
         // No users in the queue, end the streaming
         socket.emit("endStreaming");
-        onlineUsers[roomId].forEach((user) => {
-          user.user["audio_status"] = "none";
-        });
+        // onlineUsers[roomId].forEach((user) => {
+        //   user.user["audio_status"] = "none";
+        // });
       }
     } else {
       // User not found in the speakersQueue[roomId], handle accordingly (e.g., send an error message)
@@ -1038,14 +1047,14 @@ function endStreaming(data) {
   io.to(data["roomId"]).emit("endBroadcast", { socketId: data["socketId"] });
   updateOnlineUsersList(data["roomId"], data["socketId"], "mic_status", "none");
 
-  if (onlineUsers[data["roomId"]]) {
-    onlineUsers[data["roomId"]].forEach((user) => {
-      if (user.id !== data["socketId"]) {
-        user.user["audio_status"] = "none";
-      }
-    });
-    emitOnlineUsers({ room_id: data["roomId"] });
-  }
+  // if (onlineUsers[data["roomId"]]) {
+  //   onlineUsers[data["roomId"]].forEach((user) => {
+  //     if (user.id !== data["socketId"]) {
+  //       user.user["audio_status"] = "none";
+  //     }
+  //   });
+  //   emitOnlineUsers({ room_id: data["roomId"] });
+  // }
   currentStreamer = null; // Clear current streamer
 
   if (
@@ -1068,7 +1077,7 @@ function joinBroadcast(data, socket) {
     roomId: data["roomId"],
     streamerSocket: data["socketId"],
   });
-  updateOnlineUsersList(data["roomId"], socket.id, "audio_status", "unmute");
+  //  updateOnlineUsersList(data["roomId"], socket.id, "audio_status", "unmute");
 }
 
 function startVideoStreaming(data, socket) {
@@ -1321,6 +1330,7 @@ app.use("/blocked", BlockedRouter);
 app.use("/logs", LogsRouter);
 app.use("/images", ImagesRouter);
 app.use("/emojies", EmojieRouter);
+app.use("/notice", NoticeRouter);
 
 /////////////////////////////////////////////////////
 server.listen(8002, () => {

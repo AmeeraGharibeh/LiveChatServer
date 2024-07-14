@@ -13,6 +13,10 @@ const RoomSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  is_sales_room: {
+    type: Boolean,
+    default: false,
+  },
   room_code: {
     type: String,
     required: true,
@@ -110,44 +114,3 @@ const RoomSchema = mongoose.Schema({
 });
 
 module.exports = mongoose.model("Room", RoomSchema);
-
-/*const AccountLimitsSchema = mongoose.Schema({
-    admin : {
-        type : Number, 
-        required : true, 
-    },
-     super_admin : {
-        type : Number, 
-        required : true, 
-    },
-     master : {
-        type : Number, 
-        required : true, 
-    },
-     member : {
-        type : Number, 
-        required : true, 
-    },
-    
-
-},{ timestamps : true });
-
-module.exports = mongoose.model('AccountLimit', AccountLimitsSchema);
-
-const MasterAdvancedSchema = mongoose.Schema({
-    add_master : {
-        type : Boolean, 
-        default: false 
-    },
-     manage_room : {
-        type : Boolean, 
-        default : false, 
-    },
-    
-
-},);
-
-module.exports = mongoose.model('MasterAdvanced', MasterAdvancedSchema);
-
-
-*/

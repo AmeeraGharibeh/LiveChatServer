@@ -7,7 +7,6 @@ const Reports = require("../Models/ReportsModel");
 const Blocked = require("../Models/BlockedModel");
 const { time } = require("../Config/Helpers/time_helper");
 const ImageModel = require("../Models/ImageModel");
-//const cron = require("node-cron");
 
 const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10);
@@ -458,8 +457,12 @@ const updateUser = async (req, res) => {
     // Ensure that the username is not "master"
     if (user.username.toLowerCase() !== "master") {
       const currentType = user.user_type;
-      const newType =
-        body.user_type === "master_girl" ? "master" : body.user_type;
+      const newType = body.user_type
+        ? body.user_type.toLowerCase()
+        : currentType;
+      if (newType === "master_girl") {
+        newType = "master";
+      }
 
       // Check if the user type is being updated
       if (newType !== currentType) {
@@ -517,6 +520,7 @@ const updateUser = async (req, res) => {
     res.status(500).send({ msg: err.message });
   }
 };
+
 const changeMasterPassword = async (req, res) => {
   const { roomId, old_password, newPassword, roomCode } = req.body;
   const userId = req.params.id;
@@ -530,7 +534,7 @@ const changeMasterPassword = async (req, res) => {
       return res.status(404).json({ msg: "Room not found" });
     }
 
-    if (!user.isOwner) {
+    if (!user.is_owner) {
       return res.status(403).json({ msg: "مسموح فقط للماستر العام" });
     }
 
@@ -539,11 +543,11 @@ const changeMasterPassword = async (req, res) => {
       return res.status(400).json({ msg: "كلمة المرور السابقة غير صحيحة" });
     }
 
-    if (roomCode !== room.roomCode) {
+    if (roomCode !== room.room_code) {
       return res.status(400).json({ msg: "رمز الغرفة غير صحيح" });
     }
 
-    const hashedPassword = hashPassword(newPassword);
+    const hashedPassword = await hashPassword(newPassword);
 
     user.room_password = hashedPassword;
     await user.save();
@@ -555,6 +559,34 @@ const changeMasterPassword = async (req, res) => {
       .json({ message: "Server error", error: error.message });
   }
 };
+
+const changeNamePassword = async (req, res) => {
+  const { old_password, newPassword } = req.body;
+  const userId = req.params.id;
+  try {
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    const isPasswordMatch = verifyPassword(old_password, user.name_password);
+    if (!isPasswordMatch) {
+      return res.status(400).json({ msg: "كلمة المرور السابقة غير صحيحة" });
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    user.name_password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ msg: "تم تحديث المستخدم بنجاح" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
 const updateNameUser = async (req, res) => {
   try {
     const existingUser = await User.findById(req.params.id);
@@ -566,10 +598,6 @@ const updateNameUser = async (req, res) => {
     const body = req.body.body;
     const updatedFields = {};
 
-    if (body.room_password) {
-      const salt = await bcrypt.genSalt(10);
-      body.room_password = await bcrypt.hash(body.room_password, salt);
-    }
     for (const key in body) {
       if (body.hasOwnProperty(key)) {
         updatedFields[key] = body[key];
@@ -580,7 +608,7 @@ const updateNameUser = async (req, res) => {
 
     const result = await updatedUser.save();
 
-    res.status(200).json({ msg: "User updated successfully!", user: result });
+    res.status(200).json({ msg: "تم تحديث المستخدم بنجاح", user: result });
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
@@ -1006,6 +1034,7 @@ module.exports = {
   nameLogin,
   updateUser,
   changeMasterPassword,
+  changeNamePassword,
   updateNameUser,
   updateUserProfile,
   addPhotoToAlbum,

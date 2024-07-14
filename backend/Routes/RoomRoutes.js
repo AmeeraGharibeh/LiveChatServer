@@ -12,6 +12,7 @@ const {
   deleteRoom,
   resetRoom,
   searchRoom,
+  getFavoritesRooms,
   getSpecialRooms,
 } = require("../Controllers/RoomController");
 const { createMasterUser } = require("./CreateMaster");
@@ -19,6 +20,7 @@ const { createMasterUser } = require("./CreateMaster");
 //router.post("/", verifyTokenAndAuthorization, createRoom);
 router.post("/", verifyTokenAndAuthorization, createRoom, createMasterUser);
 router.get("/search", searchRoom);
+router.get("/favorites", getFavoritesRooms);
 router.get("/", getAllRooms);
 router.get("/special", getSpecialRooms);
 router.get("/:id", getAllRoomsByCountry);

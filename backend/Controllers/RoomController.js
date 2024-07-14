@@ -1,6 +1,10 @@
 const Rooms = require("../Models/RoomModel");
 const User = require("../Models/UserModel");
 const Logs = require("../Models/LogModel");
+const {
+  Types: { ObjectId },
+} = require("mongoose");
+
 const Reports = require("../Models/ReportsModel");
 const {
   calculateDateAfterDays,
@@ -90,12 +94,14 @@ const getSpecialRooms = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
 
   try {
-    const totalItems = await Rooms.countDocuments({ room_type: "special" });
+    const totalItems = await Rooms.countDocuments({
+      room_type: { $in: ["gold", "special"] },
+    });
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
 
-    const items = await Rooms.find({ room_type: "special" })
+    const items = await Rooms.find({ room_type: { $in: ["gold", "special"] } })
       .skip(skip)
       .limit(limit);
 
@@ -114,6 +120,27 @@ const getSpecialRooms = async (req, res) => {
   }
 };
 
+const getFavoritesRooms = async (req, res) => {
+  try {
+    let ids;
+
+    // Remove leading and trailing brackets from the query string
+    const cleanedQuery = req.query.q.replace(/[\[\]]/g, "");
+
+    ids = cleanedQuery.split(",").map((id) => id.trim());
+
+    if (ids.length === 0) {
+      return res.status(400).json({ msg: "Invalid room IDs provided" });
+    }
+
+    const rooms = await Rooms.find({ _id: { $in: ids } });
+    res.status(200).json({ rooms });
+  } catch (error) {
+    console.error("Error fetching rooms:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 const searchRoom = async (req, res) => {
   try {
     const keyword = req.query.q
@@ -126,7 +153,7 @@ const searchRoom = async (req, res) => {
     res.status(200).json({ rooms });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ msg: "Internal server error" });
   }
 };
 
@@ -222,4 +249,5 @@ module.exports = {
   resetRoom,
   updateRoom,
   searchRoom,
+  getFavoritesRooms,
 };
