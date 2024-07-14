@@ -18,7 +18,7 @@ export const NoticeReportsSlice = createSlice({
     getNoticeReportsSuccess: (state, action) => {
       state.isFetching = false;
       state.error = null;
-      state.reports = action.payload.reports;
+      state.reports = action.payload.Reports;
       state.total = action.payload.total;
       state.limit = action.payload.per_page;
     },
