@@ -78,7 +78,7 @@ export default function Sidebar() {
             السمايلات والإيموجي
            {index === 11 && <div className="active"></div>}
             </div></li></Link>
-             <Link to="/reports" className="link">
+             <Link to="/notice" className="link">
             <li className="sidebarListItem" onClick={() => {setIndex(12)}}><Flag/>
             <div className='label'>
             التبليغات

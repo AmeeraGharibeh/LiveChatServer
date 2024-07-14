@@ -1,0 +1,14 @@
+.noticeList {
+    flex: 4;
+}
+
+.noticeListNotice {
+    display: flex;
+    align-items: center;
+}
+
+
+.noticeListDelete {
+    color: red;
+    cursor: pointer;
+}

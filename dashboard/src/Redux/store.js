@@ -6,6 +6,7 @@ import usersReducer from "./UsersRedux";
 import logsReducer from "./LogsRedux";
 import imagesReducer from "./ImagesRedux";
 import emojieReducer from "./EmojieRedux";
+import noticeReducer from "./NoticeRedux";
 
 import {
   persistStore,
@@ -33,6 +34,7 @@ const rootReducer = combineReducers({
   log: logsReducer,
   image: imagesReducer,
   emojie: emojieReducer,
+  notice: noticeReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer); // Pass persistConfig to persistReducer

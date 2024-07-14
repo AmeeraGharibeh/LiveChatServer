@@ -22,6 +22,7 @@ import ProtectedNamesList from "./Pages/NamePages/ProtectedNamesList/ProtectedNa
 import RoyalNamesList from "./Pages/NamePages/RoyalNamesList/RoyalNamesList.jsx";
 import RootsList from "./Pages/RootPages/RootsList/RootsList.jsx";
 import NewRoot from "./Pages/RootPages/NewRoot/NewRoot.jsx";
+import NoticePage from "./Pages/NoticeList/NoticeList.jsx";
 import SupportPage from "./Pages/SupportPages/SupportPage/SupportPage.jsx";
 import BlockedPage from "./Pages/BlockedPages/BlockedList/BlockedList.jsx";
 import ReportPage from "./Pages/SupportPages/ReportPage/ReportPage.jsx";
@@ -83,6 +84,7 @@ function App() {
 
               <Route exact path="/roots" element={<RootsList />} />
               <Route exact path="/newroot" element={<NewRoot />} />
+              <Route exact path="/notice" element={<NoticePage />} />
 
               <Route
                 exact
@@ -98,7 +100,6 @@ function App() {
               <Route exact path="/backgrounds" element={<Backgrounds />} />
 
               <Route exact path="/support" element={<SupportPage />} />
-              <Route exact path="/reports" element={<ReportPage />} />
               <Route exact path="/blocked" element={<BlockedPage />} />
               <Route exact path="/emojies" element={<EmojiesPage />} />
               <Route exact path="/logs" element={<LogsPage />} />
