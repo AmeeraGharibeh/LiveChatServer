@@ -166,6 +166,15 @@ const getRoom = async (req, res) => {
   }
 };
 
+const getSalesRoom = async (req, res) => {
+  try {
+    const room = await Rooms.find({ is_sales_room: true });
+    res.status(200).json(room);
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
+
 const updateRoom = async (req, res) => {
   console.log(req.body);
 
@@ -250,4 +259,5 @@ module.exports = {
   updateRoom,
   searchRoom,
   getFavoritesRooms,
+  getSalesRoom,
 };
