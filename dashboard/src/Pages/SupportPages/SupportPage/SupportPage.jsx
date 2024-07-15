@@ -5,6 +5,7 @@ import { addAdmin, getAllAdmins, updateAdmin } from '../../../Redux/Repositories
 import { resetAuthState } from '../../../Redux/AuthRedux';
 import { addSalesRoom, getSalesRooms, updateRooms } from '../../../Redux/Repositories/RoomsRepo';
 import { resetRoomState } from '../../../Redux/RoomsRedux';
+import permisstionsData from '../../../Data/PermissionsData';
 
 
 export default function SupportPage() {
@@ -94,7 +95,11 @@ export default function SupportPage() {
   function showAlert() {
   const result = window.confirm("إضافة غرفة مبيعات جديدة سيؤدي إلى حذف غرفة المبيعات السابقة, هل أنت متأكد؟");
   if (result) {
- const newRoom = { ...inputs, room_capacity: totalCapacity, account_limits:  limitsInput};
+          const permissions = {};
+    permisstionsData.forEach((item) => {
+        permissions[item.key] = true
+    })
+ const newRoom = { ...inputs, room_capacity: totalCapacity, account_limits:  limitsInput, permissions};
     addSalesRoom(newRoom, dispatch);  }
 }
   return (
