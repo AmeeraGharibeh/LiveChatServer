@@ -61,12 +61,16 @@ const getAllRooms = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
 
   try {
-    const totalItems = await Rooms.countDocuments();
+    const totalItems = await Rooms.countDocuments({
+      is_sales_room: { $ne: true },
+    });
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
 
-    const items = await Rooms.find().skip(skip).limit(limit);
+    const items = await Rooms.find({ is_sales_room: { $ne: true } })
+      .skip(skip)
+      .limit(limit);
 
     const response = {
       current_page: currentPage,
@@ -89,12 +93,18 @@ const getAllRoomsByCountry = async (req, res) => {
   const countryId = req.params.id;
 
   try {
-    const totalItems = await Rooms.countDocuments({ room_country: countryId });
+    const totalItems = await Rooms.countDocuments({
+      room_country: countryId,
+      is_sales_room: { $ne: true },
+    });
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
 
-    const items = await Rooms.find({ room_country: countryId })
+    const items = await Rooms.find({
+      room_country: countryId,
+      is_sales_room: { $ne: true },
+    })
       .skip(skip)
       .limit(limit);
 
@@ -120,12 +130,16 @@ const getSpecialRooms = async (req, res) => {
   try {
     const totalItems = await Rooms.countDocuments({
       room_type: { $in: ["gold", "special"] },
+      is_sales_room: { $ne: true },
     });
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
 
-    const items = await Rooms.find({ room_type: { $in: ["gold", "special"] } })
+    const items = await Rooms.find({
+      room_type: { $in: ["gold", "special"] },
+      is_sales_room: { $ne: true },
+    })
       .skip(skip)
       .limit(limit);
 
@@ -157,7 +171,10 @@ const getFavoritesRooms = async (req, res) => {
       return res.status(400).json({ msg: "Invalid room IDs provided" });
     }
 
-    const rooms = await Rooms.find({ _id: { $in: ids } });
+    const rooms = await Rooms.find({
+      _id: { $in: ids },
+      is_sales_room: { $ne: true },
+    });
     res.status(200).json({ rooms });
   } catch (error) {
     console.error("Error fetching rooms:", error);
