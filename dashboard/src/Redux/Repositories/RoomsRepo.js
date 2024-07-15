@@ -91,7 +91,7 @@ export const addSalesRoom = async (room, dispatch) => {
   initializeUserRequest()
     .then(async (Request) => {
       const val = await Request.post(`rooms/sales`, room);
-      dispatch(addSalesRoomsSuccess(val.data));
+      dispatch(addSalesRoomsSuccess(val.data.rooms));
     })
     .catch((err) => {
       console.log(err.response.data);
@@ -104,7 +104,7 @@ export const updateRooms = async (id, Rooms, dispatch) => {
   initializeUserRequest()
     .then(async (Request) => {
       const val = await Request.put(`rooms/update/${id}`, Rooms);
-      dispatch(updateRoomsSuccess(val.data.rooms));
+      dispatch(updateRoomsSuccess(val.data));
     })
     .catch((err) => {
       console.log(err.response.data);
