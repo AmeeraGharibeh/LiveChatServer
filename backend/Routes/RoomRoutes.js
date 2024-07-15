@@ -9,6 +9,7 @@ const {
   getAllRoomsByCountry,
   getRoom,
   updateRoom,
+  updatePanelRoom,
   deleteRoom,
   resetRoom,
   searchRoom,
@@ -36,6 +37,7 @@ router.get("/:id", getAllRoomsByCountry);
 router.get("/room/:id", getRoom);
 router.post("/reset/:id", verifyTokenAndAuthorization, resetRoom);
 router.put("/:id", verifyTokenAndAction, updateRoom);
+router.put("/update/:id", verifyTokenAndAuthorization, updatePanelRoom);
 router.delete("/:id", verifyTokenAndAuthorization, deleteRoom);
 
 module.exports = router;

@@ -7,6 +7,7 @@ const {
   calculateDateAfterDays,
   time,
 } = require("../Config/Helpers/time_helper");
+const UserModel = require("../Models/UserModel");
 
 const createRoom = async (req, res, next) => {
   console.log(req.body);
@@ -251,6 +252,50 @@ const updateRoom = async (req, res) => {
   }
 };
 
+const updatePanelRoom = async (req, res) => {
+  try {
+    const room = await Rooms.findById(req.params.id);
+    if (!room) {
+      return res.status(404).json({ msg: "Room not found" });
+    }
+
+    if (req.body.body.room_password) {
+      if (room.room_code !== req.body.body.room_code) {
+        return res.status(400).json({ msg: "كود الغرفة غير صحيح" });
+      }
+
+      // Get the master user associated with the room
+      const masterUser = await UserModel.findOne({ rooms: req.params.id });
+      if (!masterUser) {
+        return res.status(404).json({ msg: "Master user not found" });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(
+        req.body.body.room_password,
+        salt
+      );
+
+      masterUser.room_password = hashedPassword;
+      await masterUser.save();
+    }
+
+    const updated = await Rooms.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: req.body.body,
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.status(200).json({ msg: "تم تعديل الغرفة بنجاح!", room: updated });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
+
 const resetRoom = async (req, res) => {
   const roomId = req.params.id;
 
@@ -298,6 +343,7 @@ module.exports = {
   deleteRoom,
   resetRoom,
   updateRoom,
+  updatePanelRoom,
   searchRoom,
   getFavoritesRooms,
   getSalesRoom,
