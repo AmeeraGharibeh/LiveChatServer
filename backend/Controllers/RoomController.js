@@ -1,9 +1,6 @@
 const Rooms = require("../Models/RoomModel");
 const User = require("../Models/UserModel");
 const Logs = require("../Models/LogModel");
-const {
-  Types: { ObjectId },
-} = require("mongoose");
 
 const Reports = require("../Models/ReportsModel");
 const {
@@ -17,6 +14,32 @@ const createRoom = async (req, res, next) => {
   const password = req.body.body.room_password;
   const permissions = req.body.body.permissions;
   roomData.end_date = time(calculateDateAfterDays(roomData.room_duration));
+  const newRoom = new Rooms(roomData);
+
+  try {
+    await newRoom.save().then((val) => {
+      req.body.room_password = password;
+      req.body.permissions = permissions;
+      req.body.roomId = val._id.toHexString();
+
+      next();
+    });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
+
+const createSalesRoom = async (req, res, next) => {
+  console.log(req.body);
+  let roomData = req.body.body;
+  const password = req.body.body.room_password;
+  const permissions = req.body.body.permissions;
+  roomData.end_date = "forever";
+  roomData.room_name = "غرفة المبيعات";
+  roomData.room_owner = "الدعم الفني";
+  roomData.email = "الدعم الفني";
+  roomData.room_type = "sales_room";
+  roomData.is_sales_room = true;
   const newRoom = new Rooms(roomData);
 
   try {
@@ -260,4 +283,5 @@ module.exports = {
   searchRoom,
   getFavoritesRooms,
   getSalesRoom,
+  createSalesRoom,
 };
