@@ -82,7 +82,6 @@ const handleDropdownCountry = (value) => {
     permisstionsData.forEach((item) => {
         permissions[item.key] = true
     })
-    console.log(permissions)
     const roomData = { ...inputs,
       room_country: country._id,
       room_type: type.name_en,

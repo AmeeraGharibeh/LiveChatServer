@@ -38,7 +38,7 @@ export const getSalesRooms = async (dispatch) => {
     Request.get(`rooms/sales/`)
       .then((val) => {
         console.log(val.data);
-        dispatch(getSalesRoomsSuccess(val.data));
+        dispatch(getSalesRoomsSuccess(val.data.rooms));
       })
       .catch((err) => {
         dispatch(getSalesRoomsFailure(err.response.data));
@@ -91,7 +91,7 @@ export const addSalesRoom = async (room, dispatch) => {
   initializeUserRequest()
     .then(async (Request) => {
       const val = await Request.post(`rooms/sales`, room);
-      dispatch(addSalesRoomsSuccess(val.data.rooms));
+      dispatch(addSalesRoomsSuccess(val.data));
     })
     .catch((err) => {
       console.log(err.response.data);
