@@ -46,10 +46,8 @@ const createSalesRoom = async (req, res, next) => {
   const newRoom = new Rooms(roomData);
 
   try {
-    // Check if there is an existing sales room
     const existingSalesRoom = await Rooms.findOne({ is_sales_room: true });
     if (existingSalesRoom) {
-      // Delete the existing sales room
       await Rooms.deleteOne({ _id: existingSalesRoom._id });
     }
 
@@ -220,7 +218,7 @@ const getRoom = async (req, res) => {
 const getSalesRoom = async (req, res) => {
   try {
     const room = await Rooms.find({ is_sales_room: true });
-    res.status(200).json(room);
+    res.status(200).json(room.first);
   } catch (err) {
     res.status(500).send({ msg: err.message });
   }
