@@ -25,7 +25,7 @@ router.post("/", verifyTokenAndAuthorization, createRoom, createMasterUser);
 router.get("/search", searchRoom);
 router.get("/favorites", getFavoritesRooms);
 router.get("/", getAllRooms);
-router.get("/sales", verifyTokenAndAuthorization, getSalesRoom);
+router.get("/sales", getSalesRoom);
 router.post(
   "/sales",
   verifyTokenAndAuthorization,
