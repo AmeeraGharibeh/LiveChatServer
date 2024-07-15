@@ -218,7 +218,7 @@ const getRoom = async (req, res) => {
 const getSalesRoom = async (req, res) => {
   try {
     const room = await Rooms.find({ is_sales_room: true });
-    res.status(200).json(room.first);
+    res.status(200).json({ rooms: room[0] });
   } catch (err) {
     res.status(500).send({ msg: err.message });
   }
