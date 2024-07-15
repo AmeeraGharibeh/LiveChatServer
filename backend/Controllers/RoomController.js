@@ -39,6 +39,7 @@ const createSalesRoom = async (req, res, next) => {
   roomData.room_owner = "الدعم الفني";
   roomData.email = "الدعم الفني";
   roomData.room_type = "sales_room";
+  roomData.room_country = "sales_room";
   roomData.is_sales_room = true;
   const newRoom = new Rooms(roomData);
 
