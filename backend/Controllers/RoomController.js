@@ -46,6 +46,14 @@ const createSalesRoom = async (req, res, next) => {
   const newRoom = new Rooms(roomData);
 
   try {
+    // Check if there is an existing sales room
+    const existingSalesRoom = await Rooms.findOne({ is_sales_room: true });
+    if (existingSalesRoom) {
+      // Delete the existing sales room
+      await Rooms.deleteOne({ _id: existingSalesRoom._id });
+    }
+
+    // Save the new room
     await newRoom.save().then((val) => {
       req.body.room_password = password;
       req.body.permissions = permissions;
