@@ -44,7 +44,7 @@ export default function NoticeList() {
       Cell: ({cell}) => {
         return (
           <div className="noticeListNotice">
-            {cell.row.original.username}
+            {cell.row.original.noticed_username}
           </div>
         );
       },
@@ -52,6 +52,8 @@ export default function NoticeList() {
    
     { accessor: 'noticed_device', Header: 'Device' },
     { accessor: 'noticed_ip', Header: 'IP ' },
+        { accessor: 'report_date', Header: 'Date ' },
+
     {
       accessor: 'action',
       Header: 'Action',

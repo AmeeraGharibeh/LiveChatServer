@@ -22,9 +22,9 @@ import ProtectedNamesList from "./Pages/NamePages/ProtectedNamesList/ProtectedNa
 import RoyalNamesList from "./Pages/NamePages/RoyalNamesList/RoyalNamesList.jsx";
 import RootsList from "./Pages/RootPages/RootsList/RootsList.jsx";
 import NewRoot from "./Pages/RootPages/NewRoot/NewRoot.jsx";
-import NoticePage from "./Pages/NoticeList/NoticeList.jsx";
 import SupportPage from "./Pages/SupportPages/SupportPage/SupportPage.jsx";
 import BlockedPage from "./Pages/BlockedPages/BlockedList/BlockedList.jsx";
+import NoticePage from "./Pages/NoticeList/NoticeList.jsx";
 import EmojiesPage from "./Pages/EmojjesPage/EmojiesPage.jsx";
 import { checkAuthState } from "./Redux/Repositories/AuthRepo.js";
 import LogsPage from "./Pages/Logs/Logs.jsx";

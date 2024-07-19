@@ -13,9 +13,7 @@
     color: rgb(175, 170, 170);
 }
 .adminsItem{
-    display:flex;
-    align-items: end;
-    width: 75%;
+    display: inline;
 }
 .adminsItem > span {
     color: green;

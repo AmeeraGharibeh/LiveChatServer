@@ -2,18 +2,12 @@ import {
   getRoomsStart,
   getRoomsSuccess,
   getRoomsFailure,
-  getSalesRoomsStart,
-  getSalesRoomsSuccess,
-  getSalesRoomsFailure,
   deleteRoomStart,
   deleteRoomSuccess,
   deleteRoomFailure,
   addRoomsStart,
   addRoomsSuccess,
   addRoomsFailure,
-  addSalesRoomsStart,
-  addSalesRoomsSuccess,
-  addSalesRoomsFailure,
   updateRoomsStart,
   updateRoomsSuccess,
   updateRoomsFailure,
@@ -31,19 +25,6 @@ export const getRooms = async (page, limit, dispatch) => {
     .catch((err) => {
       dispatch(getRoomsFailure(err.response.data));
     });
-};
-export const getSalesRooms = async (dispatch) => {
-  dispatch(getSalesRoomsStart());
-  initializeUserRequest().then(async (Request) => {
-    Request.get(`rooms/sales/`)
-      .then((val) => {
-        console.log(val.data);
-        dispatch(getSalesRoomsSuccess(val.data.rooms));
-      })
-      .catch((err) => {
-        dispatch(getSalesRoomsFailure(err.response.data));
-      });
-  });
 };
 
 export const getRoomsByID = async (id, dispatch) => {
@@ -86,24 +67,11 @@ export const addRoom = async (room, dispatch) => {
     });
 };
 
-export const addSalesRoom = async (room, dispatch) => {
-  dispatch(addSalesRoomsStart());
-  initializeUserRequest()
-    .then(async (Request) => {
-      const val = await Request.post(`rooms/sales`, room);
-      dispatch(addSalesRoomsSuccess(val.data));
-    })
-    .catch((err) => {
-      console.log(err.response.data);
-      dispatch(addSalesRoomsFailure(err.response.data));
-    });
-};
-
 export const updateRooms = async (id, Rooms, dispatch) => {
   dispatch(updateRoomsStart());
   initializeUserRequest()
     .then(async (Request) => {
-      const val = await Request.put(`rooms/update/${id}`, Rooms);
+      const val = await Request.put(`rooms/${id}`, Rooms);
       dispatch(updateRoomsSuccess(val.data));
     })
     .catch((err) => {
