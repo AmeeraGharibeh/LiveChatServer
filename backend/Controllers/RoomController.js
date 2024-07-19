@@ -1,14 +1,12 @@
 const Rooms = require("../Models/RoomModel");
 const User = require("../Models/UserModel");
 const Logs = require("../Models/LogModel");
-const bcrypt = require("bcryptjs");
 
 const Reports = require("../Models/ReportsModel");
 const {
   calculateDateAfterDays,
   time,
 } = require("../Config/Helpers/time_helper");
-const UserModel = require("../Models/UserModel");
 
 const createRoom = async (req, res, next) => {
   console.log(req.body);
@@ -31,54 +29,17 @@ const createRoom = async (req, res, next) => {
   }
 };
 
-const createSalesRoom = async (req, res, next) => {
-  console.log(req.body);
-  let roomData = req.body.body;
-  const password = req.body.body.room_password;
-  const permissions = req.body.body.permissions;
-  roomData.end_date = "forever";
-  roomData.room_name = "غرفة المبيعات";
-  roomData.room_owner = "الدعم الفني";
-  roomData.email = "الدعم الفني";
-  roomData.room_type = "sales_room";
-  roomData.room_country = "sales_room";
-  roomData.is_sales_room = true;
-  const newRoom = new Rooms(roomData);
-
-  try {
-    const existingSalesRoom = await Rooms.findOne({ is_sales_room: true });
-    if (existingSalesRoom) {
-      await Rooms.deleteOne({ _id: existingSalesRoom._id });
-    }
-
-    // Save the new room
-    await newRoom.save().then((val) => {
-      req.body.room_password = password;
-      req.body.permissions = permissions;
-      req.body.roomId = val._id.toHexString();
-
-      next();
-    });
-  } catch (err) {
-    res.status(500).send({ msg: err.message });
-  }
-};
-
 const getAllRooms = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
 
   try {
-    const totalItems = await Rooms.countDocuments({
-      is_sales_room: { $ne: true },
-    });
+    const totalItems = await Rooms.countDocuments();
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
 
-    const items = await Rooms.find({ is_sales_room: { $ne: true } })
-      .skip(skip)
-      .limit(limit);
+    const items = await Rooms.find().skip(skip).limit(limit);
 
     const response = {
       current_page: currentPage,
@@ -101,18 +62,12 @@ const getAllRoomsByCountry = async (req, res) => {
   const countryId = req.params.id;
 
   try {
-    const totalItems = await Rooms.countDocuments({
-      room_country: countryId,
-      is_sales_room: { $ne: true },
-    });
+    const totalItems = await Rooms.countDocuments({ room_country: countryId });
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
 
-    const items = await Rooms.find({
-      room_country: countryId,
-      is_sales_room: { $ne: true },
-    })
+    const items = await Rooms.find({ room_country: countryId })
       .skip(skip)
       .limit(limit);
 
@@ -138,16 +93,12 @@ const getSpecialRooms = async (req, res) => {
   try {
     const totalItems = await Rooms.countDocuments({
       room_type: { $in: ["gold", "special"] },
-      is_sales_room: { $ne: true },
     });
     const totalPages = Math.ceil(totalItems / limit);
     const currentPage = Math.min(page, totalPages);
     const skip = Math.max((currentPage - 1) * limit, 0);
 
-    const items = await Rooms.find({
-      room_type: { $in: ["gold", "special"] },
-      is_sales_room: { $ne: true },
-    })
+    const items = await Rooms.find({ room_type: { $in: ["gold", "special"] } })
       .skip(skip)
       .limit(limit);
 
@@ -302,7 +253,6 @@ const updatePanelRoom = async (req, res) => {
     res.status(500).send({ msg: err.message });
   }
 };
-
 const resetRoom = async (req, res) => {
   const roomId = req.params.id;
 
@@ -321,6 +271,39 @@ const resetRoom = async (req, res) => {
     res.status(500).json({ msg: "حدث خطأ اثناء محاولة إعادة تهيئة الغرفة" });
   }
 };
+const createSalesRoom = async (req, res, next) => {
+  console.log(req.body);
+  let roomData = req.body.body;
+  const password = req.body.body.room_password;
+  const permissions = req.body.body.permissions;
+  roomData.end_date = "forever";
+  roomData.room_name = "غرفة المبيعات";
+  roomData.room_owner = "الدعم الفني";
+  roomData.email = "الدعم الفني";
+  roomData.room_type = "sales_room";
+  roomData.room_country = "sales_room";
+  roomData.is_sales_room = true;
+  const newRoom = new Rooms(roomData);
+
+  try {
+    const existingSalesRoom = await Rooms.findOne({ is_sales_room: true });
+    if (existingSalesRoom) {
+      await Rooms.deleteOne({ _id: existingSalesRoom._id });
+    }
+
+    // Save the new room
+    await newRoom.save().then((val) => {
+      req.body.room_password = password;
+      req.body.permissions = permissions;
+      req.body.roomId = val._id.toHexString();
+
+      next();
+    });
+  } catch (err) {
+    res.status(500).send({ msg: err.message });
+  }
+};
+
 const deleteRoom = async (req, res) => {
   try {
     await Rooms.findByIdAndDelete(req.params.id);
@@ -346,13 +329,13 @@ module.exports = {
   getAllRooms,
   getAllRoomsByCountry,
   getSpecialRooms,
+  getSalesRoom,
+  updatePanelRoom,
   getRoom,
   deleteRoom,
   resetRoom,
   updateRoom,
-  updatePanelRoom,
+  createSalesRoom,
   searchRoom,
   getFavoritesRooms,
-  getSalesRoom,
-  createSalesRoom,
 };

@@ -21,6 +21,10 @@ const LogSchema = mongoose.Schema(
       type: String,
       default: "-",
     },
+    duration: {
+      type: Number,
+      default: 0,
+    },
 
     time_in: {
       type: String,

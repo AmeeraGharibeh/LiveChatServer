@@ -13,10 +13,6 @@ const RoomSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  is_sales_room: {
-    type: Boolean,
-    default: false,
-  },
   room_code: {
     type: String,
     required: true,
@@ -39,7 +35,10 @@ const RoomSchema = mongoose.Schema({
     type: String,
     default: "-",
   },
-
+  is_sales_room: {
+    type: Boolean,
+    default: false,
+  },
   welcome_msg: {
     type: String,
     default: "-",

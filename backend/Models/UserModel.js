@@ -154,6 +154,10 @@ const UserSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    blockCount: {
+      type: Number,
+      default: 0,
+    },
 
     permissions: {
       type: {},
