@@ -29,6 +29,7 @@ const verifyTokenAndAdmin = async (req, res, next) => {
   body = req.body;
   try {
     await verifyToken(req, res, async () => {
+      console.log("verify token " + JSON.stringify(body, null, 2));
       const types = ["admin", "super_admin", "master", "root"];
       const adminUser = await UserModel.findById(req.body.id);
       const dashboardUser = await AuthModel.findById(req.body.id);
