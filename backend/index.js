@@ -31,7 +31,6 @@ const io = socketIo(server, {
   cors: {
     transports: ["websocket"],
     origin: "wss://audio-video-chat-backend.onrender.com/",
-    // origin: "http://192.168.137.1:8002/",
     methods: ["GET", "POST"],
   },
 });
@@ -54,7 +53,6 @@ const streamData = {};
 const ignoredUsers = new Set();
 const stoppedUsers = [];
 const roomSockets = {};
-const now = new Date();
 
 io.on("connection", async (socket) => {
   console.log("A user connected");
@@ -124,24 +122,10 @@ io.on("connection", async (socket) => {
       }
       console.log(stoppedUsers);
     }
-
-    // update room's log on db
-    const newLog = new Logs({
-      room_id: user.room_id,
-      username: user.username,
-      user_id: user._id,
-      ip,
-      device,
-      location,
-      time_in: time(now),
-      icon: user.icon,
-    });
-    await newLog.save();
   });
 
   socket.on("leaveRoom", async (data) => {
     socket.leave(data.room_id);
-
     removeFromOnlineUsers(
       {
         room_id: data.room_id,
@@ -158,15 +142,23 @@ io.on("connection", async (socket) => {
       notificationType: "out",
     });
 
-    //update room log on db
-    const log = await Logs.findOne({ user_id: data._id });
+    // //update room log on db
+    // const log = await Logs.findOne({ user_id: data._id });
+    // if (log) {
+    //   console.log("log finded");
 
-    await Logs.findByIdAndUpdate(
-      log._id,
-      { time_out: time(now) },
-      { new: true }
-    );
-    console.log("A user disconnected at " + time(now));
+    //   const date1 = new Date(log.time_in);
+    //   const date2 = time(now);
+    //   const duration = getDuration(date1, date2);
+
+    //   console.log("log finded duration " + duration);
+
+    //   await Logs.findByIdAndUpdate(
+    //     log._id,
+    //     { time_out: now, duration: duration },
+    //     { new: true }
+    //   );
+    // }
   });
   socket.on("sessionTimeout", async (_) => {
     socket.emit("sessionTimeout");
@@ -200,7 +192,7 @@ io.on("connection", async (socket) => {
     io.to(data.roomId).emit("changeRoomColor", { color: data.color });
   });
   // send notification when your profile has been visited
-  socket.on("profileVisit", (data) => {
+  socket.on("profileVisit", async (data) => {
     io.to(data.socket).emit("notification", {
       sender: data.username,
       senderId: data._id,
@@ -208,6 +200,17 @@ io.on("connection", async (socket) => {
       color: 0xffffeebb,
       type: "notification",
     });
+    const user = await UserModel.findOne({ _id: data["userId"] });
+
+    if (user) {
+      console.log("from visit profile ");
+      const visitCount = user.visitors + 1;
+      await UserModel.findByIdAndUpdate(
+        user._id,
+        { visitors: visitCount },
+        { new: true, upsert: true }
+      );
+    }
   });
 
   // Handle chat events
@@ -453,6 +456,15 @@ io.on("connection", async (socket) => {
     io.to(data["socket"]).emit("logout", {
       msg: "تم حظرك من الغرفة من طرف: " + data["master"],
     });
+    const user = await UserModel.findOne({ _id: data["userId"] });
+    if (user) {
+      const blockingCount = user.blockCount + 1;
+      await UserModel.findByIdAndUpdate(
+        user._id,
+        { blockCount: blockingCount },
+        { new: true, upsert: true }
+      );
+    }
   });
 
   socket.on("unBlockUser", async (data) => {
@@ -991,6 +1003,8 @@ function getSocketsInRoom(room) {
 
 let timerId = null;
 let currentStreamer = null;
+let startTime = null;
+
 function startStreaming(data) {
   const userId = data["userId"];
   const roomId = data["roomId"];
@@ -1003,7 +1017,9 @@ function startStreaming(data) {
     endStreaming(data); // End existing stream if user tries to start again
     return;
   }
+
   const currentTime = new Date();
+  startTime = currentTime; // Record start time
   const endTime = new Date(currentTime.getTime() + speakTime * 1000);
   const speakingEnds = `${endTime.getHours()}:${endTime.getMinutes()}:${endTime.getSeconds()}`;
   const serverTime = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}`;
@@ -1036,7 +1052,7 @@ function startStreaming(data) {
   };
 }
 
-function endStreaming(data) {
+async function endStreaming(data) {
   const timerId = streamData[data["roomId"]]?.timerId; // Check if data exists for the room
 
   if (timerId) {
@@ -1044,18 +1060,22 @@ function endStreaming(data) {
     clearTimeout(timerId);
   }
 
-  io.to(data["roomId"]).emit("endBroadcast", { socketId: data["socketId"] });
-  updateOnlineUsersList(data["roomId"], data["socketId"], "mic_status", "none");
+  // Calculate the elapsed time
+  const endTime = new Date();
+  const elapsedTime = (endTime - startTime) / 1000; // Time in seconds
+  console.log(`Stream ended. Duration: ${elapsedTime} seconds`);
 
-  // if (onlineUsers[data["roomId"]]) {
-  //   onlineUsers[data["roomId"]].forEach((user) => {
-  //     if (user.id !== data["socketId"]) {
-  //       user.user["audio_status"] = "none";
-  //     }
-  //   });
-  //   emitOnlineUsers({ room_id: data["roomId"] });
-  // }
+  io.to(data["roomId"]).emit("endBroadcast", {
+    socketId: data["socketId"],
+    elapsedTime,
+  });
+  updateOnlineUsersList(data["roomId"], data["socketId"], "mic_status", "none");
+  await UserModel.findByIdAndUpdate(data["userId"], {
+    talk_time: elapsedTime.toString(),
+  });
+
   currentStreamer = null; // Clear current streamer
+  startTime = null; // Clear start time
 
   if (
     speakersQueue[data["roomId"]] &&
@@ -1121,7 +1141,14 @@ function sendMessage(data, socket) {
 }
 async function sendPrivateMessage(data, socket1) {
   const socketsInRoom = getSocketsInRoom(data.roomId);
-  const types = ["admin", "super_admin", "member", "master", "master_girl"];
+  const types = [
+    "admin",
+    "super_admin",
+    "member",
+    "master",
+    "master_girl",
+    "root",
+  ];
 
   const toSocket = socketsInRoom.find((socket) => socket.id === data.toSocket);
   if (toSocket) {
